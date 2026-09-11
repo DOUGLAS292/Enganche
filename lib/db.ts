@@ -13,15 +13,19 @@ function createPool() {
   return new Pool({ connectionString, max: 5 });
 }
 
-export const pool = global._enganchePool ?? createPool();
-
-if (process.env.NODE_ENV !== "production") {
-  global._enganchePool = pool;
+// Perezoso a propósito: `next build` importa las rutas para analizarlas sin
+// tener DATABASE_URL disponible, así que el Pool no se crea hasta la primera
+// consulta real (en runtime), nunca al importar este módulo.
+function getPool(): Pool {
+  if (!global._enganchePool) {
+    global._enganchePool = createPool();
+  }
+  return global._enganchePool;
 }
 
 export function query<T extends QueryResultRow = QueryResultRow>(
   text: string,
   params?: unknown[]
 ) {
-  return pool.query<T>(text, params);
+  return getPool().query<T>(text, params);
 }

@@ -1,83 +1,68 @@
-"use client";
+import Link from "next/link";
+import { obtenerUsuarioIdDeSesion } from "@/lib/auth/session";
+import { query } from "@/lib/db";
+import HealthCheck from "./HealthCheck";
+import CerrarSesionBoton from "./CerrarSesionBoton";
 
-import { useState } from "react";
+export default async function Home() {
+  const usuarioId = await obtenerUsuarioIdDeSesion();
+  let usuario: { nombre_razon_social: string; ciudad: string | null } | null = null;
 
-type HealthState =
-  | { status: "idle" }
-  | { status: "loading" }
-  | { status: "ok"; db: { postgis_version: string; now: string } }
-  | { status: "error"; message: string };
-
-export default function Home() {
-  const [health, setHealth] = useState<HealthState>({ status: "idle" });
-
-  async function verificar() {
-    setHealth({ status: "loading" });
-    try {
-      const res = await fetch("/api/health");
-      const data = await res.json();
-      if (data.ok) {
-        setHealth({ status: "ok", db: data.db });
-      } else {
-        setHealth({ status: "error", message: data.error ?? "error desconocido" });
-      }
-    } catch (err) {
-      setHealth({
-        status: "error",
-        message: err instanceof Error ? err.message : "error desconocido",
-      });
-    }
+  if (usuarioId) {
+    const result = await query<{ nombre_razon_social: string; ciudad: string | null }>(
+      "select nombre_razon_social, ciudad from usuarios where id = $1",
+      [usuarioId]
+    );
+    usuario = result.rows[0] ?? null;
   }
 
   return (
     <main style={{ maxWidth: 640, margin: "0 auto", padding: "48px 20px" }}>
       <h1 style={{ fontSize: 28, marginBottom: 4 }}>Enganche</h1>
       <p style={{ color: "#94a3b8", marginTop: 0 }}>
-        Marketplace de demanda para producción e instalación de sistemas de
-        aluminio y vidrio.
+        Marketplace de demanda para producción e instalación de sistemas de aluminio y vidrio.
       </p>
 
-      <h2 style={{ fontSize: 16, marginTop: 32 }}>Fase 0 — Esqueleto de datos</h2>
+      <div
+        style={{
+          marginTop: 16,
+          padding: "12px 16px",
+          borderRadius: 8,
+          border: "1px solid #334155",
+          background: "#1e293b",
+        }}
+      >
+        {usuario ? (
+          <>
+            <p style={{ margin: 0 }}>
+              Sesión activa: <strong>{usuario.nombre_razon_social}</strong>
+              {usuario.ciudad ? ` · ${usuario.ciudad}` : ""}
+            </p>
+            <div style={{ marginTop: 8 }}>
+              <CerrarSesionBoton />
+            </div>
+          </>
+        ) : (
+          <p style={{ margin: 0 }}>
+            No has iniciado sesión.{" "}
+            <Link href="/entrar" style={{ color: "#60a5fa" }}>
+              Entrar
+            </Link>
+          </p>
+        )}
+      </div>
+
+      <h2 style={{ fontSize: 16, marginTop: 32 }}>Estado de las fases</h2>
       <ul style={{ lineHeight: 1.8 }}>
-        <li>
-          ✅ 8 tablas: usuarios, publicaciones, postulaciones, mensajes,
-          calificaciones, comisiones, garantias, ciudades_piloto
-        </li>
-        <li>✅ Extensión PostGIS + índices GIST para emparejamiento geográfico</li>
-        <li>✅ Triggers de reputación (rating_promedio, trabajos_completados)</li>
-        <li>
-          ✅ Runner de migraciones (<code>npm run migrate</code>)
-        </li>
-        <li>⬜ Fase 1 — Auth por OTP de WhatsApp</li>
+        <li>✅ Fase 0 — Esqueleto de datos (8 tablas, PostGIS, triggers)</li>
+        <li>✅ Fase 1 — Auth por OTP de WhatsApp + registro de dos pasos</li>
         <li>⬜ Fase 2 — Publicar + feed por cercanía</li>
         <li>⬜ Fase 3 — Postulación + chat</li>
         <li>⬜ Fase 4 — Cierre + calificación + comisión</li>
         <li>⬜ Fase 5 — Panel de comisiones (admin)</li>
       </ul>
 
-      <button
-        onClick={verificar}
-        style={{
-          marginTop: 24,
-          padding: "10px 18px",
-          borderRadius: 8,
-          border: "1px solid #334155",
-          background: "#1e293b",
-          color: "#eef2f5",
-          cursor: "pointer",
-          fontSize: 14,
-        }}
-      >
-        Verificar conexión a PostGIS
-      </button>
-
-      {health.status === "loading" && <p>Consultando…</p>}
-      {health.status === "ok" && (
-        <p style={{ color: "#4ade80" }}>✓ Conectado — {health.db.postgis_version}</p>
-      )}
-      {health.status === "error" && (
-        <p style={{ color: "#f87171" }}>✗ {health.message}</p>
-      )}
+      <HealthCheck />
     </main>
   );
 }
