@@ -60,7 +60,23 @@ tardar de horas a un par de días — no es algo que yo pueda hacer por ti. Con
 puestos en `.env` (o en Vercel al desplegar), el envío real se activa solo,
 sin tocar código.
 
-Siguiente: **Fase 2 — Publicar + feed por cercanía** (`docs/SPEC.md §4`).
+### Fase 2 — Publicar + feed por cercanía ✅
+
+- [x] `/publicar` — formulario de oferta (tipo de trabajo, nivel del sistema
+      con sugerencias de proyecto, cantidad, valor libre, entrega, ciudad) con
+      captura opcional de ubicación exacta (Geolocation API del navegador)
+- [x] `/feed` — pide tu ubicación al abrir y consulta con `ST_DWithin` /
+      `ST_Distance` (radio ajustable 2–50 km, default 10 km); si no hay
+      ubicación, cae a filtrar por ciudad escrita a mano — nunca deja al
+      usuario sin poder ver ofertas
+- [x] Filtros por tipo de trabajo y nivel del sistema
+- [x] `/publicaciones/[id]` — detalle con reputación del autor (rating,
+      trabajos completados, verificado); postularse queda para Fase 3
+- [x] Consultas geoespaciales verificadas contra la base real vía el
+      conector MCP de Supabase (0 m en el mismo punto, excluida a 10 km desde
+      Bogotá, encontrada a 500 km) — no solo compiladas, probadas con datos
+
+Siguiente: **Fase 3 — Postulación + chat** (`docs/SPEC.md §4`).
 
 ## Poner esto a andar
 
@@ -110,7 +126,11 @@ lib/validation/       Normalización de celular colombiano
 lib/constants/        Listas de referencia para los formularios (Fase 2)
 app/entrar/           Paso 1-2 del login: celular → código
 app/registro/         Perfil, solo para celulares nuevos verificados
+app/publicar/         Formulario de oferta (con ubicación opcional)
+app/feed/             Feed por cercanía con filtros
+app/publicaciones/[id] Detalle de una oferta
 app/api/auth/         Rutas de login/registro/sesión
+app/api/publicaciones/ Crear y listar ofertas (consulta PostGIS)
 app/                  Next.js App Router
 docs/SPEC.md          Especificación técnica completa del producto
 ```
