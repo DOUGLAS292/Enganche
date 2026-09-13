@@ -10,6 +10,7 @@ type Publicacion = {
   nivel_sistema: "tradicional" | "superior" | "especializada";
   sistema_o_proyecto: string;
   cantidad: string;
+  mtr2: string | null;
   tiempo_entrega: string | null;
   valor_ofertado: number;
   ciudad: string;
@@ -179,7 +180,10 @@ export default function FeedClient() {
                 {NIVEL_ETIQUETA[p.nivel_sistema]} · {p.ciudad}
               </p>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6, marginTop: 10, fontSize: 13 }}>
-                <span>{p.cantidad}</span>
+                <span>
+                  {/^\d+$/.test(p.cantidad) ? `${p.cantidad} producto${p.cantidad === "1" ? "" : "s"}` : p.cantidad}
+                  {p.mtr2 ? ` · ${p.mtr2} m²` : ""}
+                </span>
                 <span style={{ textAlign: "right", fontWeight: 600 }}>{formatCOP(p.valor_ofertado)}</span>
               </div>
               <p style={{ marginTop: 8, marginBottom: 0, fontSize: 12, color: "#64748b" }}>

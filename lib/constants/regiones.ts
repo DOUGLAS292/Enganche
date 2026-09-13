@@ -13,6 +13,38 @@ export const REGION_POR_CIUDAD: Record<string, string> = {
   Bello: "Antioquia",
 };
 
+// Quita tildes además de mayúsculas — "medellin" (muy común al escribir
+// rápido desde el celular, sin tilde) debe calzar con "Medellín".
+function llaveComparable(texto: string): string {
+  return texto
+    .trim()
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "");
+}
+
+function tituloSimple(ciudad: string): string {
+  return ciudad
+    .trim()
+    .replace(/\s+/g, " ")
+    .split(" ")
+    .map((palabra) => (palabra ? palabra[0].toUpperCase() + palabra.slice(1).toLowerCase() : palabra))
+    .join(" ");
+}
+
+// "cali", "CALI", "medellin" (sin tilde) → "Cali", "Medellín". Si la ciudad
+// ya está en REGION_POR_CIUDAD (comparando sin tildes/mayúsculas), se guarda
+// con esa ortografía exacta — así ciudades_piloto nunca termina con dos
+// filas distintas para la misma ciudad real. Si no está en el mapa, se
+// guarda con capitalización simple.
+export function normalizarCiudad(ciudad: string): string {
+  const normalizado = llaveComparable(ciudad);
+  const clave = Object.keys(REGION_POR_CIUDAD).find((c) => llaveComparable(c) === normalizado);
+  return clave ?? tituloSimple(ciudad);
+}
+
 export function regionParaCiudad(ciudad: string): string | null {
-  return REGION_POR_CIUDAD[ciudad.trim()] ?? null;
+  const normalizado = llaveComparable(ciudad);
+  const clave = Object.keys(REGION_POR_CIUDAD).find((c) => llaveComparable(c) === normalizado);
+  return clave ? REGION_POR_CIUDAD[clave] : null;
 }

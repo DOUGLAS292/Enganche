@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { query } from "@/lib/db";
 import { obtenerUsuarioIdDeSesion } from "@/lib/auth/session";
-import { regionParaCiudad } from "@/lib/constants/regiones";
+import { regionParaCiudad, normalizarCiudad } from "@/lib/constants/regiones";
 
 const TIPOS_TRABAJO = ["produccion", "instalacion"];
 const NIVELES_SISTEMA = ["tradicional", "superior", "especializada"];
@@ -55,7 +55,7 @@ export async function GET(request: Request) {
 
   const sql = `
     select
-      p.id, p.tipo_trabajo, p.nivel_sistema, p.sistema_o_proyecto, p.cantidad,
+      p.id, p.tipo_trabajo, p.nivel_sistema, p.sistema_o_proyecto, p.cantidad, p.mtr2,
       p.tiempo_entrega, p.valor_ofertado, p.ciudad, p.region, p.creado_en,
       u.nombre_razon_social as autor_nombre, u.rating_promedio as autor_rating,
       u.trabajos_completados as autor_trabajos, u.verificado as autor_verificado,
@@ -83,7 +83,7 @@ export async function POST(request: Request) {
   const sistemaOProyecto = String(body?.sistemaOProyecto ?? "").trim();
   const cantidad = String(body?.cantidad ?? "").trim();
   const valorOfertado = Number(body?.valorOfertado);
-  const ciudad = String(body?.ciudad ?? "").trim();
+  const ciudad = normalizarCiudad(String(body?.ciudad ?? ""));
   const lat = body?.lat != null && Number.isFinite(Number(body.lat)) ? Number(body.lat) : null;
   const lng = body?.lng != null && Number.isFinite(Number(body.lng)) ? Number(body.lng) : null;
   const fechaInicio = body?.fechaInicio ? String(body.fechaInicio) : null;
@@ -96,12 +96,16 @@ export async function POST(request: Request) {
     !TIPOS_TRABAJO.includes(tipoTrabajo) ||
     !NIVELES_SISTEMA.includes(nivelSistema) ||
     !sistemaOProyecto ||
-    !cantidad ||
+    !Number.isInteger(Number(cantidad)) ||
+    Number(cantidad) <= 0 ||
     !ciudad ||
     !Number.isFinite(valorOfertado) ||
     valorOfertado <= 0
   ) {
     return NextResponse.json({ ok: false, error: "Completa los campos obligatorios." }, { status: 400 });
+  }
+  if (fechaInicio && fechaFin && fechaFin < fechaInicio) {
+    return NextResponse.json({ ok: false, error: "La fecha de finalización no puede ser antes de la de inicio." }, { status: 400 });
   }
 
   const region = regionParaCiudad(ciudad);

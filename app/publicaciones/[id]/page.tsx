@@ -149,7 +149,10 @@ export default async function PublicacionDetalle({ params }: { params: Promise<{
       </p>
 
       <div style={{ marginTop: 16, padding: "14px 16px", borderRadius: 10, border: "1px solid #334155", background: "#1e293b" }}>
-        <Fila etiqueta="Cantidad" valor={publicacion.cantidad} />
+        <Fila
+          etiqueta="Cantidad"
+          valor={/^\d+$/.test(publicacion.cantidad) ? `${publicacion.cantidad} producto${publicacion.cantidad === "1" ? "" : "s"}` : publicacion.cantidad}
+        />
         {publicacion.mtr2 && <Fila etiqueta="Área" valor={`${publicacion.mtr2} m²`} />}
         <Fila etiqueta="Valor ofertado" valor={formatCOP(publicacion.valor_ofertado)} />
         {publicacion.fecha_inicio && (
