@@ -106,7 +106,35 @@ spec — hoy el cambio de estado ocurre correctamente en la base, pero avisar
 al usuario fuera de la app depende del mismo WhatsApp Business API que Fase 1
 dejó pendiente de aprobación por Meta.
 
-Siguiente: **Fase 4 — Cierre + calificación + comisión** (`docs/SPEC.md §4`).
+### Fase 4 — Cierre + calificación + comisión ✅
+
+- [x] "Marcar trabajo completado" (autor, solo desde `en_proceso`) — genera la
+      comisión automáticamente, sin depender de que nadie califique
+- [x] **Arranque en frío por ciudad, implementado de verdad**: la primera vez
+      que se completa un trabajo en una ciudad nueva, se registra en
+      `ciudades_piloto` con 30 días sin comisión desde ese momento; pasado ese
+      plazo cobra el 3% normal — probado contra la base real con una ciudad
+      nueva (comisión $0) y una ciudad ya establecida (comisión normal)
+- [x] `completada_en` nuevo en `publicaciones` (migración `0013`, ya aplicada
+      en producción) para poder contar los 30 días de garantía
+- [x] Calificación mutua (autor ↔ ganador), independiente y no bloqueante
+      para el cobro — reutiliza el trigger de `rating_promedio` de Fase 0,
+      confirmado con datos reales (5 ★ → `rating_promedio` recalculado solo)
+- [x] `trabajos_completados` también se incrementa solo al completar
+      (trigger de Fase 0), sin código nuevo — confirmado con datos reales
+- [x] Reporte de garantía (autor, dentro de 30 días de completada) + el autor
+      marca "atendida" / "no atendida"; el ganador ve el reporte y coordina
+      por el chat
+- [x] Comisión: el ganador (`responsable_pago_id`) se marca "pagada" desde la
+      app; la confirmación final queda para el admin en Fase 5
+
+**Pendiente para más adelante:** notificaciones reales de "comisión pendiente
+> 48h" y de reportes de garantía (mismo bloqueo de WhatsApp Business API de
+Fase 1); y el criterio exacto de cómo un `no_atendido` reduce reputación más
+allá de quedar registrado como dato — el spec lo deja como "insumo", sin
+fórmula, así que se define cuando haya casos reales.
+
+Siguiente: **Fase 5 — Panel de comisiones (admin)** (`docs/SPEC.md §4`).
 
 ## Poner esto a andar
 
@@ -158,11 +186,11 @@ app/entrar/           Paso 1-2 del login: celular → código
 app/registro/         Perfil, solo para celulares nuevos verificados
 app/publicar/         Formulario de oferta (con ubicación opcional)
 app/feed/             Feed por cercanía con filtros
-app/publicaciones/[id] Detalle: postularse, elegir, reabrir, cancelar
+app/publicaciones/[id] Detalle: postularse, elegir, reabrir, cancelar, cerrar
 app/publicaciones/[id]/chat  Chat 1-a-1 autor ↔ elegido
 app/postulaciones/     "Mis postulaciones" del usuario
 app/api/auth/         Rutas de login/registro/sesión
-app/api/publicaciones/ Crear/listar ofertas + postular/elegir/reabrir/mensajes
+app/api/publicaciones/ Ofertas, postulación, cierre, comisión, garantías
 app/                  Next.js App Router
 docs/SPEC.md          Especificación técnica completa del producto
 ```

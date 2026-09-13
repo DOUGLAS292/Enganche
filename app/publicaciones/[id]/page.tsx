@@ -6,6 +6,7 @@ import { query } from "@/lib/db";
 import { formatCOP, formatFecha } from "@/lib/format";
 import AccionesAutor from "./AccionesAutor";
 import AccionPostulante from "./AccionPostulante";
+import AccionesCompletada from "./AccionesCompletada";
 
 const NIVEL_ETIQUETA: Record<string, string> = {
   tradicional: "Nivel 1 · Tradicional",
@@ -101,6 +102,27 @@ export default async function PublicacionDetalle({ params }: { params: Promise<{
     miPostulacion = r.rows[0] ?? null;
   }
 
+  let comision: { valor_comision: number; estado: string } | null = null;
+  let yaCalifique = false;
+  let garantias: { id: string; descripcion: string; estado: "abierto" | "atendido" | "no_atendido"; fecha_reporte: string }[] = [];
+
+  if ((esAutor || esGanador) && publicacion.estado === "completada") {
+    const [rComision, rCalifique, rGarantias] = await Promise.all([
+      query<{ valor_comision: number; estado: string }>(
+        "select valor_comision, estado from comisiones where publicacion_id = $1",
+        [id]
+      ),
+      query("select 1 from calificaciones where publicacion_id = $1 and calificador_id = $2", [id, usuarioId]),
+      query<{ id: string; descripcion: string; estado: "abierto" | "atendido" | "no_atendido"; fecha_reporte: string }>(
+        "select id, descripcion, estado, fecha_reporte from garantias where publicacion_id = $1 order by fecha_reporte desc",
+        [id]
+      ),
+    ]);
+    comision = rComision.rows[0] ?? null;
+    yaCalifique = rCalifique.rows.length > 0;
+    garantias = rGarantias.rows;
+  }
+
   const estadoEtiqueta = ESTADO_ETIQUETA[publicacion.estado] ?? { texto: publicacion.estado, color: "#94a3b8" };
 
   return (
@@ -153,6 +175,17 @@ export default async function PublicacionDetalle({ params }: { params: Promise<{
             Ir al chat con quien publicó
           </Link>
         </div>
+      )}
+
+      {(esAutor || esGanador) && publicacion.estado === "completada" && (
+        <AccionesCompletada
+          publicacionId={publicacion.id}
+          soyAutor={esAutor}
+          soyGanador={esGanador}
+          comisionInicial={comision}
+          yaCalifique={yaCalifique}
+          garantiasIniciales={garantias}
+        />
       )}
 
       {!esAutor && !esGanador && (

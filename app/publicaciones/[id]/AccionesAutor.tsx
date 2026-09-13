@@ -67,6 +67,25 @@ export default function AccionesAutor({
     }
   }
 
+  async function completar() {
+    if (!confirm("¿Marcar este trabajo como completado? Se generará la comisión de la plataforma.")) return;
+    setError(null);
+    setCargando("completar");
+    try {
+      const res = await fetch(`/api/publicaciones/${publicacionId}/completar`, { method: "POST" });
+      const data = await res.json();
+      if (!data.ok) {
+        setError(data.error ?? "No se pudo marcar como completado.");
+        return;
+      }
+      router.refresh();
+    } catch {
+      setError("Error de conexión.");
+    } finally {
+      setCargando(null);
+    }
+  }
+
   async function cancelar() {
     if (!confirm("¿Cancelar esta oferta? Ya no aparecerá en el feed.")) return;
     setError(null);
@@ -129,14 +148,23 @@ export default function AccionesAutor({
       )}
 
       {estadoPublicacion === "en_proceso" && (
-        <div style={{ marginTop: 14, display: "flex", gap: 8 }}>
-          <Link href={`/publicaciones/${publicacionId}/chat`} style={botonPrimarioLink}>
-            Ir al chat
-          </Link>
-          <button onClick={reabrir} disabled={cargando === "reabrir"} style={{ ...botonChico, flex: 1 }}>
-            {cargando === "reabrir" ? "…" : "Reabrir publicación"}
+        <>
+          <div style={{ marginTop: 14, display: "flex", gap: 8 }}>
+            <Link href={`/publicaciones/${publicacionId}/chat`} style={botonPrimarioLink}>
+              Ir al chat
+            </Link>
+            <button onClick={reabrir} disabled={cargando === "reabrir"} style={{ ...botonChico, flex: 1 }}>
+              {cargando === "reabrir" ? "…" : "Reabrir publicación"}
+            </button>
+          </div>
+          <button
+            onClick={completar}
+            disabled={cargando === "completar"}
+            style={{ ...botonChico, marginTop: 8, width: "100%", borderColor: "#4ade80", color: "#4ade80" }}
+          >
+            {cargando === "completar" ? "…" : "Marcar trabajo completado"}
           </button>
-        </div>
+        </>
       )}
     </div>
   );

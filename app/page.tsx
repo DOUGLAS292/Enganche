@@ -67,7 +67,7 @@ export default async function Home() {
         <li>✅ Fase 1 — Auth por OTP de WhatsApp + registro de dos pasos</li>
         <li>✅ Fase 2 — Publicar + feed por cercanía (PostGIS en vivo)</li>
         <li>✅ Fase 3 — Postulación + chat</li>
-        <li>⬜ Fase 4 — Cierre + calificación + comisión</li>
+        <li>✅ Fase 4 — Cierre + calificación + comisión</li>
         <li>⬜ Fase 5 — Panel de comisiones (admin)</li>
       </ul>
 
