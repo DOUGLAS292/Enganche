@@ -134,7 +134,27 @@ Fase 1); y el criterio exacto de cómo un `no_atendido` reduce reputación más
 allá de quedar registrado como dato — el spec lo deja como "insumo", sin
 fórmula, así que se define cuando haya casos reales.
 
-Siguiente: **Fase 5 — Panel de comisiones (admin)** (`docs/SPEC.md §4`).
+### Fase 5 — Panel de comisiones (admin) ✅
+
+- [x] `usuarios.es_admin` (migración `0014`, ya aplicada en producción) —
+      marca a Douglas como el único admin del piloto
+- [x] `/admin` — vista de solo lectura de todas las comisiones (pendiente,
+      marcada pagada, confirmada), con totales por estado, ciudad, sistema
+      y el responsable de pago (nombre + celular)
+- [x] "Confirmar pago recibido" — el admin cierra el ciclo de una comisión
+      `marcada_pagada` → `confirmada`, con `confirmada_en`; probado contra
+      la base real (transición correcta, y no confirma dos veces la misma
+      comisión)
+- [x] El link "Panel admin" solo aparece en el home si `usuario.es_admin`;
+      `/admin` redirige a `/` si el usuario no es admin (o no hay sesión)
+
+**Con esto cierra el plan de 5 fases del spec.** Lo que queda pendiente es
+externo a la app: la aprobación de Meta para WhatsApp Business API (Fase 1),
+y las notificaciones push/WhatsApp reales que dependen de esa misma
+aprobación (mencionadas en Fase 3 y Fase 4).
+
+Siguiente: por definir con Douglas — candidatos naturales son pulir UI/UX,
+notificaciones, o abrir el piloto a más usuarios reales en Cali.
 
 ## Poner esto a andar
 
@@ -191,6 +211,8 @@ app/publicaciones/[id]/chat  Chat 1-a-1 autor ↔ elegido
 app/postulaciones/     "Mis postulaciones" del usuario
 app/api/auth/         Rutas de login/registro/sesión
 app/api/publicaciones/ Ofertas, postulación, cierre, comisión, garantías
+app/admin/            Panel de comisiones, solo para usuarios.es_admin
+app/api/admin/        Confirmar comisiones marcadas como pagadas
 app/                  Next.js App Router
 docs/SPEC.md          Especificación técnica completa del producto
 ```

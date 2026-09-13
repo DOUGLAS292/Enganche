@@ -6,11 +6,11 @@ import CerrarSesionBoton from "./CerrarSesionBoton";
 
 export default async function Home() {
   const usuarioId = await obtenerUsuarioIdDeSesion();
-  let usuario: { nombre_razon_social: string; ciudad: string | null } | null = null;
+  let usuario: { nombre_razon_social: string; ciudad: string | null; es_admin: boolean } | null = null;
 
   if (usuarioId) {
-    const result = await query<{ nombre_razon_social: string; ciudad: string | null }>(
-      "select nombre_razon_social, ciudad from usuarios where id = $1",
+    const result = await query<{ nombre_razon_social: string; ciudad: string | null; es_admin: boolean }>(
+      "select nombre_razon_social, ciudad, es_admin from usuarios where id = $1",
       [usuarioId]
     );
     usuario = result.rows[0] ?? null;
@@ -48,6 +48,11 @@ export default async function Home() {
               <Link href="/postulaciones" style={{ color: "#60a5fa", fontSize: 13 }}>
                 Mis postulaciones
               </Link>
+              {usuario.es_admin && (
+                <Link href="/admin" style={{ color: "#facc15", fontSize: 13 }}>
+                  Panel admin
+                </Link>
+              )}
               <CerrarSesionBoton />
             </div>
           </>
@@ -68,7 +73,7 @@ export default async function Home() {
         <li>✅ Fase 2 — Publicar + feed por cercanía (PostGIS en vivo)</li>
         <li>✅ Fase 3 — Postulación + chat</li>
         <li>✅ Fase 4 — Cierre + calificación + comisión</li>
-        <li>⬜ Fase 5 — Panel de comisiones (admin)</li>
+        <li>✅ Fase 5 — Panel de comisiones (admin)</li>
       </ul>
 
       <HealthCheck />
