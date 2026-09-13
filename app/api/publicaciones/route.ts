@@ -41,11 +41,13 @@ export async function GET(request: Request) {
     const lngIdx = params.length - 1;
     const latIdx = params.length;
     const punto = `ST_SetSRID(ST_MakePoint($${lngIdx}, $${latIdx}), 4326)::geography`;
-    distanciaSelect = `ST_Distance(p.ubicacion, ${punto}) as distancia_m`;
+    // Una oferta sin ubicación guardada (compartirla al publicar es opcional)
+    // no debe desaparecer del feed: se muestra sin distancia calculada, en
+    // vez de quedar excluida por el filtro de cercanía.
+    distanciaSelect = `case when p.ubicacion is not null then ST_Distance(p.ubicacion, ${punto}) end as distancia_m`;
     params.push(radioKm * 1000);
-    condiciones.push("p.ubicacion is not null");
-    condiciones.push(`ST_DWithin(p.ubicacion, ${punto}, $${params.length})`);
-    orderBy = "distancia_m asc";
+    condiciones.push(`(p.ubicacion is null or ST_DWithin(p.ubicacion, ${punto}, $${params.length}))`);
+    orderBy = "distancia_m asc nulls last, p.creado_en desc";
   } else if (ciudad) {
     params.push(`%${ciudad}%`);
     condiciones.push(`p.ciudad ilike $${params.length}`);
