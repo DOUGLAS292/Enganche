@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { CSSProperties } from "react";
 import { obtenerUsuarioIdDeSesion } from "@/lib/auth/session";
 import { query } from "@/lib/db";
 import HealthCheck from "./HealthCheck";
@@ -16,67 +17,157 @@ export default async function Home() {
     usuario = result.rows[0] ?? null;
   }
 
-  return (
-    <main style={{ maxWidth: 640, margin: "0 auto", padding: "48px 20px" }}>
-      <h1 style={{ fontSize: 28, marginBottom: 4 }}>Enganche</h1>
-      <p style={{ color: "#94a3b8", marginTop: 0 }}>
-        Marketplace de demanda para producción e instalación de sistemas de aluminio y vidrio.
-      </p>
+  const primerNombre = usuario?.nombre_razon_social?.split(" ")[0] ?? "";
 
-      <div
-        style={{
-          marginTop: 16,
-          padding: "12px 16px",
-          borderRadius: 8,
-          border: "1px solid #334155",
-          background: "#1e293b",
-        }}
-      >
-        {usuario ? (
-          <>
-            <p style={{ margin: 0 }}>
-              Sesión activa: <strong>{usuario.nombre_razon_social}</strong>
-              {usuario.ciudad ? ` · ${usuario.ciudad}` : ""}
-            </p>
-            <div style={{ marginTop: 10, display: "flex", gap: 14, alignItems: "center" }}>
-              <Link href="/feed" style={{ color: "#60a5fa", fontSize: 13 }}>
-                Ver ofertas
-              </Link>
-              <Link href="/publicar" style={{ color: "#60a5fa", fontSize: 13 }}>
-                Publicar una oferta
-              </Link>
-              <Link href="/postulaciones" style={{ color: "#60a5fa", fontSize: 13 }}>
-                Mis postulaciones
-              </Link>
-              {usuario.es_admin && (
-                <Link href="/admin" style={{ color: "#facc15", fontSize: 13 }}>
-                  Panel admin
-                </Link>
-              )}
-              <CerrarSesionBoton />
-            </div>
-          </>
-        ) : (
-          <p style={{ margin: 0 }}>
-            No has iniciado sesión.{" "}
-            <Link href="/entrar" style={{ color: "#60a5fa" }}>
-              Entrar
-            </Link>
-          </p>
-        )}
+  return (
+    <main style={{ maxWidth: 480, margin: "0 auto", padding: "40px 20px 60px" }}>
+      <div style={{ textAlign: "center" }}>
+        <div style={{ fontSize: 40, lineHeight: 1 }}>🪟🔧</div>
+        <h1 style={{ fontSize: 30, margin: "10px 0 2px", fontWeight: 800 }}>Enganche</h1>
+        <p style={{ color: "#94a3b8", margin: 0, fontSize: 15 }}>
+          Conecta con quien produce o instala aluminio y vidrio, cerca de ti.
+        </p>
       </div>
 
-      <h2 style={{ fontSize: 16, marginTop: 32 }}>Estado de las fases</h2>
-      <ul style={{ lineHeight: 1.8 }}>
-        <li>✅ Fase 0 — Esqueleto de datos (8 tablas, PostGIS, triggers)</li>
-        <li>✅ Fase 1 — Auth por OTP de WhatsApp + registro de dos pasos</li>
-        <li>✅ Fase 2 — Publicar + feed por cercanía (PostGIS en vivo)</li>
-        <li>✅ Fase 3 — Postulación + chat</li>
-        <li>✅ Fase 4 — Cierre + calificación + comisión</li>
-        <li>✅ Fase 5 — Panel de comisiones (admin)</li>
-      </ul>
+      {usuario ? (
+        <>
+          <div style={saludoCaja}>
+            <p style={{ margin: 0, fontSize: 15 }}>
+              ¡Hola, <strong>{primerNombre}</strong>! 👋
+            </p>
+            {usuario.ciudad && <p style={{ margin: "2px 0 0", fontSize: 13, color: "#94a3b8" }}>📍 {usuario.ciudad}</p>}
+          </div>
 
-      <HealthCheck />
+          <div style={{ marginTop: 18, display: "flex", flexDirection: "column", gap: 12 }}>
+            <TarjetaAccion href="/feed" icono="🔍" titulo="Ver ofertas" subtitulo="Encuentra trabajo cerca de ti" color="#1c5079" />
+            <TarjetaAccion href="/publicar" icono="📢" titulo="Publicar una oferta" subtitulo="Cuenta qué necesitas" color="#bd5a26" />
+            <TarjetaAccion href="/postulaciones" icono="📋" titulo="Mis postulaciones" subtitulo="Revisa en qué vas" color="#3f6212" />
+            {usuario.es_admin && (
+              <TarjetaAccion href="/admin" icono="🛡️" titulo="Panel admin" subtitulo="Comisiones del piloto" color="#854d0e" />
+            )}
+          </div>
+
+          <div style={{ textAlign: "center", marginTop: 22 }}>
+            <CerrarSesionBoton />
+          </div>
+        </>
+      ) : (
+        <>
+          <div style={{ marginTop: 26, display: "flex", flexDirection: "column", gap: 12 }}>
+            <PasoItem numero={1} texto="Publica lo que necesitas o lo que ofreces" />
+            <PasoItem numero={2} texto="Recibe propuestas de gente cerca de ti" />
+            <PasoItem numero={3} texto="Cierra el trabajo y califica" />
+          </div>
+
+          <Link href="/entrar" style={botonPrincipal}>
+            Entrar gratis
+          </Link>
+          <p style={{ textAlign: "center", color: "#64748b", fontSize: 12, marginTop: 8 }}>
+            Solo necesitas tu celular. Sin contraseñas, sin complicaciones.
+          </p>
+        </>
+      )}
+
+      {usuario?.es_admin && (
+        <details style={{ marginTop: 40 }}>
+          <summary style={{ color: "#475569", fontSize: 12, cursor: "pointer" }}>Diagnóstico técnico</summary>
+          <ul style={{ lineHeight: 1.8, color: "#64748b", fontSize: 12 }}>
+            <li>✅ Fase 0 — Esqueleto de datos (8 tablas, PostGIS, triggers)</li>
+            <li>✅ Fase 1 — Auth por OTP de WhatsApp + registro de dos pasos</li>
+            <li>✅ Fase 2 — Publicar + feed por cercanía (PostGIS en vivo)</li>
+            <li>✅ Fase 3 — Postulación + chat</li>
+            <li>✅ Fase 4 — Cierre + calificación + comisión</li>
+            <li>✅ Fase 5 — Panel de comisiones (admin)</li>
+          </ul>
+          <HealthCheck />
+        </details>
+      )}
     </main>
   );
 }
+
+function TarjetaAccion({
+  href,
+  icono,
+  titulo,
+  subtitulo,
+  color,
+}: {
+  href: string;
+  icono: string;
+  titulo: string;
+  subtitulo: string;
+  color: string;
+}) {
+  return (
+    <Link
+      href={href}
+      style={{
+        display: "flex",
+        alignItems: "center",
+        gap: 14,
+        padding: "16px 18px",
+        borderRadius: 14,
+        border: "1px solid #334155",
+        background: `linear-gradient(135deg, ${color}33, #1e293b)`,
+        textDecoration: "none",
+        color: "#eef2f5",
+      }}
+    >
+      <span style={{ fontSize: 26 }}>{icono}</span>
+      <span>
+        <span style={{ display: "block", fontSize: 16, fontWeight: 700 }}>{titulo}</span>
+        <span style={{ display: "block", fontSize: 13, color: "#94a3b8" }}>{subtitulo}</span>
+      </span>
+      <span style={{ marginLeft: "auto", color: "#64748b" }}>→</span>
+    </Link>
+  );
+}
+
+function PasoItem({ numero, texto }: { numero: number; texto: string }) {
+  return (
+    <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+      <span
+        style={{
+          flexShrink: 0,
+          width: 28,
+          height: 28,
+          borderRadius: "50%",
+          background: "#1e293b",
+          border: "1px solid #334155",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          fontSize: 13,
+          fontWeight: 700,
+          color: "#60a5fa",
+        }}
+      >
+        {numero}
+      </span>
+      <p style={{ margin: 0, fontSize: 14 }}>{texto}</p>
+    </div>
+  );
+}
+
+const saludoCaja: CSSProperties = {
+  marginTop: 22,
+  padding: "14px 16px",
+  borderRadius: 12,
+  border: "1px solid #334155",
+  background: "#1e293b",
+  textAlign: "center",
+};
+
+const botonPrincipal: CSSProperties = {
+  display: "block",
+  marginTop: 22,
+  padding: "16px 20px",
+  borderRadius: 14,
+  textAlign: "center",
+  background: "linear-gradient(135deg, #2563eb, #1c5079)",
+  color: "#fff",
+  fontWeight: 700,
+  fontSize: 16,
+  textDecoration: "none",
+};
