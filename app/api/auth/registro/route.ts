@@ -25,9 +25,13 @@ export async function POST(request: Request) {
   const documento = body?.documento ? String(body.documento).trim() : null;
   const sistemaLinea = body?.sistemaLinea ? String(body.sistemaLinea).trim() : null;
   const anosExperiencia = body?.anosExperiencia ? Number(body.anosExperiencia) : null;
+  const aceptaTerminos = Boolean(body?.aceptaTerminos);
 
   if (!TIPOS_USUARIO.includes(tipoUsuario) || !OFRECE.includes(ofrece) || !nombre || !ciudad) {
     return NextResponse.json({ ok: false, error: "Completa los campos obligatorios." }, { status: 400 });
+  }
+  if (!aceptaTerminos) {
+    return NextResponse.json({ ok: false, error: "Debes aceptar los términos y condiciones." }, { status: 400 });
   }
 
   const existente = await query("select id from usuarios where celular = $1", [celular]);
@@ -37,8 +41,8 @@ export async function POST(request: Request) {
 
   const creado = await query<{ id: string }>(
     `insert into usuarios
-       (celular, tipo_usuario, nombre_razon_social, documento, ciudad, ofrece, sistema_linea, anos_experiencia, verificado)
-     values ($1, $2, $3, $4, $5, $6, $7, $8, true)
+       (celular, tipo_usuario, nombre_razon_social, documento, ciudad, ofrece, sistema_linea, anos_experiencia, verificado, terminos_aceptados_en)
+     values ($1, $2, $3, $4, $5, $6, $7, $8, true, now())
      returning id`,
     [celular, tipoUsuario, nombre, documento, ciudad, ofrece, sistemaLinea, anosExperiencia]
   );

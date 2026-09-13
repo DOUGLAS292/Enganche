@@ -1,0 +1,109 @@
+import Link from "next/link";
+import { redirect } from "next/navigation";
+import { obtenerUsuarioIdDeSesion } from "@/lib/auth/session";
+import { query } from "@/lib/db";
+import { formatCOP, formatFecha } from "@/lib/format";
+
+const ESTADO_ETIQUETA: Record<string, { texto: string; color: string }> = {
+  abierta: { texto: "Abierta", color: "#4ade80" },
+  en_proceso: { texto: "En proceso", color: "#60a5fa" },
+  completada: { texto: "Completada", color: "#94a3b8" },
+  cancelada: { texto: "Cancelada", color: "#f87171" },
+};
+
+type Fila = {
+  id: string;
+  sistema_o_proyecto: string;
+  ciudad: string;
+  valor_ofertado: number;
+  estado: string;
+  creado_en: string;
+  postulantes_pendientes: number;
+  postulantes_total: number;
+};
+
+export default async function MisPublicacionesPage() {
+  const usuarioId = await obtenerUsuarioIdDeSesion();
+  if (!usuarioId) {
+    redirect("/entrar");
+  }
+
+  const result = await query<Fila>(
+    `select
+       p.id, p.sistema_o_proyecto, p.ciudad, p.valor_ofertado, p.estado, p.creado_en,
+       count(po.id) filter (where po.estado = 'pendiente') as postulantes_pendientes,
+       count(po.id) as postulantes_total
+     from publicaciones p
+     left join postulaciones po on po.publicacion_id = p.id
+     where p.autor_id = $1
+     group by p.id
+     order by
+       (count(po.id) filter (where po.estado = 'pendiente') > 0 and p.estado = 'abierta') desc,
+       p.creado_en desc`,
+    [usuarioId]
+  );
+
+  return (
+    <main style={{ maxWidth: 640, margin: "0 auto", padding: "32px 20px 80px" }}>
+      <Link href="/" style={{ color: "#60a5fa", fontSize: 13 }}>
+        ← Inicio
+      </Link>
+      <h1 style={{ fontSize: 24, marginTop: 14 }}>Mis publicaciones</h1>
+
+      {result.rows.length === 0 && (
+        <p style={{ color: "#94a3b8", marginTop: 16 }}>
+          Todavía no has publicado ninguna oferta.{" "}
+          <Link href="/publicar" style={{ color: "#60a5fa" }}>
+            Publica la primera
+          </Link>
+          .
+        </p>
+      )}
+
+      <div style={{ marginTop: 16, display: "flex", flexDirection: "column", gap: 10 }}>
+        {result.rows.map((p) => {
+          const estado = ESTADO_ETIQUETA[p.estado] ?? { texto: p.estado, color: "#94a3b8" };
+          const hayNuevas = p.postulantes_pendientes > 0 && p.estado === "abierta";
+          return (
+            <Link
+              key={p.id}
+              href={`/publicaciones/${p.id}`}
+              style={{
+                textDecoration: "none",
+                color: "inherit",
+                border: `1px solid ${hayNuevas ? "#facc15" : "#334155"}`,
+                borderRadius: 10,
+                padding: "12px 14px",
+                background: "#1e293b",
+                display: "block",
+              }}
+            >
+              <div style={{ display: "flex", justifyContent: "space-between" }}>
+                <span style={{ fontSize: 11, fontWeight: 700, color: estado.color }}>{estado.texto}</span>
+                <span style={{ fontSize: 12, color: "#94a3b8" }}>{formatFecha(p.creado_en)}</span>
+              </div>
+              <h3 style={{ margin: "6px 0 2px", fontSize: 16 }}>{p.sistema_o_proyecto}</h3>
+              <p style={{ margin: 0, fontSize: 12, color: "#94a3b8" }}>{p.ciudad}</p>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 8 }}>
+                <p style={{ margin: 0, fontSize: 13, fontWeight: 600 }}>{formatCOP(p.valor_ofertado)}</p>
+                {p.postulantes_total > 0 && (
+                  <span
+                    style={{
+                      fontSize: 12,
+                      fontWeight: hayNuevas ? 700 : 400,
+                      color: hayNuevas ? "#facc15" : "#94a3b8",
+                    }}
+                  >
+                    {hayNuevas ? "🔔 " : ""}
+                    {p.postulantes_total} postulante{p.postulantes_total === 1 ? "" : "s"}
+                    {hayNuevas ? ` · ${p.postulantes_pendientes} por revisar` : ""}
+                  </span>
+                )}
+              </div>
+            </Link>
+          );
+        })}
+      </div>
+    </main>
+  );
+}

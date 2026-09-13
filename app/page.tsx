@@ -8,6 +8,7 @@ import CerrarSesionBoton from "./CerrarSesionBoton";
 export default async function Home() {
   const usuarioId = await obtenerUsuarioIdDeSesion();
   let usuario: { nombre_razon_social: string; ciudad: string | null; es_admin: boolean } | null = null;
+  let postulantesPorRevisar = 0;
 
   if (usuarioId) {
     const result = await query<{ nombre_razon_social: string; ciudad: string | null; es_admin: boolean }>(
@@ -15,6 +16,15 @@ export default async function Home() {
       [usuarioId]
     );
     usuario = result.rows[0] ?? null;
+
+    const pendientes = await query<{ total: string }>(
+      `select count(*) as total
+       from postulaciones po
+       join publicaciones p on p.id = po.publicacion_id
+       where p.autor_id = $1 and po.estado = 'pendiente' and p.estado = 'abierta'`,
+      [usuarioId]
+    );
+    postulantesPorRevisar = Number(pendientes.rows[0]?.total ?? 0);
   }
 
   const primerNombre = usuario?.nombre_razon_social?.split(" ")[0] ?? "";
@@ -41,6 +51,14 @@ export default async function Home() {
           <div style={{ marginTop: 18, display: "flex", flexDirection: "column", gap: 12 }}>
             <TarjetaAccion href="/feed" icono="🔍" titulo="Ver ofertas" subtitulo="Encuentra trabajo cerca de ti" color="#1c5079" />
             <TarjetaAccion href="/publicar" icono="📢" titulo="Publicar una oferta" subtitulo="Cuenta qué necesitas" color="#bd5a26" />
+            <TarjetaAccion
+              href="/mis-publicaciones"
+              icono="📦"
+              titulo="Mis publicaciones"
+              subtitulo={postulantesPorRevisar > 0 ? `${postulantesPorRevisar} postulación${postulantesPorRevisar === 1 ? "" : "es"} nueva${postulantesPorRevisar === 1 ? "" : "s"} por revisar` : "Lo que has publicado"}
+              color="#7c3aed"
+              badge={postulantesPorRevisar > 0 ? postulantesPorRevisar : undefined}
+            />
             <TarjetaAccion href="/postulaciones" icono="📋" titulo="Mis postulaciones" subtitulo="Revisa en qué vas" color="#3f6212" />
             {usuario.es_admin && (
               <TarjetaAccion href="/admin" icono="🛡️" titulo="Panel admin" subtitulo="Comisiones del piloto" color="#854d0e" />
@@ -68,8 +86,14 @@ export default async function Home() {
         </>
       )}
 
+      <p style={{ textAlign: "center", marginTop: 32 }}>
+        <Link href="/terminos" style={{ color: "#64748b", fontSize: 12 }}>
+          Términos y condiciones
+        </Link>
+      </p>
+
       {usuario?.es_admin && (
-        <details style={{ marginTop: 40 }}>
+        <details style={{ marginTop: 16 }}>
           <summary style={{ color: "#475569", fontSize: 12, cursor: "pointer" }}>Diagnóstico técnico</summary>
           <ul style={{ lineHeight: 1.8, color: "#64748b", fontSize: 12 }}>
             <li>✅ Fase 0 — Esqueleto de datos (8 tablas, PostGIS, triggers)</li>
@@ -92,23 +116,26 @@ function TarjetaAccion({
   titulo,
   subtitulo,
   color,
+  badge,
 }: {
   href: string;
   icono: string;
   titulo: string;
   subtitulo: string;
   color: string;
+  badge?: number;
 }) {
   return (
     <Link
       href={href}
       style={{
+        position: "relative",
         display: "flex",
         alignItems: "center",
         gap: 14,
         padding: "16px 18px",
         borderRadius: 14,
-        border: "1px solid #334155",
+        border: `1px solid ${badge ? "#facc15" : "#334155"}`,
         background: `linear-gradient(135deg, ${color}33, #1e293b)`,
         textDecoration: "none",
         color: "#eef2f5",
@@ -117,9 +144,31 @@ function TarjetaAccion({
       <span style={{ fontSize: 26 }}>{icono}</span>
       <span>
         <span style={{ display: "block", fontSize: 16, fontWeight: 700 }}>{titulo}</span>
-        <span style={{ display: "block", fontSize: 13, color: "#94a3b8" }}>{subtitulo}</span>
+        <span style={{ display: "block", fontSize: 13, color: badge ? "#facc15" : "#94a3b8" }}>{subtitulo}</span>
       </span>
       <span style={{ marginLeft: "auto", color: "#64748b" }}>→</span>
+      {badge ? (
+        <span
+          style={{
+            position: "absolute",
+            top: -8,
+            right: -8,
+            minWidth: 22,
+            height: 22,
+            borderRadius: "50%",
+            background: "#facc15",
+            color: "#111820",
+            fontSize: 12,
+            fontWeight: 800,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: "0 4px",
+          }}
+        >
+          {badge}
+        </span>
+      ) : null}
     </Link>
   );
 }

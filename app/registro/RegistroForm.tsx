@@ -2,6 +2,7 @@
 
 import { useState, type CSSProperties, type FormEvent, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 const TIPOS = [
   { valor: "independiente", etiqueta: "Independiente" },
@@ -24,6 +25,7 @@ export default function RegistroForm({ celular }: { celular: string }) {
   const [documento, setDocumento] = useState("");
   const [sistemaLinea, setSistemaLinea] = useState("");
   const [anosExperiencia, setAnosExperiencia] = useState("");
+  const [aceptaTerminos, setAceptaTerminos] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [cargando, setCargando] = useState(false);
 
@@ -43,6 +45,7 @@ export default function RegistroForm({ celular }: { celular: string }) {
           documento: documento || undefined,
           sistemaLinea: sistemaLinea || undefined,
           anosExperiencia: anosExperiencia || undefined,
+          aceptaTerminos,
         }),
       });
       const data = await res.json();
@@ -93,9 +96,27 @@ export default function RegistroForm({ celular }: { celular: string }) {
           <input type="number" min={0} value={anosExperiencia} onChange={(e) => setAnosExperiencia(e.target.value)} style={inputStyle} />
         </Campo>
 
+        <label style={terminosLabel}>
+          <input
+            type="checkbox"
+            checked={aceptaTerminos}
+            onChange={(e) => setAceptaTerminos(e.target.checked)}
+            style={{ marginTop: 2 }}
+          />
+          <span>
+            He leído y acepto los{" "}
+            <Link href="/terminos" target="_blank" style={{ color: "#60a5fa" }}>
+              términos y condiciones
+            </Link>{" "}
+            de Enganche, incluyendo el tratamiento de mis datos personales y que la plataforma
+            solo intermedia el contacto entre las partes, sin responder por la calidad del
+            trabajo ni por los pagos acordados entre ellas.
+          </span>
+        </label>
+
         {error && <p style={{ color: "#f87171", fontSize: 14 }}>{error}</p>}
 
-        <button type="submit" disabled={cargando} style={buttonStyle}>
+        <button type="submit" disabled={cargando || !aceptaTerminos} style={buttonStyle}>
           {cargando ? "Creando cuenta…" : "Crear cuenta"}
         </button>
       </form>
@@ -162,6 +183,16 @@ const inputStyle: CSSProperties = {
   background: "#1e293b",
   color: "#eef2f5",
   fontSize: 15,
+};
+
+const terminosLabel: CSSProperties = {
+  display: "flex",
+  gap: 8,
+  alignItems: "flex-start",
+  marginTop: 20,
+  fontSize: 11.5,
+  color: "#94a3b8",
+  lineHeight: 1.5,
 };
 
 const buttonStyle: CSSProperties = {
