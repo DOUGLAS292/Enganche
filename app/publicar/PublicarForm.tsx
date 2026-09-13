@@ -23,22 +23,18 @@ export default function PublicarForm() {
   const router = useRouter();
   const [tipoTrabajo, setTipoTrabajo] = useState<string>("instalacion");
   const [nivelSistema, setNivelSistema] = useState<NivelSistema>("tradicional");
-  const [sistemaOProyecto, setSistemaOProyecto] = useState("");
+  const [descripcion, setDescripcion] = useState("");
   const [cantidad, setCantidad] = useState("");
-  const [tiempoEntrega, setTiempoEntrega] = useState("");
+  const [mtr2, setMtr2] = useState("");
   const [valorOfertado, setValorOfertado] = useState("");
+  const [fechaInicio, setFechaInicio] = useState("");
+  const [fechaFin, setFechaFin] = useState("");
   const [ciudad, setCiudad] = useState("");
   const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
   const [estadoUbicacion, setEstadoUbicacion] = useState<EstadoUbicacion>("sin_pedir");
+  const [requiereSeguridad, setRequiereSeguridad] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [cargando, setCargando] = useState(false);
-
-  const [mostrarDetalle, setMostrarDetalle] = useState(false);
-  const [fechaInicio, setFechaInicio] = useState("");
-  const [fechaFin, setFechaFin] = useState("");
-  const [requiereSeguridad, setRequiereSeguridad] = useState(false);
-  const [horarioAcceso, setHorarioAcceso] = useState("");
-  const [mtr2, setMtr2] = useState("");
 
   function pedirUbicacion() {
     if (!navigator.geolocation) {
@@ -67,18 +63,16 @@ export default function PublicarForm() {
         body: JSON.stringify({
           tipoTrabajo,
           nivelSistema,
-          sistemaOProyecto,
+          sistemaOProyecto: descripcion,
           cantidad,
-          tiempoEntrega: tiempoEntrega || undefined,
+          mtr2: mtr2 || undefined,
           valorOfertado: Number(valorOfertado),
+          fechaInicio: fechaInicio || undefined,
+          fechaFin: fechaFin || undefined,
           ciudad,
           lat: coords?.lat,
           lng: coords?.lng,
-          fechaInicio: fechaInicio || undefined,
-          fechaFin: fechaFin || undefined,
           requiereSeguridad,
-          horarioAcceso: horarioAcceso || undefined,
-          mtr2: mtr2 || undefined,
         }),
       });
       const data = await res.json();
@@ -114,52 +108,66 @@ export default function PublicarForm() {
           <Radios opciones={NIVELES} valor={nivelSistema} onChange={(v) => setNivelSistema(v as NivelSistema)} nombre="nivelSistema" columnas={1} />
         </Campo>
 
-        <Campo etiqueta="Sistema o proyecto">
+        <Campo etiqueta="Descripción">
           <input
-            value={sistemaOProyecto}
-            onChange={(e) => setSistemaOProyecto(e.target.value)}
+            value={descripcion}
+            onChange={(e) => setDescripcion(e.target.value)}
             required
             style={inputStyle}
-            placeholder="Ej: Serie 50, referencia exacta…"
+            placeholder="Ej: Ventanas, puertas, divisiones de baño, gabinetes…"
           />
           <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginTop: 8 }}>
             {PROYECTOS_SUGERIDOS[nivelSistema].map((s) => (
-              <button type="button" key={s} onClick={() => setSistemaOProyecto(s)} style={chipStyle}>
+              <button type="button" key={s} onClick={() => setDescripcion(s)} style={chipStyle}>
                 {s}
               </button>
             ))}
           </div>
         </Campo>
 
-        <Campo etiqueta="Cantidad (m² o unidades)">
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+          <Campo etiqueta="Cantidad de productos">
+            <input
+              type="number"
+              min={1}
+              value={cantidad}
+              onChange={(e) => setCantidad(e.target.value)}
+              required
+              style={inputStyle}
+              placeholder="Ej: 3"
+            />
+          </Campo>
+          <Campo etiqueta="m² (opcional)">
+            <input
+              type="number"
+              min={0}
+              step="0.1"
+              value={mtr2}
+              onChange={(e) => setMtr2(e.target.value)}
+              style={inputStyle}
+              placeholder="Ej: 13,4"
+            />
+          </Campo>
+        </div>
+
+        <Campo etiqueta="Valor ofertado (COP)">
           <input
-            value={cantidad}
-            onChange={(e) => setCantidad(e.target.value)}
+            type="number"
+            min={0}
+            step={1000}
+            value={valorOfertado}
+            onChange={(e) => setValorOfertado(e.target.value)}
             required
             style={inputStyle}
-            placeholder="Ej: 25 m² o 8 unidades"
           />
         </Campo>
 
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
-          <Campo etiqueta="Valor ofertado (COP)">
-            <input
-              type="number"
-              min={0}
-              step={1000}
-              value={valorOfertado}
-              onChange={(e) => setValorOfertado(e.target.value)}
-              required
-              style={inputStyle}
-            />
+          <Campo etiqueta="Fecha de inicio (opcional)">
+            <input type="date" value={fechaInicio} onChange={(e) => setFechaInicio(e.target.value)} style={inputStyle} />
           </Campo>
-          <Campo etiqueta="Entrega (opcional)">
-            <input
-              value={tiempoEntrega}
-              onChange={(e) => setTiempoEntrega(e.target.value)}
-              style={inputStyle}
-              placeholder="Ej: 8 días"
-            />
+          <Campo etiqueta="Fecha de finalización (opcional)">
+            <input type="date" value={fechaFin} onChange={(e) => setFechaFin(e.target.value)} style={inputStyle} />
           </Campo>
         </div>
 
@@ -182,58 +190,10 @@ export default function PublicarForm() {
           )}
         </Campo>
 
-        <div style={{ marginTop: 20 }}>
-          {!mostrarDetalle ? (
-            <button type="button" onClick={() => setMostrarDetalle(true)} style={buttonStyleSecondary}>
-              + Agregar detalle técnico (opcional)
-            </button>
-          ) : (
-            <div style={{ border: "1px solid #334155", borderRadius: 10, padding: "14px 16px" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <p style={{ margin: 0, fontSize: 14, fontWeight: 600 }}>Detalle técnico</p>
-                <button type="button" onClick={() => setMostrarDetalle(false)} style={{ ...chipStyle, background: "transparent" }}>
-                  Ocultar
-                </button>
-              </div>
-
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginTop: 12 }}>
-                <Campo etiqueta="m² (opcional)">
-                  <input
-                    type="number"
-                    min={0}
-                    step="0.1"
-                    value={mtr2}
-                    onChange={(e) => setMtr2(e.target.value)}
-                    style={inputStyle}
-                    placeholder="Ej: 13,4"
-                  />
-                </Campo>
-                <Campo etiqueta="Horario de acceso (opcional)">
-                  <input
-                    value={horarioAcceso}
-                    onChange={(e) => setHorarioAcceso(e.target.value)}
-                    style={inputStyle}
-                    placeholder="Ej: Oficina"
-                  />
-                </Campo>
-              </div>
-
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginTop: 10 }}>
-                <Campo etiqueta="Fecha inicio (opcional)">
-                  <input type="date" value={fechaInicio} onChange={(e) => setFechaInicio(e.target.value)} style={inputStyle} />
-                </Campo>
-                <Campo etiqueta="Fecha fin (opcional)">
-                  <input type="date" value={fechaFin} onChange={(e) => setFechaFin(e.target.value)} style={inputStyle} />
-                </Campo>
-              </div>
-
-              <label style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 14, fontSize: 13 }}>
-                <input type="checkbox" checked={requiereSeguridad} onChange={(e) => setRequiereSeguridad(e.target.checked)} />
-                Requiere seguridad / registro de acceso
-              </label>
-            </div>
-          )}
-        </div>
+        <label style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 20, fontSize: 14 }}>
+          <input type="checkbox" checked={requiereSeguridad} onChange={(e) => setRequiereSeguridad(e.target.checked)} />
+          Requiere seguridad / registro de acceso
+        </label>
 
         {error && <p style={{ color: "#f87171", fontSize: 14 }}>{error}</p>}
 

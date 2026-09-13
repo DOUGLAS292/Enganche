@@ -82,7 +82,6 @@ export async function POST(request: Request) {
   const nivelSistema = String(body?.nivelSistema ?? "");
   const sistemaOProyecto = String(body?.sistemaOProyecto ?? "").trim();
   const cantidad = String(body?.cantidad ?? "").trim();
-  const tiempoEntrega = body?.tiempoEntrega ? String(body.tiempoEntrega).trim() : null;
   const valorOfertado = Number(body?.valorOfertado);
   const ciudad = String(body?.ciudad ?? "").trim();
   const lat = body?.lat != null && Number.isFinite(Number(body.lat)) ? Number(body.lat) : null;
@@ -90,7 +89,6 @@ export async function POST(request: Request) {
   const fechaInicio = body?.fechaInicio ? String(body.fechaInicio) : null;
   const fechaFin = body?.fechaFin ? String(body.fechaFin) : null;
   const requiereSeguridad = Boolean(body?.requiereSeguridad);
-  const horarioAcceso = body?.horarioAcceso ? String(body.horarioAcceso).trim() : null;
   const mtr2Raw = body?.mtr2 != null && body.mtr2 !== "" ? Number(body.mtr2) : null;
   const mtr2 = mtr2Raw != null && Number.isFinite(mtr2Raw) && mtr2Raw > 0 ? mtr2Raw : null;
 
@@ -114,14 +112,12 @@ export async function POST(request: Request) {
     nivelSistema,
     sistemaOProyecto,
     cantidad,
-    tiempoEntrega,
     valorOfertado,
     ciudad,
     region,
     fechaInicio,
     fechaFin,
     requiereSeguridad,
-    horarioAcceso,
     mtr2,
   ];
 
@@ -134,9 +130,9 @@ export async function POST(request: Request) {
   const creado = await query<{ id: string }>(
     `insert into publicaciones
        (autor_id, tipo_trabajo, nivel_sistema, sistema_o_proyecto, cantidad,
-        tiempo_entrega, valor_ofertado, ciudad, region, fecha_inicio, fecha_fin,
-        requiere_seguridad, horario_acceso, mtr2, ubicacion, estado, creado_en)
-     values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, ${ubicacionExpr}, 'abierta', now())
+        valor_ofertado, ciudad, region, fecha_inicio, fecha_fin,
+        requiere_seguridad, mtr2, ubicacion, estado, creado_en)
+     values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, ${ubicacionExpr}, 'abierta', now())
      returning id`,
     params
   );
