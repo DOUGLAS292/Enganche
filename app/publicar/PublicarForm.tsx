@@ -33,6 +33,13 @@ export default function PublicarForm() {
   const [error, setError] = useState<string | null>(null);
   const [cargando, setCargando] = useState(false);
 
+  const [mostrarDetalle, setMostrarDetalle] = useState(false);
+  const [fechaInicio, setFechaInicio] = useState("");
+  const [fechaFin, setFechaFin] = useState("");
+  const [requiereSeguridad, setRequiereSeguridad] = useState(false);
+  const [horarioAcceso, setHorarioAcceso] = useState("");
+  const [mtr2, setMtr2] = useState("");
+
   function pedirUbicacion() {
     if (!navigator.geolocation) {
       setEstadoUbicacion("denegada");
@@ -67,6 +74,11 @@ export default function PublicarForm() {
           ciudad,
           lat: coords?.lat,
           lng: coords?.lng,
+          fechaInicio: fechaInicio || undefined,
+          fechaFin: fechaFin || undefined,
+          requiereSeguridad,
+          horarioAcceso: horarioAcceso || undefined,
+          mtr2: mtr2 || undefined,
         }),
       });
       const data = await res.json();
@@ -169,6 +181,59 @@ export default function PublicarForm() {
             </p>
           )}
         </Campo>
+
+        <div style={{ marginTop: 20 }}>
+          {!mostrarDetalle ? (
+            <button type="button" onClick={() => setMostrarDetalle(true)} style={buttonStyleSecondary}>
+              + Agregar detalle técnico (opcional)
+            </button>
+          ) : (
+            <div style={{ border: "1px solid #334155", borderRadius: 10, padding: "14px 16px" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <p style={{ margin: 0, fontSize: 14, fontWeight: 600 }}>Detalle técnico</p>
+                <button type="button" onClick={() => setMostrarDetalle(false)} style={{ ...chipStyle, background: "transparent" }}>
+                  Ocultar
+                </button>
+              </div>
+
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginTop: 12 }}>
+                <Campo etiqueta="m² (opcional)">
+                  <input
+                    type="number"
+                    min={0}
+                    step="0.1"
+                    value={mtr2}
+                    onChange={(e) => setMtr2(e.target.value)}
+                    style={inputStyle}
+                    placeholder="Ej: 13,4"
+                  />
+                </Campo>
+                <Campo etiqueta="Horario de acceso (opcional)">
+                  <input
+                    value={horarioAcceso}
+                    onChange={(e) => setHorarioAcceso(e.target.value)}
+                    style={inputStyle}
+                    placeholder="Ej: Oficina"
+                  />
+                </Campo>
+              </div>
+
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginTop: 10 }}>
+                <Campo etiqueta="Fecha inicio (opcional)">
+                  <input type="date" value={fechaInicio} onChange={(e) => setFechaInicio(e.target.value)} style={inputStyle} />
+                </Campo>
+                <Campo etiqueta="Fecha fin (opcional)">
+                  <input type="date" value={fechaFin} onChange={(e) => setFechaFin(e.target.value)} style={inputStyle} />
+                </Campo>
+              </div>
+
+              <label style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 14, fontSize: 13 }}>
+                <input type="checkbox" checked={requiereSeguridad} onChange={(e) => setRequiereSeguridad(e.target.checked)} />
+                Requiere seguridad / registro de acceso
+              </label>
+            </div>
+          )}
+        </div>
 
         {error && <p style={{ color: "#f87171", fontSize: 14 }}>{error}</p>}
 

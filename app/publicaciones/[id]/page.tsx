@@ -39,6 +39,11 @@ type Publicacion = {
   autor_rating: number | null;
   autor_trabajos: number;
   autor_verificado: boolean;
+  fecha_inicio: string | null;
+  fecha_fin: string | null;
+  requiere_seguridad: boolean;
+  horario_acceso: string | null;
+  mtr2: string | null;
 };
 
 type Postulante = {
@@ -62,7 +67,7 @@ export default async function PublicacionDetalle({ params }: { params: Promise<{
     `select
        p.id, p.tipo_trabajo, p.nivel_sistema, p.sistema_o_proyecto, p.cantidad,
        p.tiempo_entrega, p.valor_ofertado, p.ciudad, p.region, p.estado, p.creado_en,
-       p.autor_id, p.ganador_id,
+       p.autor_id, p.ganador_id, p.fecha_inicio, p.fecha_fin, p.requiere_seguridad, p.horario_acceso, p.mtr2,
        u.nombre_razon_social as autor_nombre, u.rating_promedio as autor_rating,
        u.trabajos_completados as autor_trabajos, u.verificado as autor_verificado
      from publicaciones p
@@ -147,8 +152,17 @@ export default async function PublicacionDetalle({ params }: { params: Promise<{
 
       <div style={{ marginTop: 16, padding: "14px 16px", borderRadius: 10, border: "1px solid #334155", background: "#1e293b" }}>
         <Fila etiqueta="Cantidad" valor={publicacion.cantidad} />
+        {publicacion.mtr2 && <Fila etiqueta="Área" valor={`${publicacion.mtr2} m²`} />}
         <Fila etiqueta="Valor ofertado" valor={formatCOP(publicacion.valor_ofertado)} />
         <Fila etiqueta="Tiempo de entrega" valor={publicacion.tiempo_entrega ?? "No especificado"} />
+        {publicacion.fecha_inicio && (
+          <Fila
+            etiqueta="Fechas"
+            valor={`${formatFecha(publicacion.fecha_inicio)}${publicacion.fecha_fin ? ` → ${formatFecha(publicacion.fecha_fin)}` : ""}`}
+          />
+        )}
+        {publicacion.horario_acceso && <Fila etiqueta="Horario de acceso" valor={publicacion.horario_acceso} />}
+        <Fila etiqueta="Requiere seguridad" valor={publicacion.requiere_seguridad ? "Sí" : "No"} />
         <Fila etiqueta="Publicada" valor={formatFecha(publicacion.creado_en)} />
       </div>
 

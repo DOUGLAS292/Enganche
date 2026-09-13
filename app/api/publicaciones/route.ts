@@ -87,6 +87,12 @@ export async function POST(request: Request) {
   const ciudad = String(body?.ciudad ?? "").trim();
   const lat = body?.lat != null && Number.isFinite(Number(body.lat)) ? Number(body.lat) : null;
   const lng = body?.lng != null && Number.isFinite(Number(body.lng)) ? Number(body.lng) : null;
+  const fechaInicio = body?.fechaInicio ? String(body.fechaInicio) : null;
+  const fechaFin = body?.fechaFin ? String(body.fechaFin) : null;
+  const requiereSeguridad = Boolean(body?.requiereSeguridad);
+  const horarioAcceso = body?.horarioAcceso ? String(body.horarioAcceso).trim() : null;
+  const mtr2Raw = body?.mtr2 != null && body.mtr2 !== "" ? Number(body.mtr2) : null;
+  const mtr2 = mtr2Raw != null && Number.isFinite(mtr2Raw) && mtr2Raw > 0 ? mtr2Raw : null;
 
   if (
     !TIPOS_TRABAJO.includes(tipoTrabajo) ||
@@ -112,6 +118,11 @@ export async function POST(request: Request) {
     valorOfertado,
     ciudad,
     region,
+    fechaInicio,
+    fechaFin,
+    requiereSeguridad,
+    horarioAcceso,
+    mtr2,
   ];
 
   let ubicacionExpr = "null";
@@ -123,8 +134,9 @@ export async function POST(request: Request) {
   const creado = await query<{ id: string }>(
     `insert into publicaciones
        (autor_id, tipo_trabajo, nivel_sistema, sistema_o_proyecto, cantidad,
-        tiempo_entrega, valor_ofertado, ciudad, region, ubicacion, estado, creado_en)
-     values ($1, $2, $3, $4, $5, $6, $7, $8, $9, ${ubicacionExpr}, 'abierta', now())
+        tiempo_entrega, valor_ofertado, ciudad, region, fecha_inicio, fecha_fin,
+        requiere_seguridad, horario_acceso, mtr2, ubicacion, estado, creado_en)
+     values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, ${ubicacionExpr}, 'abierta', now())
      returning id`,
     params
   );
