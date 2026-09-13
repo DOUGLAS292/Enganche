@@ -45,7 +45,10 @@ export default async function MisPostulacionesPage() {
 
   return (
     <main style={{ maxWidth: 640, margin: "0 auto", padding: "32px 20px 80px" }}>
-      <h1 style={{ fontSize: 24 }}>Mis postulaciones</h1>
+      <Link href="/" style={{ color: "#60a5fa", fontSize: 13 }}>
+        ← Inicio
+      </Link>
+      <h1 style={{ fontSize: 24, marginTop: 14 }}>Mis postulaciones</h1>
 
       {result.rows.length === 0 && (
         <p style={{ color: "#94a3b8", marginTop: 16 }}>

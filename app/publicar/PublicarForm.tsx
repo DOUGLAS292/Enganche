@@ -2,6 +2,7 @@
 
 import { useState, type CSSProperties, type FormEvent, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { PROYECTOS_SUGERIDOS } from "@/lib/constants/proyectos";
 
 const TIPOS = [
@@ -84,7 +85,10 @@ export default function PublicarForm() {
 
   return (
     <main style={{ maxWidth: 480, margin: "0 auto", padding: "48px 20px 80px" }}>
-      <h1 style={{ fontSize: 24 }}>Publicar una oferta</h1>
+      <Link href="/" style={{ color: "#60a5fa", fontSize: 13 }}>
+        ← Inicio
+      </Link>
+      <h1 style={{ fontSize: 24, marginTop: 14 }}>Publicar una oferta</h1>
       <p style={{ color: "#94a3b8" }}>
         El valor lo defines tú. Los postulantes solo deciden si aceptan — no hay regateo.
       </p>

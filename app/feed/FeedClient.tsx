@@ -94,7 +94,11 @@ export default function FeedClient() {
 
   return (
     <main style={{ maxWidth: 640, margin: "0 auto", padding: "32px 20px 80px" }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
+      <Link href="/" style={{ color: "#60a5fa", fontSize: 13 }}>
+        ← Inicio
+      </Link>
+
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginTop: 14 }}>
         <h1 style={{ fontSize: 24, margin: 0 }}>Ofertas cerca de ti</h1>
         <Link href="/publicar" style={{ color: "#60a5fa", fontSize: 14 }}>
           + Publicar
