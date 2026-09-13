@@ -75,8 +75,38 @@ sin tocar código.
 - [x] Consultas geoespaciales verificadas contra la base real vía el
       conector MCP de Supabase (0 m en el mismo punto, excluida a 10 km desde
       Bogotá, encontrada a 500 km) — no solo compiladas, probadas con datos
+- [x] **Desplegado en producción** en Vercel + Supabase (pooler `sa-east-1`),
+      probado de punta a punta por Douglas: login, registro, publicar y ver
+      ofertas funcionando en `enganche.vercel.app`
 
-Siguiente: **Fase 3 — Postulación + chat** (`docs/SPEC.md §4`).
+### Fase 3 — Postulación + chat ✅
+
+- [x] "Postularme" — cualquiera puede postularse a cualquier oferta abierta
+      (sin filtro por perfil, como pide el spec); no se puede postular dos
+      veces a la misma oferta ni a la propia
+- [x] El autor ve sus postulantes (reputación incluida) y **elige uno** —
+      la publicación pasa a `en_proceso` y las demás postulaciones quedan
+      `pendiente`, no rechazadas
+- [x] Regla central impuesta por la base de datos, no solo por el código:
+      **solo puede haber un postulante `elegida` a la vez** por publicación
+      (índice único parcial) — probado forzando el error contra la base real
+- [x] **Reapertura**: si el elegido no responde, el autor reabre la oferta →
+      vuelve a `abierta`, el elegido pasa a `rechazada`, y los demás
+      postulantes siguen disponibles sin tener que volver a postularse —
+      probado contra la base real, coincide exactamente con el spec
+- [x] Botón "Cancelar publicación" (abierta → cancelada)
+- [x] Chat 1-a-1 por publicación, solo entre el autor y el elegido — el
+      celular de la otra parte se revela ahí (nunca antes), con enlace directo
+      a WhatsApp
+- [x] `/postulaciones` — "Mis postulaciones" con el estado de cada una
+
+**Pendiente para más adelante (no bloquea Fase 4):** las notificaciones reales
+(push / WhatsApp) de "fuiste elegido" y "se reabrió la oferta" que pide el
+spec — hoy el cambio de estado ocurre correctamente en la base, pero avisar
+al usuario fuera de la app depende del mismo WhatsApp Business API que Fase 1
+dejó pendiente de aprobación por Meta.
+
+Siguiente: **Fase 4 — Cierre + calificación + comisión** (`docs/SPEC.md §4`).
 
 ## Poner esto a andar
 
@@ -128,9 +158,11 @@ app/entrar/           Paso 1-2 del login: celular → código
 app/registro/         Perfil, solo para celulares nuevos verificados
 app/publicar/         Formulario de oferta (con ubicación opcional)
 app/feed/             Feed por cercanía con filtros
-app/publicaciones/[id] Detalle de una oferta
+app/publicaciones/[id] Detalle: postularse, elegir, reabrir, cancelar
+app/publicaciones/[id]/chat  Chat 1-a-1 autor ↔ elegido
+app/postulaciones/     "Mis postulaciones" del usuario
 app/api/auth/         Rutas de login/registro/sesión
-app/api/publicaciones/ Crear y listar ofertas (consulta PostGIS)
+app/api/publicaciones/ Crear/listar ofertas + postular/elegir/reabrir/mensajes
 app/                  Next.js App Router
 docs/SPEC.md          Especificación técnica completa del producto
 ```

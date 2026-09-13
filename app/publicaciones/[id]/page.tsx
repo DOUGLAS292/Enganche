@@ -4,11 +4,20 @@ import type { CSSProperties } from "react";
 import { obtenerUsuarioIdDeSesion } from "@/lib/auth/session";
 import { query } from "@/lib/db";
 import { formatCOP, formatFecha } from "@/lib/format";
+import AccionesAutor from "./AccionesAutor";
+import AccionPostulante from "./AccionPostulante";
 
 const NIVEL_ETIQUETA: Record<string, string> = {
   tradicional: "Nivel 1 · Tradicional",
   superior: "Nivel 2 · Superior",
   especializada: "Nivel 3 · Especializada",
+};
+
+const ESTADO_ETIQUETA: Record<string, { texto: string; color: string }> = {
+  abierta: { texto: "Abierta", color: "#4ade80" },
+  en_proceso: { texto: "En proceso", color: "#60a5fa" },
+  completada: { texto: "Completada", color: "#94a3b8" },
+  cancelada: { texto: "Cancelada", color: "#f87171" },
 };
 
 type Publicacion = {
@@ -24,10 +33,21 @@ type Publicacion = {
   estado: string;
   creado_en: string;
   autor_id: string;
+  ganador_id: string | null;
   autor_nombre: string;
   autor_rating: number | null;
   autor_trabajos: number;
   autor_verificado: boolean;
+};
+
+type Postulante = {
+  postulante_id: string;
+  estado: "pendiente" | "elegida" | "rechazada";
+  nombre_razon_social: string;
+  ciudad: string | null;
+  rating_promedio: number | null;
+  trabajos_completados: number;
+  verificado: boolean;
 };
 
 export default async function PublicacionDetalle({ params }: { params: Promise<{ id: string }> }) {
@@ -41,7 +61,7 @@ export default async function PublicacionDetalle({ params }: { params: Promise<{
     `select
        p.id, p.tipo_trabajo, p.nivel_sistema, p.sistema_o_proyecto, p.cantidad,
        p.tiempo_entrega, p.valor_ofertado, p.ciudad, p.region, p.estado, p.creado_en,
-       p.autor_id,
+       p.autor_id, p.ganador_id,
        u.nombre_razon_social as autor_nombre, u.rating_promedio as autor_rating,
        u.trabajos_completados as autor_trabajos, u.verificado as autor_verificado
      from publicaciones p
@@ -55,7 +75,33 @@ export default async function PublicacionDetalle({ params }: { params: Promise<{
     notFound();
   }
 
-  const esPropia = publicacion.autor_id === usuarioId;
+  const esAutor = publicacion.autor_id === usuarioId;
+  const esGanador = publicacion.ganador_id === usuarioId;
+
+  let postulantes: Postulante[] = [];
+  let miPostulacion: { estado: string } | null = null;
+
+  if (esAutor) {
+    const r = await query<Postulante>(
+      `select
+         po.postulante_id, po.estado, u.nombre_razon_social, u.ciudad,
+         u.rating_promedio, u.trabajos_completados, u.verificado
+       from postulaciones po
+       join usuarios u on u.id = po.postulante_id
+       where po.publicacion_id = $1
+       order by po.creado_en asc`,
+      [id]
+    );
+    postulantes = r.rows;
+  } else if (!esGanador) {
+    const r = await query<{ estado: string }>(
+      "select estado from postulaciones where publicacion_id = $1 and postulante_id = $2",
+      [id, usuarioId]
+    );
+    miPostulacion = r.rows[0] ?? null;
+  }
+
+  const estadoEtiqueta = ESTADO_ETIQUETA[publicacion.estado] ?? { texto: publicacion.estado, color: "#94a3b8" };
 
   return (
     <main style={{ maxWidth: 560, margin: "0 auto", padding: "32px 20px 80px" }}>
@@ -63,11 +109,12 @@ export default async function PublicacionDetalle({ params }: { params: Promise<{
         ← Volver a ofertas
       </Link>
 
-      <div style={{ marginTop: 14, display: "flex", gap: 8, alignItems: "center" }}>
+      <div style={{ marginTop: 14, display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
         <span style={badgeStyle(publicacion.tipo_trabajo === "instalacion" ? "#1c5079" : "#bd5a26")}>
           {publicacion.tipo_trabajo === "instalacion" ? "Instalación" : "Producción"}
         </span>
         <span style={{ fontSize: 12, color: "#94a3b8" }}>{NIVEL_ETIQUETA[publicacion.nivel_sistema]}</span>
+        <span style={{ fontSize: 12, fontWeight: 700, color: estadoEtiqueta.color }}>{estadoEtiqueta.texto}</span>
       </div>
 
       <h1 style={{ fontSize: 24, marginBottom: 4 }}>{publicacion.sistema_o_proyecto}</h1>
@@ -95,23 +142,34 @@ export default async function PublicacionDetalle({ params }: { params: Promise<{
         </p>
       </div>
 
-      {esPropia ? (
-        <p style={{ marginTop: 20, color: "#94a3b8", fontSize: 13 }}>
-          Esta es tu publicación. Podrás elegir postulantes cuando lleguemos a la Fase 3.
-        </p>
-      ) : (
-        <div
-          style={{
-            marginTop: 20,
-            padding: "12px 16px",
-            borderRadius: 8,
-            border: "1px dashed #475569",
-            color: "#94a3b8",
-            fontSize: 13,
-          }}
-        >
-          Postularte a esta oferta estará disponible en la próxima fase (postulación + chat).
+      {esAutor && (
+        <AccionesAutor publicacionId={publicacion.id} estadoPublicacion={publicacion.estado} postulantesIniciales={postulantes} />
+      )}
+
+      {!esAutor && esGanador && (
+        <div style={{ marginTop: 20, padding: "14px 16px", borderRadius: 10, border: "1px solid #4ade80" }}>
+          <p style={{ margin: 0, fontWeight: 600, color: "#4ade80" }}>¡Fuiste elegido para este trabajo!</p>
+          <Link href={`/publicaciones/${publicacion.id}/chat`} style={{ color: "#4ade80", textDecoration: "underline", fontSize: 13 }}>
+            Ir al chat con quien publicó
+          </Link>
         </div>
+      )}
+
+      {!esAutor && !esGanador && (
+        <>
+          {miPostulacion ? (
+            <div style={{ marginTop: 20, padding: "12px 16px", borderRadius: 8, border: "1px dashed #475569", color: "#94a3b8", fontSize: 13 }}>
+              {miPostulacion.estado === "pendiente" && "Ya te postulaste — pendiente de que el autor elija."}
+              {miPostulacion.estado === "rechazada" && "No fuiste el elegido esta vez."}
+            </div>
+          ) : publicacion.estado === "abierta" ? (
+            <AccionPostulante publicacionId={publicacion.id} />
+          ) : (
+            <div style={{ marginTop: 20, padding: "12px 16px", borderRadius: 8, border: "1px dashed #475569", color: "#94a3b8", fontSize: 13 }}>
+              Esta oferta ya no está abierta para postularse.
+            </div>
+          )}
+        </>
       )}
     </main>
   );
