@@ -34,8 +34,8 @@ export default async function MisPublicacionesPage() {
        p.id, p.sistema_o_proyecto, p.ciudad, p.valor_ofertado, p.estado, p.creado_en,
        count(distinct po.id) filter (where po.estado = 'pendiente') as postulantes_pendientes,
        count(distinct po.id) as postulantes_total,
-       count(m.id) filter (
-         where m.emisor_id != $1 and m.creado_en > coalesce(ml.leido_hasta, '-infinity')
+       count(distinct m.id) filter (
+         where p.ganador_id is not null and m.emisor_id != $1 and m.creado_en > coalesce(ml.leido_hasta, '-infinity')
        ) as mensajes_nuevos
      from publicaciones p
      left join postulaciones po on po.publicacion_id = p.id
