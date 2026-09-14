@@ -95,13 +95,13 @@ export default function FeedClient() {
 
   return (
     <main style={{ maxWidth: 640, margin: "0 auto", padding: "32px 20px 80px" }}>
-      <Link href="/" style={{ color: "#60a5fa", fontSize: 13 }}>
+      <Link href="/" style={{ color: "var(--color-azul-suave)", fontSize: 13 }}>
         ← Inicio
       </Link>
 
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginTop: 14 }}>
         <h1 style={{ fontSize: 24, margin: 0 }}>Ofertas cerca de ti</h1>
-        <Link href="/publicar" style={{ color: "#60a5fa", fontSize: 14 }}>
+        <Link href="/publicar" style={{ color: "var(--color-azul-suave)", fontSize: 14 }}>
           + Publicar
         </Link>
       </div>
@@ -158,7 +158,7 @@ export default function FeedClient() {
       {publicaciones?.length === 0 && (
         <p style={{ marginTop: 24, color: "#94a3b8" }}>
           No hay ofertas abiertas por ahora{coords ? " en este radio" : ""}. Sé el primero en{" "}
-          <Link href="/publicar" style={{ color: "#60a5fa" }}>
+          <Link href="/publicar" style={{ color: "var(--color-azul-suave)" }}>
             publicar una
           </Link>
           .
@@ -203,18 +203,18 @@ const inputStyle: CSSProperties = {
   width: "100%",
   padding: "8px 10px",
   borderRadius: 8,
-  border: "1px solid #334155",
-  background: "#1e293b",
+  border: "1px solid var(--color-borde)",
+  background: "var(--color-superficie)",
   color: "#eef2f5",
   fontSize: 14,
   marginTop: 6,
 };
 
 const cardStyle: CSSProperties = {
-  border: "1px solid #334155",
+  border: "1px solid var(--color-borde)",
   borderRadius: 10,
   padding: "12px 14px",
-  background: "#1e293b",
+  background: "var(--color-superficie)",
 };
 
 function chipStyle(activo: boolean): CSSProperties {
@@ -224,7 +224,7 @@ function chipStyle(activo: boolean): CSSProperties {
     borderRadius: 999,
     fontSize: 12,
     cursor: "pointer",
-    border: `1px solid ${activo ? "#60a5fa" : "#334155"}`,
+    border: `1px solid ${activo ? "var(--color-azul-suave)" : "var(--color-borde)"}`,
     background: activo ? "#1e3a5f" : "transparent",
     color: activo ? "#eef2f5" : "#94a3b8",
   };

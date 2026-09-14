@@ -46,8 +46,8 @@ export default function HealthCheck() {
 const buttonStyle: CSSProperties = {
   padding: "10px 18px",
   borderRadius: 8,
-  border: "1px solid #334155",
-  background: "#1e293b",
+  border: "1px solid var(--color-borde)",
+  background: "var(--color-superficie)",
   color: "#eef2f5",
   cursor: "pointer",
   fontSize: 14,

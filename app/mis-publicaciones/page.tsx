@@ -6,7 +6,7 @@ import { formatCOP, formatFecha } from "@/lib/format";
 
 const ESTADO_ETIQUETA: Record<string, { texto: string; color: string }> = {
   abierta: { texto: "Abierta", color: "#4ade80" },
-  en_proceso: { texto: "En proceso", color: "#60a5fa" },
+  en_proceso: { texto: "En proceso", color: "var(--color-azul-suave)" },
   completada: { texto: "Completada", color: "#94a3b8" },
   cancelada: { texto: "Cancelada", color: "#f87171" },
 };
@@ -51,7 +51,7 @@ export default async function MisPublicacionesPage() {
 
   return (
     <main style={{ maxWidth: 640, margin: "0 auto", padding: "32px 20px 80px" }}>
-      <Link href="/" style={{ color: "#60a5fa", fontSize: 13 }}>
+      <Link href="/" style={{ color: "var(--color-azul-suave)", fontSize: 13 }}>
         ← Inicio
       </Link>
       <h1 style={{ fontSize: 24, marginTop: 14 }}>Mis publicaciones</h1>
@@ -59,7 +59,7 @@ export default async function MisPublicacionesPage() {
       {result.rows.length === 0 && (
         <p style={{ color: "#94a3b8", marginTop: 16 }}>
           Todavía no has publicado ninguna oferta.{" "}
-          <Link href="/publicar" style={{ color: "#60a5fa" }}>
+          <Link href="/publicar" style={{ color: "var(--color-azul-suave)" }}>
             Publica la primera
           </Link>
           .
@@ -77,10 +77,10 @@ export default async function MisPublicacionesPage() {
               style={{
                 textDecoration: "none",
                 color: "inherit",
-                border: `1px solid ${hayNuevas ? "#facc15" : "#334155"}`,
+                border: `1px solid ${hayNuevas ? "var(--color-acento-claro)" : "var(--color-borde)"}`,
                 borderRadius: 10,
                 padding: "12px 14px",
-                background: "#1e293b",
+                background: "var(--color-superficie)",
                 display: "block",
               }}
             >
@@ -96,7 +96,7 @@ export default async function MisPublicacionesPage() {
                   style={{
                     fontSize: 12,
                     fontWeight: hayNuevas ? 700 : 400,
-                    color: hayNuevas ? "#facc15" : "#94a3b8",
+                    color: hayNuevas ? "var(--color-acento-claro)" : "#94a3b8",
                     textAlign: "right",
                   }}
                 >

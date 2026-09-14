@@ -76,8 +76,8 @@ export default function ChatClient({
 
   return (
     <main style={{ maxWidth: 480, margin: "0 auto", padding: "20px 16px 0", minHeight: "100dvh", display: "flex", flexDirection: "column" }}>
-      <div style={{ paddingBottom: 12, borderBottom: "1px solid #334155" }}>
-        <Link href={`/publicaciones/${publicacionId}`} style={{ color: "#60a5fa", fontSize: 13 }}>
+      <div style={{ paddingBottom: 12, borderBottom: "1px solid var(--color-borde)" }}>
+        <Link href={`/publicaciones/${publicacionId}`} style={{ color: "var(--color-azul-suave)", fontSize: 13 }}>
           ← Volver a la oferta
         </Link>
         <h1 style={{ fontSize: 18, margin: "8px 0 2px" }}>{titulo}</h1>
@@ -94,7 +94,7 @@ export default function ChatClient({
           const esMio = m.emisor_id === miId;
           return (
             <div key={m.id} style={{ alignSelf: esMio ? "flex-end" : "flex-start", maxWidth: "80%" }}>
-              <div style={{ ...burbuja, background: esMio ? "#1e3a5f" : "#1e293b" }}>
+              <div style={{ ...burbuja, background: esMio ? "#1e3a5f" : "var(--color-superficie)" }}>
                 {!esMio && <p style={{ margin: 0, fontSize: 11, color: "#94a3b8" }}>{m.emisor_nombre}</p>}
                 <p style={{ margin: esMio ? 0 : "2px 0 0", fontSize: 14 }}>{m.contenido}</p>
               </div>
@@ -104,7 +104,7 @@ export default function ChatClient({
         <div ref={finRef} />
       </div>
 
-      <form onSubmit={enviar} style={{ display: "flex", gap: 8, padding: "12px 0", borderTop: "1px solid #334155" }}>
+      <form onSubmit={enviar} style={{ display: "flex", gap: 8, padding: "12px 0", borderTop: "1px solid var(--color-borde)" }}>
         <input value={texto} onChange={(e) => setTexto(e.target.value)} placeholder="Escribe un mensaje…" style={inputStyle} />
         <button type="submit" disabled={enviando || !texto.trim()} style={botonEnviar}>
           Enviar
@@ -115,7 +115,7 @@ export default function ChatClient({
 }
 
 const burbuja: CSSProperties = {
-  border: "1px solid #334155",
+  border: "1px solid var(--color-borde)",
   borderRadius: 10,
   padding: "8px 12px",
 };
@@ -124,8 +124,8 @@ const inputStyle: CSSProperties = {
   flex: 1,
   padding: "10px 12px",
   borderRadius: 8,
-  border: "1px solid #334155",
-  background: "#1e293b",
+  border: "1px solid var(--color-borde)",
+  background: "var(--color-superficie)",
   color: "#eef2f5",
   fontSize: 14,
 };
@@ -133,7 +133,7 @@ const inputStyle: CSSProperties = {
 const botonEnviar: CSSProperties = {
   padding: "10px 16px",
   borderRadius: 8,
-  border: "1px solid #334155",
+  border: "1px solid var(--color-borde)",
   background: "#1e3a5f",
   color: "#eef2f5",
   cursor: "pointer",

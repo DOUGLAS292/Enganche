@@ -16,7 +16,7 @@ const NIVEL_ETIQUETA: Record<string, string> = {
 
 const ESTADO_ETIQUETA: Record<string, { texto: string; color: string }> = {
   abierta: { texto: "Abierta", color: "#4ade80" },
-  en_proceso: { texto: "En proceso", color: "#60a5fa" },
+  en_proceso: { texto: "En proceso", color: "var(--color-azul-suave)" },
   completada: { texto: "Completada", color: "#94a3b8" },
   cancelada: { texto: "Cancelada", color: "#f87171" },
 };
@@ -142,7 +142,7 @@ export default async function PublicacionDetalle({ params }: { params: Promise<{
 
   return (
     <main style={{ maxWidth: 560, margin: "0 auto", padding: "32px 20px 80px" }}>
-      <Link href="/feed" style={{ color: "#60a5fa", fontSize: 13 }}>
+      <Link href="/feed" style={{ color: "var(--color-azul-suave)", fontSize: 13 }}>
         ← Volver a ofertas
       </Link>
 
@@ -160,7 +160,7 @@ export default async function PublicacionDetalle({ params }: { params: Promise<{
         {publicacion.region ? ` · ${publicacion.region}` : ""}
       </p>
 
-      <div style={{ marginTop: 16, padding: "14px 16px", borderRadius: 10, border: "1px solid #334155", background: "#1e293b" }}>
+      <div style={{ marginTop: 16, padding: "14px 16px", borderRadius: 10, border: "1px solid var(--color-borde)", background: "var(--color-superficie)" }}>
         <Fila
           etiqueta="Cantidad"
           valor={/^\d+$/.test(publicacion.cantidad) ? `${publicacion.cantidad} producto${publicacion.cantidad === "1" ? "" : "s"}` : publicacion.cantidad}
@@ -177,7 +177,7 @@ export default async function PublicacionDetalle({ params }: { params: Promise<{
         <Fila etiqueta="Publicada" valor={formatFecha(publicacion.creado_en)} />
       </div>
 
-      <div style={{ marginTop: 16, padding: "14px 16px", borderRadius: 10, border: "1px solid #334155", background: "#1e293b" }}>
+      <div style={{ marginTop: 16, padding: "14px 16px", borderRadius: 10, border: "1px solid var(--color-borde)", background: "var(--color-superficie)" }}>
         <p style={{ margin: 0, fontSize: 13, color: "#94a3b8" }}>Publicada por</p>
         <p style={{ margin: "4px 0 0", fontSize: 16, fontWeight: 600 }}>
           {publicacion.autor_nombre}
@@ -199,9 +199,9 @@ export default async function PublicacionDetalle({ params }: { params: Promise<{
       )}
 
       {!esAutor && esGanador && (
-        <div style={{ marginTop: 20, padding: "14px 16px", borderRadius: 10, border: `1px solid ${mensajesNuevos > 0 ? "#facc15" : "#4ade80"}` }}>
+        <div style={{ marginTop: 20, padding: "14px 16px", borderRadius: 10, border: `1px solid ${mensajesNuevos > 0 ? "var(--color-acento-claro)" : "#4ade80"}` }}>
           <p style={{ margin: 0, fontWeight: 600, color: "#4ade80" }}>¡Fuiste elegido para este trabajo!</p>
-          <Link href={`/publicaciones/${publicacion.id}/chat`} style={{ color: mensajesNuevos > 0 ? "#facc15" : "#4ade80", textDecoration: "underline", fontSize: 13, fontWeight: mensajesNuevos > 0 ? 700 : 400 }}>
+          <Link href={`/publicaciones/${publicacion.id}/chat`} style={{ color: mensajesNuevos > 0 ? "var(--color-acento-claro)" : "#4ade80", textDecoration: "underline", fontSize: 13, fontWeight: mensajesNuevos > 0 ? 700 : 400 }}>
             {mensajesNuevos > 0 ? `🔔 Ir al chat (${mensajesNuevos} nuevo${mensajesNuevos === 1 ? "" : "s"})` : "Ir al chat con quien publicó"}
           </Link>
         </div>

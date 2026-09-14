@@ -5,7 +5,7 @@ export const metadata = { title: "Términos y condiciones — Enganche" };
 export default function TerminosPage() {
   return (
     <main style={{ maxWidth: 640, margin: "0 auto", padding: "32px 20px 80px" }}>
-      <Link href="/" style={{ color: "#60a5fa", fontSize: 13 }}>
+      <Link href="/" style={{ color: "var(--color-azul-suave)", fontSize: 13 }}>
         ← Inicio
       </Link>
 

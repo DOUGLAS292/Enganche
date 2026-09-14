@@ -1,5 +1,22 @@
+/* Paleta oficial de La Ventanería (LV-MKT-001 — Manual de Identidad
+   Corporativa): azul corporativo #04253A, naranja #FF7F00, ámbar #FFAD01,
+   grises #F7F7F7/#EFEFEF, negro #1C1C1C. */
 :root {
-  color-scheme: light dark;
+  color-scheme: dark;
+
+  --color-bg: #051622;
+  --color-bg-elevado: #0a2436;
+  --color-superficie: #0f3049;
+  --color-borde: #1c4a66;
+
+  --color-marca: #04253a;
+  --color-acento: #ff7f00;
+  --color-acento-claro: #ffad01;
+  --color-azul-suave: #5b9bc9;
+
+  --color-texto: #f7f7f7;
+  --color-texto-tenue: #a9c2d1;
+  --color-negro: #1c1c1c;
 }
 
 * {
@@ -8,9 +25,9 @@
 
 body {
   margin: 0;
-  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
-  background: #0f1720;
-  color: #eef2f5;
+  font-family: var(--font-sans), system-ui, -apple-system, "Segoe UI", sans-serif;
+  background: var(--color-bg);
+  color: var(--color-texto);
 }
 
 code {

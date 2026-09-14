@@ -105,7 +105,7 @@ export default function RegistroForm({ celular }: { celular: string }) {
           />
           <span>
             He leído y acepto los{" "}
-            <Link href="/terminos" target="_blank" style={{ color: "#60a5fa" }}>
+            <Link href="/terminos" target="_blank" style={{ color: "var(--color-azul-suave)" }}>
               términos y condiciones
             </Link>{" "}
             de Enganche, incluyendo el tratamiento de mis datos personales y que la plataforma
@@ -154,8 +154,8 @@ function Radios<T extends string>({
             textAlign: "center",
             padding: "8px 6px",
             borderRadius: 8,
-            border: `1px solid ${valor === op.valor ? "#60a5fa" : "#334155"}`,
-            background: valor === op.valor ? "#1e3a5f" : "#1e293b",
+            border: `1px solid ${valor === op.valor ? "var(--color-azul-suave)" : "var(--color-borde)"}`,
+            background: valor === op.valor ? "#1e3a5f" : "var(--color-superficie)",
             cursor: "pointer",
             fontSize: 13,
           }}
@@ -179,8 +179,8 @@ const inputStyle: CSSProperties = {
   width: "100%",
   padding: "10px 12px",
   borderRadius: 8,
-  border: "1px solid #334155",
-  background: "#1e293b",
+  border: "1px solid var(--color-borde)",
+  background: "var(--color-superficie)",
   color: "#eef2f5",
   fontSize: 15,
 };
@@ -200,9 +200,9 @@ const buttonStyle: CSSProperties = {
   width: "100%",
   padding: "12px 18px",
   borderRadius: 8,
-  border: "1px solid #334155",
-  background: "#1e293b",
-  color: "#eef2f5",
+  border: "none",
+  background: "linear-gradient(135deg, #FFAD01, #FF7F00)",
+  color: "#1c1c1c",
   cursor: "pointer",
   fontSize: 15,
 };

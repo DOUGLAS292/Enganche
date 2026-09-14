@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  html, body { margin: 0; padding: 0; background: transparent; }
+  svg { display: block; }
+</style>
+</head>
+<body>
+<svg id="icon" width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0a3050"/>
+      <stop offset="55%" stop-color="#04253A"/>
+      <stop offset="100%" stop-color="#021018"/>
+    </linearGradient>
+
+    <linearGradient id="frame" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#f4f6f8"/>
+      <stop offset="45%" stop-color="#cfd8e0"/>
+      <stop offset="100%" stop-color="#94a3b8"/>
+    </linearGradient>
+
+    <linearGradient id="glass" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#dff1fb"/>
+      <stop offset="45%" stop-color="#a9d9ee"/>
+      <stop offset="100%" stop-color="#5fa8c9"/>
+    </linearGradient>
+
+    <linearGradient id="sun" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFD24C"/>
+      <stop offset="55%" stop-color="#FFAD01"/>
+      <stop offset="100%" stop-color="#FF7F00"/>
+    </linearGradient>
+
+    <linearGradient id="shine" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.55"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+
+    <filter id="dropshadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feDropShadow dx="0" dy="14" stdDeviation="18" flood-color="#000000" flood-opacity="0.45"/>
+    </filter>
+
+    <filter id="softshadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feDropShadow dx="0" dy="6" stdDeviation="8" flood-color="#01131f" flood-opacity="0.5"/>
+    </filter>
+
+    <clipPath id="roundedBg">
+      <rect x="0" y="0" width="1024" height="1024" rx="228"/>
+    </clipPath>
+  </defs>
+
+  <!-- Background -->
+  <rect x="0" y="0" width="1024" height="1024" rx="228" fill="url(#bg)"/>
+
+  <g clip-path="url(#roundedBg)">
+    <!-- soft ambient glow behind window -->
+    <ellipse cx="512" cy="470" rx="360" ry="360" fill="#0d3a5c" opacity="0.55"/>
+
+    <!-- Sun / orange glint, top-right, partially behind window -->
+    <circle cx="742" cy="292" r="118" fill="url(#sun)" filter="url(#softshadow)"/>
+    <circle cx="742" cy="292" r="118" fill="#ffffff" opacity="0.08"/>
+
+    <!-- Window group, slight isometric tilt -->
+    <g transform="translate(512 546) rotate(-6) translate(-512 -546)" filter="url(#dropshadow)">
+      <!-- outer frame -->
+      <rect x="272" y="316" width="480" height="460" rx="28" fill="url(#frame)"/>
+      <rect x="290" y="334" width="444" height="424" rx="18" fill="#04253A"/>
+
+      <!-- 2x2 panes -->
+      <!-- top-left -->
+      <rect x="300" y="344" width="206" height="196" rx="10" fill="url(#glass)"/>
+      <!-- top-right -->
+      <rect x="518" y="344" width="206" height="196" rx="10" fill="url(#glass)"/>
+      <!-- bottom-left -->
+      <rect x="300" y="552" width="206" height="196" rx="10" fill="url(#glass)"/>
+      <!-- bottom-right -->
+      <rect x="518" y="552" width="206" height="196" rx="10" fill="url(#glass)"/>
+
+      <!-- mullions (cross bar) with their own subtle bevel -->
+      <rect x="500" y="334" width="24" height="424" rx="6" fill="url(#frame)"/>
+      <rect x="290" y="534" width="444" height="24" rx="6" fill="url(#frame)"/>
+
+      <!-- glossy diagonal highlight across the whole window -->
+      <path d="M300 344 L420 344 L300 700 Z" fill="url(#shine)"/>
+      <path d="M518 344 L638 344 L580 500 L518 420 Z" fill="url(#shine)" opacity="0.6"/>
+
+      <!-- outer frame highlight edge (top) for 3D bevel -->
+      <rect x="272" y="316" width="480" height="14" rx="7" fill="#ffffff" opacity="0.5"/>
+    </g>
+  </g>
+
+  <!-- subtle top gloss over entire icon -->
+  <path d="M0 0 H1024 V220 Q512 340 0 220 Z" fill="#ffffff" opacity="0.05" clip-path="url(#roundedBg)"/>
+</svg>
+</body>
+</html>

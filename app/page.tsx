@@ -71,8 +71,8 @@ export default async function Home() {
           </div>
 
           <div style={{ marginTop: 18, display: "flex", flexDirection: "column", gap: 12 }}>
-            <TarjetaAccion href="/feed" icono="🔍" titulo="Ver ofertas" subtitulo="Encuentra trabajo cerca de ti" color="#1c5079" />
-            <TarjetaAccion href="/publicar" icono="📢" titulo="Publicar una oferta" subtitulo="Cuenta qué necesitas" color="#bd5a26" />
+            <TarjetaAccion href="/feed" icono="🔍" titulo="Ver ofertas" subtitulo="Encuentra trabajo cerca de ti" color="#0f6aa8" />
+            <TarjetaAccion href="/publicar" icono="📢" titulo="Publicar una oferta" subtitulo="Cuenta qué necesitas" color="#FF7F00" />
             <TarjetaAccion
               href="/mis-publicaciones"
               icono="📦"
@@ -85,7 +85,7 @@ export default async function Home() {
                   .filter(Boolean)
                   .join(" · ") || "Lo que has publicado"
               }
-              color="#7c3aed"
+              color="#FFAD01"
               badge={postulantesPorRevisar + mensajesNuevosAutor > 0 ? postulantesPorRevisar + mensajesNuevosAutor : undefined}
             />
             <TarjetaAccion
@@ -93,11 +93,11 @@ export default async function Home() {
               icono="📋"
               titulo="Mis postulaciones"
               subtitulo={mensajesNuevosGanador > 0 ? `${mensajesNuevosGanador} mensaje${mensajesNuevosGanador === 1 ? "" : "s"} nuevo${mensajesNuevosGanador === 1 ? "" : "s"}` : "Revisa en qué vas"}
-              color="#3f6212"
+              color="#04253A"
               badge={mensajesNuevosGanador > 0 ? mensajesNuevosGanador : undefined}
             />
             {usuario.es_admin && (
-              <TarjetaAccion href="/admin" icono="🛡️" titulo="Panel admin" subtitulo="Comisiones del piloto" color="#854d0e" />
+              <TarjetaAccion href="/admin" icono="🛡️" titulo="Panel admin" subtitulo="Comisiones del piloto" color="#3a3a3a" />
             )}
           </div>
 
@@ -171,8 +171,8 @@ function TarjetaAccion({
         gap: 14,
         padding: "16px 18px",
         borderRadius: 14,
-        border: `1px solid ${badge ? "#facc15" : "#334155"}`,
-        background: `linear-gradient(135deg, ${color}33, #1e293b)`,
+        border: `1px solid ${badge ? "var(--color-acento-claro)" : "var(--color-borde)"}`,
+        background: `linear-gradient(135deg, ${color}33, var(--color-superficie))`,
         textDecoration: "none",
         color: "#eef2f5",
       }}
@@ -180,7 +180,7 @@ function TarjetaAccion({
       <span style={{ fontSize: 26 }}>{icono}</span>
       <span>
         <span style={{ display: "block", fontSize: 16, fontWeight: 700 }}>{titulo}</span>
-        <span style={{ display: "block", fontSize: 13, color: badge ? "#facc15" : "#94a3b8" }}>{subtitulo}</span>
+        <span style={{ display: "block", fontSize: 13, color: badge ? "var(--color-acento-claro)" : "#94a3b8" }}>{subtitulo}</span>
       </span>
       <span style={{ marginLeft: "auto", color: "#64748b" }}>→</span>
       {badge ? (
@@ -192,8 +192,8 @@ function TarjetaAccion({
             minWidth: 22,
             height: 22,
             borderRadius: "50%",
-            background: "#facc15",
-            color: "#111820",
+            background: "var(--color-acento-claro)",
+            color: "var(--color-bg-elevado)",
             fontSize: 12,
             fontWeight: 800,
             display: "flex",
@@ -218,14 +218,14 @@ function PasoItem({ numero, texto }: { numero: number; texto: string }) {
           width: 28,
           height: 28,
           borderRadius: "50%",
-          background: "#1e293b",
-          border: "1px solid #334155",
+          background: "var(--color-superficie)",
+          border: "1px solid var(--color-borde)",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
           fontSize: 13,
           fontWeight: 700,
-          color: "#60a5fa",
+          color: "var(--color-azul-suave)",
         }}
       >
         {numero}
@@ -239,8 +239,8 @@ const saludoCaja: CSSProperties = {
   marginTop: 22,
   padding: "14px 16px",
   borderRadius: 12,
-  border: "1px solid #334155",
-  background: "#1e293b",
+  border: "1px solid var(--color-borde)",
+  background: "var(--color-superficie)",
   textAlign: "center",
 };
 
@@ -250,9 +250,9 @@ const botonPrincipal: CSSProperties = {
   padding: "16px 20px",
   borderRadius: 14,
   textAlign: "center",
-  background: "linear-gradient(135deg, #2563eb, #1c5079)",
-  color: "#fff",
-  fontWeight: 700,
+  background: "linear-gradient(135deg, #FFAD01, #FF7F00)",
+  color: "#1c1c1c",
+  fontWeight: 800,
   fontSize: 16,
   textDecoration: "none",
 };

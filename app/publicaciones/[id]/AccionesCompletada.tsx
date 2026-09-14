@@ -20,7 +20,7 @@ const ESTADO_COMISION: Record<string, string> = {
 };
 
 const ESTADO_GARANTIA: Record<string, { texto: string; color: string }> = {
-  abierto: { texto: "Abierto", color: "#facc15" },
+  abierto: { texto: "Abierto", color: "var(--color-acento-claro)" },
   atendido: { texto: "Atendido", color: "#4ade80" },
   no_atendido: { texto: "No atendido", color: "#f87171" },
 };
@@ -170,7 +170,7 @@ export default function AccionesCompletada({
                 key={n}
                 type="button"
                 onClick={() => setEstrellas(n)}
-                style={{ background: "none", border: "none", cursor: "pointer", fontSize: 22, color: n <= estrellas ? "#facc15" : "#334155" }}
+                style={{ background: "none", border: "none", cursor: "pointer", fontSize: 22, color: n <= estrellas ? "var(--color-acento-claro)" : "var(--color-borde)" }}
               >
                 ★
               </button>
@@ -201,7 +201,7 @@ export default function AccionesCompletada({
           {garantiasIniciales.map((g) => {
             const estado = ESTADO_GARANTIA[g.estado];
             return (
-              <div key={g.id} style={{ border: "1px solid #334155", borderRadius: 8, padding: "8px 10px" }}>
+              <div key={g.id} style={{ border: "1px solid var(--color-borde)", borderRadius: 8, padding: "8px 10px" }}>
                 <div style={{ display: "flex", justifyContent: "space-between" }}>
                   <span style={{ fontSize: 11, fontWeight: 700, color: estado.color }}>{estado.texto}</span>
                 </div>
@@ -258,8 +258,8 @@ export default function AccionesCompletada({
 const caja: CSSProperties = {
   padding: "14px 16px",
   borderRadius: 10,
-  border: "1px solid #334155",
-  background: "#1e293b",
+  border: "1px solid var(--color-borde)",
+  background: "var(--color-superficie)",
 };
 
 const etiquetaCheck: CSSProperties = {
@@ -273,7 +273,7 @@ const etiquetaCheck: CSSProperties = {
 const botonChico: CSSProperties = {
   padding: "6px 12px",
   borderRadius: 8,
-  border: "1px solid #334155",
+  border: "1px solid var(--color-borde)",
   background: "transparent",
   color: "#eef2f5",
   cursor: "pointer",
@@ -285,8 +285,8 @@ const textareaStyle: CSSProperties = {
   minHeight: 70,
   padding: "8px 10px",
   borderRadius: 8,
-  border: "1px solid #334155",
-  background: "#111820",
+  border: "1px solid var(--color-borde)",
+  background: "var(--color-bg-elevado)",
   color: "#eef2f5",
   fontSize: 13,
   resize: "vertical",

@@ -6,8 +6,8 @@ import { formatCOP, formatFecha } from "@/lib/format";
 import AccionesAdmin from "./AccionesAdmin";
 
 const ESTADO_ETIQUETA: Record<string, { texto: string; color: string }> = {
-  pendiente: { texto: "Pendiente", color: "#facc15" },
-  marcada_pagada: { texto: "Marcada pagada", color: "#60a5fa" },
+  pendiente: { texto: "Pendiente", color: "var(--color-acento-claro)" },
+  marcada_pagada: { texto: "Marcada pagada", color: "var(--color-azul-suave)" },
   confirmada: { texto: "Confirmada", color: "#4ade80" },
 };
 
@@ -52,7 +52,7 @@ export default async function AdminComisiones() {
 
   return (
     <main style={{ maxWidth: 720, margin: "0 auto", padding: "32px 20px 80px" }}>
-      <Link href="/" style={{ color: "#60a5fa", fontSize: 13 }}>
+      <Link href="/" style={{ color: "var(--color-azul-suave)", fontSize: 13 }}>
         ← Inicio
       </Link>
 
@@ -60,8 +60,8 @@ export default async function AdminComisiones() {
       <p style={{ color: "#94a3b8", marginTop: 0, fontSize: 13 }}>Solo visible para el admin.</p>
 
       <div style={{ display: "flex", gap: 10, marginTop: 16, flexWrap: "wrap" }}>
-        <TarjetaTotal etiqueta="Pendiente" valor={totales.pendiente} color="#facc15" />
-        <TarjetaTotal etiqueta="Marcada pagada" valor={totales.marcada_pagada} color="#60a5fa" />
+        <TarjetaTotal etiqueta="Pendiente" valor={totales.pendiente} color="var(--color-acento-claro)" />
+        <TarjetaTotal etiqueta="Marcada pagada" valor={totales.marcada_pagada} color="var(--color-azul-suave)" />
         <TarjetaTotal etiqueta="Confirmada" valor={totales.confirmada} color="#4ade80" />
       </div>
 
@@ -80,10 +80,10 @@ export default async function AdminComisiones() {
             <div
               key={c.id}
               style={{
-                border: "1px solid #334155",
+                border: "1px solid var(--color-borde)",
                 borderRadius: 10,
                 padding: "12px 14px",
-                background: "#1e293b",
+                background: "var(--color-superficie)",
               }}
             >
               <div style={{ display: "flex", justifyContent: "space-between", gap: 8 }}>
@@ -117,7 +117,7 @@ export default async function AdminComisiones() {
 
 function TarjetaTotal({ etiqueta, valor, color }: { etiqueta: string; valor: number; color: string }) {
   return (
-    <div style={{ flex: 1, minWidth: 140, border: "1px solid #334155", borderRadius: 10, padding: "10px 12px", background: "#1e293b" }}>
+    <div style={{ flex: 1, minWidth: 140, border: "1px solid var(--color-borde)", borderRadius: 10, padding: "10px 12px", background: "var(--color-superficie)" }}>
       <p style={{ margin: 0, fontSize: 11, color: "#94a3b8" }}>{etiqueta}</p>
       <p style={{ margin: "4px 0 0", fontSize: 16, fontWeight: 700, color }}>{formatCOP(valor)}</p>
     </div>

@@ -11,7 +11,7 @@ const NIVEL_ETIQUETA: Record<string, string> = {
 };
 
 const ESTADO_POSTULACION: Record<string, { texto: string; color: string }> = {
-  pendiente: { texto: "Pendiente", color: "#facc15" },
+  pendiente: { texto: "Pendiente", color: "var(--color-acento-claro)" },
   elegida: { texto: "¡Elegido!", color: "#4ade80" },
   rechazada: { texto: "No elegido", color: "#94a3b8" },
 };
@@ -52,7 +52,7 @@ export default async function MisPostulacionesPage() {
 
   return (
     <main style={{ maxWidth: 640, margin: "0 auto", padding: "32px 20px 80px" }}>
-      <Link href="/" style={{ color: "#60a5fa", fontSize: 13 }}>
+      <Link href="/" style={{ color: "var(--color-azul-suave)", fontSize: 13 }}>
         ← Inicio
       </Link>
       <h1 style={{ fontSize: 24, marginTop: 14 }}>Mis postulaciones</h1>
@@ -60,7 +60,7 @@ export default async function MisPostulacionesPage() {
       {result.rows.length === 0 && (
         <p style={{ color: "#94a3b8", marginTop: 16 }}>
           Aún no te has postulado a ninguna oferta.{" "}
-          <Link href="/feed" style={{ color: "#60a5fa" }}>
+          <Link href="/feed" style={{ color: "var(--color-azul-suave)" }}>
             Explora el feed
           </Link>
           .
@@ -75,10 +75,10 @@ export default async function MisPostulacionesPage() {
             <Link key={p.id} href={`/publicaciones/${p.id}`} style={{ textDecoration: "none", color: "inherit" }}>
               <article
                 style={{
-                  border: `1px solid ${hayMensajes ? "#facc15" : "#334155"}`,
+                  border: `1px solid ${hayMensajes ? "var(--color-acento-claro)" : "var(--color-borde)"}`,
                   borderRadius: 10,
                   padding: "12px 14px",
-                  background: "#1e293b",
+                  background: "var(--color-superficie)",
                 }}
               >
                 <div style={{ display: "flex", justifyContent: "space-between" }}>
@@ -92,7 +92,7 @@ export default async function MisPostulacionesPage() {
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 6 }}>
                   <p style={{ margin: 0, fontSize: 13, fontWeight: 600 }}>{formatCOP(p.valor_ofertado)}</p>
                   {hayMensajes && (
-                    <span style={{ fontSize: 12, fontWeight: 700, color: "#facc15" }}>
+                    <span style={{ fontSize: 12, fontWeight: 700, color: "var(--color-acento-claro)" }}>
                       🔔 {p.mensajes_nuevos} mensaje{p.mensajes_nuevos === 1 ? "" : "s"} nuevo{p.mensajes_nuevos === 1 ? "" : "s"}
                     </span>
                   )}

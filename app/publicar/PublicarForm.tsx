@@ -91,7 +91,7 @@ export default function PublicarForm() {
 
   return (
     <main style={{ maxWidth: 480, margin: "0 auto", padding: "48px 20px 80px" }}>
-      <Link href="/" style={{ color: "#60a5fa", fontSize: 13 }}>
+      <Link href="/" style={{ color: "var(--color-azul-suave)", fontSize: 13 }}>
         ← Inicio
       </Link>
       <h1 style={{ fontSize: 24, marginTop: 14 }}>Publicar una oferta</h1>
@@ -184,7 +184,7 @@ export default function PublicarForm() {
                 : "Usar mi ubicación actual"}
           </button>
           {estadoUbicacion === "denegada" && (
-            <p style={{ color: "#facc15", fontSize: 12, marginTop: 6 }}>
+            <p style={{ color: "var(--color-acento-claro)", fontSize: 12, marginTop: 6 }}>
               No se pudo obtener tu ubicación. La oferta igual se publica, pero solo aparecerá al filtrar por ciudad, no por cercanía.
             </p>
           )}
@@ -236,8 +236,8 @@ function Radios<T extends string>({
             textAlign: "center",
             padding: "8px 6px",
             borderRadius: 8,
-            border: `1px solid ${valor === op.valor ? "#60a5fa" : "#334155"}`,
-            background: valor === op.valor ? "#1e3a5f" : "#1e293b",
+            border: `1px solid ${valor === op.valor ? "var(--color-azul-suave)" : "var(--color-borde)"}`,
+            background: valor === op.valor ? "#1e3a5f" : "var(--color-superficie)",
             cursor: "pointer",
             fontSize: 13,
           }}
@@ -261,8 +261,8 @@ const inputStyle: CSSProperties = {
   width: "100%",
   padding: "10px 12px",
   borderRadius: 8,
-  border: "1px solid #334155",
-  background: "#1e293b",
+  border: "1px solid var(--color-borde)",
+  background: "var(--color-superficie)",
   color: "#eef2f5",
   fontSize: 15,
 };
@@ -270,8 +270,8 @@ const inputStyle: CSSProperties = {
 const chipStyle: CSSProperties = {
   padding: "5px 10px",
   borderRadius: 999,
-  border: "1px solid #334155",
-  background: "#1e293b",
+  border: "1px solid var(--color-borde)",
+  background: "var(--color-superficie)",
   color: "#94a3b8",
   fontSize: 12,
   cursor: "pointer",
@@ -282,9 +282,10 @@ const buttonStyle: CSSProperties = {
   width: "100%",
   padding: "12px 18px",
   borderRadius: 8,
-  border: "1px solid #334155",
-  background: "#1e293b",
-  color: "#eef2f5",
+  border: "none",
+  background: "linear-gradient(135deg, #FFAD01, #FF7F00)",
+  color: "#1c1c1c",
+  fontWeight: 700,
   cursor: "pointer",
   fontSize: 15,
 };

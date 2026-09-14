@@ -94,7 +94,7 @@ export default function Entrar() {
         <form onSubmit={verificarCodigo}>
           <p style={{ color: "#94a3b8" }}>Escribe el código de 6 dígitos que te llegó al {celular}.</p>
           {codigoDesarrollo && (
-            <p style={{ color: "#facc15", fontSize: 13 }}>
+            <p style={{ color: "var(--color-acento-claro)", fontSize: 13 }}>
               Modo desarrollo (WhatsApp aún no configurado) — tu código es <strong>{codigoDesarrollo}</strong>
             </p>
           )}
@@ -134,8 +134,8 @@ const inputStyle: CSSProperties = {
   width: "100%",
   padding: "10px 12px",
   borderRadius: 8,
-  border: "1px solid #334155",
-  background: "#1e293b",
+  border: "1px solid var(--color-borde)",
+  background: "var(--color-superficie)",
   color: "#eef2f5",
   fontSize: 15,
 };
@@ -145,9 +145,10 @@ const buttonStyle: CSSProperties = {
   width: "100%",
   padding: "12px 18px",
   borderRadius: 8,
-  border: "1px solid #334155",
-  background: "#1e293b",
-  color: "#eef2f5",
+  border: "none",
+  background: "linear-gradient(135deg, #FFAD01, #FF7F00)",
+  color: "#1c1c1c",
+  fontWeight: 700,
   cursor: "pointer",
   fontSize: 15,
 };

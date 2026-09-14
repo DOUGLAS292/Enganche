@@ -154,7 +154,7 @@ export default function AccionesAutor({
           <div style={{ marginTop: 14, display: "flex", gap: 8 }}>
             <Link
               href={`/publicaciones/${publicacionId}/chat`}
-              style={{ ...botonPrimarioLink, ...(mensajesNuevos > 0 ? { background: "#854d0e", borderColor: "#facc15" } : {}) }}
+              style={{ ...botonPrimarioLink, ...(mensajesNuevos > 0 ? { background: "#854d0e", borderColor: "var(--color-acento-claro)" } : {}) }}
             >
               {mensajesNuevos > 0 ? `🔔 Ir al chat (${mensajesNuevos})` : "Ir al chat"}
             </Link>
@@ -176,10 +176,10 @@ export default function AccionesAutor({
 }
 
 const filaPostulante: CSSProperties = {
-  border: "1px solid #334155",
+  border: "1px solid var(--color-borde)",
   borderRadius: 8,
   padding: "10px 12px",
-  background: "#1e293b",
+  background: "var(--color-superficie)",
   display: "flex",
   justifyContent: "space-between",
   alignItems: "center",
@@ -189,7 +189,7 @@ const filaPostulante: CSSProperties = {
 const botonChico: CSSProperties = {
   padding: "6px 12px",
   borderRadius: 8,
-  border: "1px solid #334155",
+  border: "1px solid var(--color-borde)",
   background: "transparent",
   color: "#eef2f5",
   cursor: "pointer",
@@ -200,7 +200,7 @@ const botonPrimarioLink: CSSProperties = {
   flex: 1,
   padding: "8px 12px",
   borderRadius: 8,
-  border: "1px solid #334155",
+  border: "1px solid var(--color-borde)",
   background: "#1e3a5f",
   color: "#eef2f5",
   cursor: "pointer",
