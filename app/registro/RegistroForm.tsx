@@ -108,6 +108,10 @@ export default function RegistroForm({ celular }: { celular: string }) {
             <Link href="/terminos" target="_blank" style={{ color: "var(--color-azul-suave)" }}>
               términos y condiciones
             </Link>{" "}
+            y la{" "}
+            <Link href="/privacidad" target="_blank" style={{ color: "var(--color-azul-suave)" }}>
+              política de privacidad
+            </Link>{" "}
             de Enganche, incluyendo el tratamiento de mis datos personales y que la plataforma
             solo intermedia el contacto entre las partes, sin responder por la calidad del
             trabajo ni por los pagos acordados entre ellas.

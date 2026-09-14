@@ -140,6 +140,10 @@ export default async function Home() {
         <Link href="/terminos" style={{ color: "#64748b", fontSize: 12 }}>
           Términos y condiciones
         </Link>
+        {" · "}
+        <Link href="/privacidad" style={{ color: "#64748b", fontSize: 12 }}>
+          Política de privacidad
+        </Link>
       </p>
 
       {usuario?.es_admin && (
