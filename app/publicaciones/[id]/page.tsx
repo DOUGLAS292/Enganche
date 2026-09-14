@@ -16,7 +16,7 @@ const NIVEL_ETIQUETA: Record<string, string> = {
 
 const ESTADO_ETIQUETA: Record<string, { texto: string; color: string }> = {
   abierta: { texto: "Abierta", color: "#4ade80" },
-  en_proceso: { texto: "En proceso", color: "var(--color-azul-suave)" },
+  en_proceso: { texto: "Enganchada", color: "var(--color-azul-suave)" },
   completada: { texto: "Completada", color: "#94a3b8" },
   cancelada: { texto: "Cancelada", color: "#f87171" },
 };
