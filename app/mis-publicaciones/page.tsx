@@ -51,13 +51,13 @@ export default async function MisPublicacionesPage() {
 
   return (
     <main style={{ maxWidth: 640, margin: "0 auto", padding: "32px 20px 80px" }}>
-      <Link href="/" style={{ color: "var(--color-azul-suave)", fontSize: 13 }}>
+      <Link href="/" className="enlace-volver">
         ← Inicio
       </Link>
-      <h1 style={{ fontSize: 24, marginTop: 14 }}>Mis publicaciones</h1>
+      <h1 className="titular" style={{ fontSize: 26, marginTop: 14, fontWeight: 700 }}>Mis publicaciones</h1>
 
       {result.rows.length === 0 && (
-        <p style={{ color: "#94a3b8", marginTop: 16 }}>
+        <p style={{ color: "var(--color-mist)", marginTop: 16 }}>
           Todavía no has publicado ninguna oferta.{" "}
           <Link href="/publicar" style={{ color: "var(--color-azul-suave)" }}>
             Publica la primera
@@ -71,32 +71,20 @@ export default async function MisPublicacionesPage() {
           const estado = ESTADO_ETIQUETA[p.estado] ?? { texto: p.estado, color: "#94a3b8" };
           const hayNuevas = (p.postulantes_pendientes > 0 && p.estado === "abierta") || p.mensajes_nuevos > 0;
           return (
-            <Link
-              key={p.id}
-              href={`/publicaciones/${p.id}`}
-              style={{
-                textDecoration: "none",
-                color: "inherit",
-                border: `1px solid ${hayNuevas ? "var(--color-acento-claro)" : "var(--color-borde)"}`,
-                borderRadius: 10,
-                padding: "12px 14px",
-                background: "var(--color-superficie)",
-                display: "block",
-              }}
-            >
+            <Link key={p.id} href={`/publicaciones/${p.id}`} className={`panel${hayNuevas ? " alerta" : ""}`} style={{ padding: "14px 16px" }}>
               <div style={{ display: "flex", justifyContent: "space-between" }}>
                 <span style={{ fontSize: 11, fontWeight: 700, color: estado.color }}>{estado.texto}</span>
-                <span style={{ fontSize: 12, color: "#94a3b8" }}>{formatFecha(p.creado_en)}</span>
+                <span style={{ fontSize: 12, color: "var(--color-mist-tenue)" }}>{formatFecha(p.creado_en)}</span>
               </div>
-              <h3 style={{ margin: "6px 0 2px", fontSize: 16 }}>{p.sistema_o_proyecto}</h3>
-              <p style={{ margin: 0, fontSize: 12, color: "#94a3b8" }}>{p.ciudad}</p>
+              <h3 style={{ margin: "8px 0 2px", fontSize: 16 }}>{p.sistema_o_proyecto}</h3>
+              <p style={{ margin: 0, fontSize: 12, color: "var(--color-mist)" }}>{p.ciudad}</p>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 8 }}>
-                <p style={{ margin: 0, fontSize: 13, fontWeight: 600 }}>{formatCOP(p.valor_ofertado)}</p>
+                <p style={{ margin: 0, fontSize: 13, fontWeight: 600, fontFamily: "var(--font-mono)", color: "var(--color-acento-claro)" }}>{formatCOP(p.valor_ofertado)}</p>
                 <span
                   style={{
                     fontSize: 12,
                     fontWeight: hayNuevas ? 700 : 400,
-                    color: hayNuevas ? "var(--color-acento-claro)" : "#94a3b8",
+                    color: hayNuevas ? "var(--color-acento-claro)" : "var(--color-mist)",
                     textAlign: "right",
                   }}
                 >

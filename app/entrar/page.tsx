@@ -64,12 +64,12 @@ export default function Entrar() {
   }
 
   return (
-    <main style={{ maxWidth: 420, margin: "0 auto", padding: "48px 20px" }}>
-      <h1 style={{ fontSize: 24 }}>Entrar a Enganche</h1>
+    <main className="reticula" style={{ maxWidth: 420, margin: "0 auto", padding: "56px 20px" }}>
+      <h1 className="titular" style={{ fontSize: 28, fontWeight: 700 }}>Entrar a Enganche</h1>
 
       {paso === "celular" && (
         <form onSubmit={pedirCodigo}>
-          <p style={{ color: "#94a3b8" }}>Te enviamos un código por WhatsApp, sin contraseñas.</p>
+          <p style={{ color: "var(--color-mist)" }}>Te enviamos un código por WhatsApp, sin contraseñas.</p>
           <label htmlFor="celular" style={labelStyle}>
             Número de celular
           </label>
@@ -81,10 +81,10 @@ export default function Entrar() {
             value={celular}
             onChange={(e) => setCelular(e.target.value)}
             required
-            style={inputStyle}
+            className="input-vidrio"
           />
           {error && <p style={errorStyle}>{error}</p>}
-          <button type="submit" disabled={cargando} style={buttonStyle}>
+          <button type="submit" disabled={cargando} className="boton-primario" style={{ marginTop: 20 }}>
             {cargando ? "Enviando…" : "Enviar código por WhatsApp"}
           </button>
         </form>
@@ -92,7 +92,7 @@ export default function Entrar() {
 
       {paso === "codigo" && (
         <form onSubmit={verificarCodigo}>
-          <p style={{ color: "#94a3b8" }}>Escribe el código de 6 dígitos que te llegó al {celular}.</p>
+          <p style={{ color: "var(--color-mist)" }}>Escribe el código de 6 dígitos que te llegó al {celular}.</p>
           {codigoDesarrollo && (
             <p style={{ color: "var(--color-acento-claro)", fontSize: 13 }}>
               Modo desarrollo (WhatsApp aún no configurado) — tu código es <strong>{codigoDesarrollo}</strong>
@@ -109,17 +109,14 @@ export default function Entrar() {
             value={codigo}
             onChange={(e) => setCodigo(e.target.value.replace(/\D/g, ""))}
             required
-            style={inputStyle}
+            className="input-vidrio"
+            style={{ fontFamily: "var(--font-mono)", letterSpacing: "0.1em" }}
           />
           {error && <p style={errorStyle}>{error}</p>}
-          <button type="submit" disabled={cargando} style={buttonStyle}>
+          <button type="submit" disabled={cargando} className="boton-primario" style={{ marginTop: 20 }}>
             {cargando ? "Verificando…" : "Verificar"}
           </button>
-          <button
-            type="button"
-            onClick={() => setPaso("celular")}
-            style={{ ...buttonStyle, background: "transparent", marginTop: 8 }}
-          >
+          <button type="button" onClick={() => setPaso("celular")} className="boton-linea" style={{ width: "100%", marginTop: 8 }}>
             Cambiar número
           </button>
         </form>
@@ -128,29 +125,6 @@ export default function Entrar() {
   );
 }
 
-const labelStyle: CSSProperties = { display: "block", marginTop: 16, marginBottom: 6, fontSize: 14, color: "#cbd5e1" };
-
-const inputStyle: CSSProperties = {
-  width: "100%",
-  padding: "10px 12px",
-  borderRadius: 8,
-  border: "1px solid var(--color-borde)",
-  background: "var(--color-superficie)",
-  color: "#eef2f5",
-  fontSize: 15,
-};
-
-const buttonStyle: CSSProperties = {
-  marginTop: 20,
-  width: "100%",
-  padding: "12px 18px",
-  borderRadius: 8,
-  border: "none",
-  background: "linear-gradient(135deg, #FFAD01, #FF7F00)",
-  color: "#1c1c1c",
-  fontWeight: 700,
-  cursor: "pointer",
-  fontSize: 15,
-};
+const labelStyle: CSSProperties = { display: "block", marginTop: 16, marginBottom: 6, fontSize: 14, color: "var(--color-texto-tenue)" };
 
 const errorStyle: CSSProperties = { color: "#f87171", marginTop: 10, fontSize: 14 };

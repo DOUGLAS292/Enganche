@@ -5,13 +5,13 @@ export const metadata = { title: "Política de privacidad — Enganche" };
 export default function PrivacidadPage() {
   return (
     <main style={{ maxWidth: 640, margin: "0 auto", padding: "32px 20px 80px" }}>
-      <Link href="/" style={{ color: "var(--color-azul-suave)", fontSize: 13 }}>
+      <Link href="/" className="enlace-volver">
         ← Inicio
       </Link>
 
-      <h1 style={{ fontSize: 24, marginTop: 14 }}>Política de privacidad</h1>
-      <p style={{ color: "#94a3b8", fontSize: 13 }}>Última actualización: septiembre de 2026</p>
-      <p style={{ color: "#94a3b8", fontSize: 13 }}>
+      <h1 className="titular" style={{ fontSize: 26, marginTop: 14, fontWeight: 700 }}>Política de privacidad</h1>
+      <p style={{ color: "var(--color-mist)", fontSize: 13 }}>Última actualización: septiembre de 2026</p>
+      <p style={{ color: "var(--color-mist)", fontSize: 13 }}>
         Responsable del tratamiento: <strong>La Ventanería Ingeniería y Diseño S.A.S.</strong>, empresa colombiana
         propietaria y operadora de la plataforma Enganche.
       </p>

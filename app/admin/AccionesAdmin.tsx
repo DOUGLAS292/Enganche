@@ -32,16 +32,8 @@ export default function AccionesAdmin({ comisionId }: { comisionId: string }) {
       <button
         onClick={confirmar}
         disabled={cargando}
-        style={{
-          width: "100%",
-          padding: "6px 12px",
-          borderRadius: 8,
-          border: "1px solid #4ade80",
-          background: "transparent",
-          color: "#4ade80",
-          cursor: "pointer",
-          fontSize: 12,
-        }}
+        className="boton-linea"
+        style={{ width: "100%", borderColor: "#4ade80", color: "#4ade80" }}
       >
         {cargando ? "…" : "Confirmar pago recibido"}
       </button>

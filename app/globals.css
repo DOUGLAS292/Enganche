@@ -1,13 +1,20 @@
 /* Paleta oficial de La Ventanería (LV-MKT-001 — Manual de Identidad
    Corporativa): azul corporativo #04253A, naranja #FF7F00, ámbar #FFAD01,
-   grises #F7F7F7/#EFEFEF, negro #1C1C1C. */
+   grises #F7F7F7/#EFEFEF, negro #1C1C1C.
+
+   "Enganche Vidriado" — el mismo lenguaje visual se ejecuta como vidrio y
+   aluminio: paneles con profundidad y brillo direccional, marcos con
+   escuadras técnicas, retícula de fondo tipo marco de ventana, y una
+   monoespaciada para cifras/ciudades que recuerda a una ficha técnica. */
 :root {
   color-scheme: dark;
 
   --color-bg: #051622;
   --color-bg-elevado: #0a2436;
   --color-superficie: #0f3049;
+  --color-superficie-2: #16324a;
   --color-borde: #1c4a66;
+  --color-borde-suave: rgba(28, 74, 102, 0.55);
 
   --color-marca: #04253a;
   --color-acento: #ff7f00;
@@ -16,7 +23,11 @@
 
   --color-texto: #f7f7f7;
   --color-texto-tenue: #a9c2d1;
+  --color-mist: #89a5ba;
+  --color-mist-tenue: #5f7b90;
   --color-negro: #1c1c1c;
+
+  --radio: 14px;
 }
 
 * {
@@ -30,9 +41,220 @@ body {
   color: var(--color-texto);
 }
 
+h1, h2, h3 {
+  text-wrap: balance;
+}
+
 code {
-  font-family: ui-monospace, "SF Mono", monospace;
+  font-family: var(--font-mono), ui-monospace, "SF Mono", monospace;
   background: rgba(255, 255, 255, 0.08);
   padding: 1px 5px;
   border-radius: 4px;
+}
+
+/* ---------- titular de marca (Unbounded) ---------- */
+.titular {
+  font-family: var(--font-display), var(--font-sans), sans-serif;
+  font-weight: 800;
+}
+
+/* ---------- retícula tipo marco de ventana + resplandor ---------- */
+.reticula {
+  position: relative;
+}
+.reticula::before {
+  content: "";
+  position: absolute;
+  inset: -32px -20px auto -20px;
+  height: 340px;
+  background-image:
+    repeating-linear-gradient(90deg, var(--color-borde) 0 1px, transparent 1px 84px),
+    repeating-linear-gradient(0deg, var(--color-borde) 0 1px, transparent 1px 84px);
+  opacity: 0.16;
+  -webkit-mask-image: linear-gradient(to bottom, black, transparent);
+  mask-image: linear-gradient(to bottom, black, transparent);
+  pointer-events: none;
+}
+.reticula::after {
+  content: "";
+  position: absolute;
+  top: -80px;
+  left: 6%;
+  width: 320px;
+  height: 260px;
+  background: radial-gradient(closest-side, rgba(255, 138, 43, 0.28), rgba(255, 138, 43, 0) 70%);
+  filter: blur(6px);
+  pointer-events: none;
+  animation: derivar 16s ease-in-out infinite alternate;
+}
+@keyframes derivar {
+  0% { transform: translate(0, 0); }
+  100% { transform: translate(70px, 36px); }
+}
+.reticula > * {
+  position: relative;
+}
+
+/* ---------- panel de vidrio (tarjetas) ---------- */
+.panel {
+  position: relative;
+  display: block;
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio);
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0) 55%), var(--color-superficie);
+  overflow: hidden;
+  text-decoration: none;
+  color: inherit;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+.panel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(115deg, transparent 40%, rgba(255, 255, 255, 0.09) 50%, transparent 60%);
+  transform: translateX(-120%);
+  transition: transform 0.7s ease;
+  pointer-events: none;
+}
+.panel:hover, .panel:focus-visible {
+  transform: translateY(-1px);
+  border-color: var(--color-acento-claro);
+}
+.panel:hover::before, .panel:focus-visible::before {
+  transform: translateX(120%);
+}
+.panel.alerta {
+  border-color: rgba(255, 207, 125, 0.6);
+}
+
+/* ---------- marco de ícono (escuadras técnicas) ---------- */
+.icono-marco {
+  position: relative;
+  flex-shrink: 0;
+  width: 46px;
+  height: 46px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 21px;
+  background: var(--color-bg-elevado);
+  border-radius: 10px;
+}
+.icono-marco::before, .icono-marco::after {
+  content: "";
+  position: absolute;
+  width: 9px;
+  height: 9px;
+  border-color: var(--color-acento-claro);
+}
+.icono-marco::before { top: -4px; left: -4px; border-top: 2px solid; border-left: 2px solid; }
+.icono-marco::after { bottom: -4px; right: -4px; border-bottom: 2px solid; border-right: 2px solid; }
+
+/* ---------- insignia con brillo ---------- */
+.insignia-brillo {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  min-width: 21px;
+  height: 21px;
+  padding: 0 5px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono), monospace;
+  font-weight: 600;
+  font-size: 11px;
+  color: #26160a;
+  background: radial-gradient(circle at 30% 30%, var(--color-acento-claro), var(--color-acento));
+  box-shadow: 0 0 14px 2px rgba(255, 138, 43, 0.55);
+}
+
+/* ---------- chip técnico (monoespaciada) ---------- */
+.chip-tecnico {
+  font-family: var(--font-mono), monospace;
+  font-size: 11px;
+  letter-spacing: 0.03em;
+  color: var(--color-acento-claro);
+  border: 1px solid var(--color-borde);
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: rgba(255, 138, 43, 0.08);
+  white-space: nowrap;
+}
+
+/* ---------- botones ---------- */
+.boton-primario {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 13px 18px;
+  border-radius: 12px;
+  border: none;
+  background: linear-gradient(135deg, var(--color-acento-claro), var(--color-acento));
+  color: #1c1006;
+  font-weight: 700;
+  cursor: pointer;
+  font-size: 15px;
+  text-align: center;
+  text-decoration: none;
+  box-shadow: 0 10px 26px -10px rgba(255, 138, 43, 0.55);
+  font-family: inherit;
+}
+.boton-primario:disabled {
+  opacity: 0.6;
+  cursor: default;
+  box-shadow: none;
+}
+
+.boton-linea {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 14px;
+  border-radius: 9px;
+  border: 1px solid var(--color-borde);
+  background: transparent;
+  color: var(--color-texto);
+  cursor: pointer;
+  font-size: 13px;
+  text-align: center;
+  text-decoration: none;
+  font-family: inherit;
+  transition: border-color 0.2s ease;
+}
+.boton-linea:hover { border-color: var(--color-azul-suave); }
+.boton-linea:disabled { opacity: 0.55; cursor: default; }
+
+/* ---------- inputs ---------- */
+.input-vidrio {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--color-borde);
+  background: var(--color-superficie);
+  color: var(--color-texto);
+  font-size: 15px;
+  font-family: inherit;
+}
+.input-vidrio:focus, .input-vidrio:focus-visible {
+  outline: none;
+  border-color: var(--color-acento-claro);
+  box-shadow: 0 0 0 3px rgba(255, 173, 1, 0.15);
+}
+
+.enlace-volver {
+  color: var(--color-azul-suave);
+  font-size: 13px;
+  text-decoration: none;
+}
+.enlace-volver:hover { text-decoration: underline; }
+
+@media (prefers-reduced-motion: reduce) {
+  .reticula::after,
+  .panel::before {
+    animation: none !important;
+    transition: none !important;
+  }
 }

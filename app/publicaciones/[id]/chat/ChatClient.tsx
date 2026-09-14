@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, type CSSProperties, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import Link from "next/link";
 
 type Mensaje = {
@@ -77,16 +77,16 @@ export default function ChatClient({
   return (
     <main style={{ maxWidth: 480, margin: "0 auto", padding: "20px 16px 0", minHeight: "100dvh", display: "flex", flexDirection: "column" }}>
       <div style={{ paddingBottom: 12, borderBottom: "1px solid var(--color-borde)" }}>
-        <Link href={`/publicaciones/${publicacionId}`} style={{ color: "var(--color-azul-suave)", fontSize: 13 }}>
+        <Link href={`/publicaciones/${publicacionId}`} className="enlace-volver">
           ← Volver a la oferta
         </Link>
-        <h1 style={{ fontSize: 18, margin: "8px 0 2px" }}>{titulo}</h1>
-        <p style={{ margin: 0, fontSize: 13, color: "#94a3b8" }}>Con {nombreContraparte}</p>
+        <h1 className="titular" style={{ fontSize: 18, margin: "8px 0 2px", fontWeight: 700 }}>{titulo}</h1>
+        <p style={{ margin: 0, fontSize: 13, color: "var(--color-mist)" }}>Con {nombreContraparte}</p>
       </div>
 
       <div style={{ flex: 1, overflowY: "auto", padding: "12px 0", display: "flex", flexDirection: "column", gap: 8 }}>
         {mensajes.length === 0 && (
-          <p style={{ color: "#94a3b8", fontSize: 13, textAlign: "center", marginTop: 20 }}>
+          <p style={{ color: "var(--color-mist)", fontSize: 13, textAlign: "center", marginTop: 20 }}>
             Todavía no hay mensajes. Escribe el primero.
           </p>
         )}
@@ -94,8 +94,17 @@ export default function ChatClient({
           const esMio = m.emisor_id === miId;
           return (
             <div key={m.id} style={{ alignSelf: esMio ? "flex-end" : "flex-start", maxWidth: "80%" }}>
-              <div style={{ ...burbuja, background: esMio ? "#1e3a5f" : "var(--color-superficie)" }}>
-                {!esMio && <p style={{ margin: 0, fontSize: 11, color: "#94a3b8" }}>{m.emisor_nombre}</p>}
+              <div
+                style={{
+                  border: `1px solid ${esMio ? "var(--color-acento-claro)" : "var(--color-borde)"}`,
+                  borderRadius: 12,
+                  padding: "8px 12px",
+                  background: esMio
+                    ? "linear-gradient(135deg, rgba(255,207,125,.16), var(--color-superficie-2))"
+                    : "linear-gradient(160deg, rgba(255,255,255,.05), rgba(255,255,255,0) 55%), var(--color-superficie)",
+                }}
+              >
+                {!esMio && <p style={{ margin: 0, fontSize: 11, color: "var(--color-mist)" }}>{m.emisor_nombre}</p>}
                 <p style={{ margin: esMio ? 0 : "2px 0 0", fontSize: 14 }}>{m.contenido}</p>
               </div>
             </div>
@@ -105,37 +114,11 @@ export default function ChatClient({
       </div>
 
       <form onSubmit={enviar} style={{ display: "flex", gap: 8, padding: "12px 0", borderTop: "1px solid var(--color-borde)" }}>
-        <input value={texto} onChange={(e) => setTexto(e.target.value)} placeholder="Escribe un mensaje…" style={inputStyle} />
-        <button type="submit" disabled={enviando || !texto.trim()} style={botonEnviar}>
+        <input value={texto} onChange={(e) => setTexto(e.target.value)} placeholder="Escribe un mensaje…" className="input-vidrio" style={{ flex: 1 }} />
+        <button type="submit" disabled={enviando || !texto.trim()} className="boton-primario" style={{ width: "auto", padding: "10px 18px", borderRadius: 10 }}>
           Enviar
         </button>
       </form>
     </main>
   );
 }
-
-const burbuja: CSSProperties = {
-  border: "1px solid var(--color-borde)",
-  borderRadius: 10,
-  padding: "8px 12px",
-};
-
-const inputStyle: CSSProperties = {
-  flex: 1,
-  padding: "10px 12px",
-  borderRadius: 8,
-  border: "1px solid var(--color-borde)",
-  background: "var(--color-superficie)",
-  color: "#eef2f5",
-  fontSize: 14,
-};
-
-const botonEnviar: CSSProperties = {
-  padding: "10px 16px",
-  borderRadius: 8,
-  border: "1px solid var(--color-borde)",
-  background: "#1e3a5f",
-  color: "#eef2f5",
-  cursor: "pointer",
-  fontSize: 14,
-};

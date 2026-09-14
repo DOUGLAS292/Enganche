@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type CSSProperties } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 export default function AccionPostulante({ publicacionId }: { publicacionId: string }) {
@@ -29,20 +29,9 @@ export default function AccionPostulante({ publicacionId }: { publicacionId: str
   return (
     <div style={{ marginTop: 20 }}>
       {error && <p style={{ color: "#f87171", fontSize: 13, marginBottom: 8 }}>{error}</p>}
-      <button onClick={postularme} disabled={cargando} style={botonPrimario}>
+      <button onClick={postularme} disabled={cargando} className="boton-primario">
         {cargando ? "Enviando…" : "Postularme a esta oferta"}
       </button>
     </div>
   );
 }
-
-const botonPrimario: CSSProperties = {
-  width: "100%",
-  padding: "12px 18px",
-  borderRadius: 8,
-  border: "1px solid var(--color-borde)",
-  background: "var(--color-superficie)",
-  color: "#eef2f5",
-  cursor: "pointer",
-  fontSize: 15,
-};

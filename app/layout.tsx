@@ -1,16 +1,31 @@
 import type { Metadata, Viewport } from "next";
-import { Poppins } from "next/font/google";
+import { Manrope, Unbounded, IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
 
 // Gilroy es la tipografía oficial de La Ventanería (manual de identidad
 // LV-MKT-001), pero no está disponible como fuente libre/CDN — el manual
-// exige no sustituirla arbitrariamente en piezas oficiales de marca. Poppins
-// se usa aquí como reemplazo temporal por ser geométrica y de peso similar;
-// cuando Douglas entregue los archivos de Gilroy, se reemplaza por esa.
-const poppins = Poppins({
+// exige no sustituirla arbitrariamente en piezas oficiales de marca. Manrope
+// se usa aquí como reemplazo temporal del cuerpo de texto por ser geométrica
+// y de peso similar; cuando Douglas entregue los archivos de Gilroy, se
+// reemplaza por esa. Unbounded viste los titulares/wordmark ("Enganche
+// Vidriado") y IBM Plex Mono las cifras, ciudades y precios, como en las
+// fichas técnicas reales de la empresa.
+const manrope = Manrope({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700", "800"],
   variable: "--font-sans",
+});
+
+const unbounded = Unbounded({
+  subsets: ["latin"],
+  weight: ["500", "700", "800"],
+  variable: "--font-display",
+});
+
+const plexMono = IBM_Plex_Mono({
+  subsets: ["latin"],
+  weight: ["500", "600"],
+  variable: "--font-mono",
 });
 
 export const metadata: Metadata = {
@@ -39,7 +54,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="es" className={poppins.variable}>
+    <html lang="es" className={`${manrope.variable} ${unbounded.variable} ${plexMono.variable}`}>
       <body>{children}</body>
     </html>
   );

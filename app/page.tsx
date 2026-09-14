@@ -59,11 +59,11 @@ export default async function Home() {
   const primerNombre = usuario?.nombre_razon_social?.split(" ")[0] ?? "";
 
   return (
-    <main style={{ maxWidth: 480, margin: "0 auto", padding: "40px 20px 60px" }}>
+    <main className="reticula" style={{ maxWidth: 480, margin: "0 auto", padding: "48px 20px 60px" }}>
       <div style={{ textAlign: "center" }}>
-        <div style={{ fontSize: 40, lineHeight: 1 }}>🪟🔧</div>
-        <h1 style={{ fontSize: 30, margin: "10px 0 2px", fontWeight: 800 }}>Enganche</h1>
-        <p style={{ color: "#94a3b8", margin: 0, fontSize: 15 }}>
+        <span className="chip-tecnico">Sistemas de aluminio y vidrio</span>
+        <h1 className="titular" style={{ fontSize: 42, margin: "16px 0 4px" }}>Enganche</h1>
+        <p style={{ color: "var(--color-mist)", margin: 0, fontSize: 15 }}>
           Conecta con quien produce o instala aluminio y vidrio, cerca de ti.
         </p>
       </div>
@@ -71,15 +71,17 @@ export default async function Home() {
       {usuario ? (
         <>
           <div style={saludoCaja}>
-            <p style={{ margin: 0, fontSize: 15 }}>
-              ¡Hola, <strong>{primerNombre}</strong>! 👋
-            </p>
-            {usuario.ciudad && <p style={{ margin: "2px 0 0", fontSize: 13, color: "#94a3b8" }}>📍 {usuario.ciudad}</p>}
+            <p style={{ margin: 0, fontSize: 15, fontWeight: 700 }}>¡Hola, {primerNombre}! 👋</p>
+            {usuario.ciudad && (
+              <span className="chip-tecnico" style={{ marginTop: 10, display: "inline-block" }}>
+                📍 {usuario.ciudad.toUpperCase()}
+              </span>
+            )}
           </div>
 
           <div style={{ marginTop: 18, display: "flex", flexDirection: "column", gap: 12 }}>
-            <TarjetaAccion href="/feed" icono="🔍" titulo="Ver ofertas" subtitulo="Encuentra trabajo cerca de ti" color="#0f6aa8" />
-            <TarjetaAccion href="/publicar" icono="📢" titulo="Publicar una oferta" subtitulo="Cuenta qué necesitas" color="#FF7F00" />
+            <TarjetaAccion href="/feed" icono="🔍" titulo="Ver ofertas" subtitulo="Encuentra trabajo cerca de ti" />
+            <TarjetaAccion href="/publicar" icono="📢" titulo="Publicar una oferta" subtitulo="Cuenta qué necesitas" />
             <TarjetaAccion
               href="/mis-publicaciones"
               icono="📦"
@@ -92,7 +94,6 @@ export default async function Home() {
                   .filter(Boolean)
                   .join(" · ") || "Lo que has publicado"
               }
-              color="#FFAD01"
               badge={postulantesPorRevisar + mensajesNuevosAutor > 0 ? postulantesPorRevisar + mensajesNuevosAutor : undefined}
             />
             <TarjetaAccion
@@ -107,49 +108,48 @@ export default async function Home() {
                   .filter(Boolean)
                   .join(" · ") || "Revisa en qué vas"
               }
-              color="#04253A"
               badge={postulacionesSinVer + mensajesNuevosGanador > 0 ? postulacionesSinVer + mensajesNuevosGanador : undefined}
             />
             {usuario.es_admin && (
-              <TarjetaAccion href="/admin" icono="🛡️" titulo="Panel admin" subtitulo="Comisiones del piloto" color="#3a3a3a" />
+              <TarjetaAccion href="/admin" icono="🛡️" titulo="Panel admin" subtitulo="Comisiones del piloto" />
             )}
           </div>
 
-          <div style={{ textAlign: "center", marginTop: 22 }}>
+          <div style={{ textAlign: "center", marginTop: 24 }}>
             <CerrarSesionBoton />
           </div>
         </>
       ) : (
         <>
-          <div style={{ marginTop: 26, display: "flex", flexDirection: "column", gap: 12 }}>
+          <div style={{ marginTop: 28, display: "flex", flexDirection: "column", gap: 12 }}>
             <PasoItem numero={1} texto="Publica lo que necesitas o lo que ofreces" />
             <PasoItem numero={2} texto="Recibe propuestas de gente cerca de ti" />
             <PasoItem numero={3} texto="Cierra el trabajo y califica" />
           </div>
 
-          <Link href="/entrar" style={botonPrincipal}>
+          <Link href="/entrar" className="boton-primario" style={{ display: "block", marginTop: 24, padding: "16px 20px", borderRadius: 14, fontSize: 16 }}>
             Entrar gratis
           </Link>
-          <p style={{ textAlign: "center", color: "#64748b", fontSize: 12, marginTop: 8 }}>
+          <p style={{ textAlign: "center", color: "var(--color-mist-tenue)", fontSize: 12, marginTop: 8 }}>
             Solo necesitas tu celular. Sin contraseñas, sin complicaciones.
           </p>
         </>
       )}
 
-      <p style={{ textAlign: "center", marginTop: 32 }}>
-        <Link href="/terminos" style={{ color: "#64748b", fontSize: 12 }}>
+      <p style={{ textAlign: "center", marginTop: 36 }}>
+        <Link href="/terminos" style={{ color: "var(--color-mist-tenue)", fontSize: 12 }}>
           Términos y condiciones
         </Link>
         {" · "}
-        <Link href="/privacidad" style={{ color: "#64748b", fontSize: 12 }}>
+        <Link href="/privacidad" style={{ color: "var(--color-mist-tenue)", fontSize: 12 }}>
           Política de privacidad
         </Link>
       </p>
 
       {usuario?.es_admin && (
         <details style={{ marginTop: 16 }}>
-          <summary style={{ color: "#475569", fontSize: 12, cursor: "pointer" }}>Diagnóstico técnico</summary>
-          <ul style={{ lineHeight: 1.8, color: "#64748b", fontSize: 12 }}>
+          <summary style={{ color: "var(--color-mist-tenue)", fontSize: 12, cursor: "pointer" }}>Diagnóstico técnico</summary>
+          <ul style={{ lineHeight: 1.8, color: "var(--color-mist-tenue)", fontSize: 12 }}>
             <li>✅ Fase 0 — Esqueleto de datos (8 tablas, PostGIS, triggers)</li>
             <li>✅ Fase 1 — Auth por OTP de WhatsApp + registro de dos pasos</li>
             <li>✅ Fase 2 — Publicar + feed por cercanía (PostGIS en vivo)</li>
@@ -169,60 +169,25 @@ function TarjetaAccion({
   icono,
   titulo,
   subtitulo,
-  color,
   badge,
 }: {
   href: string;
   icono: string;
   titulo: string;
   subtitulo: string;
-  color: string;
   badge?: number;
 }) {
   return (
-    <Link
-      href={href}
-      style={{
-        position: "relative",
-        display: "flex",
-        alignItems: "center",
-        gap: 14,
-        padding: "16px 18px",
-        borderRadius: 14,
-        border: `1px solid ${badge ? "var(--color-acento-claro)" : "var(--color-borde)"}`,
-        background: `linear-gradient(135deg, ${color}33, var(--color-superficie))`,
-        textDecoration: "none",
-        color: "#eef2f5",
-      }}
-    >
-      <span style={{ fontSize: 26 }}>{icono}</span>
-      <span>
-        <span style={{ display: "block", fontSize: 16, fontWeight: 700 }}>{titulo}</span>
-        <span style={{ display: "block", fontSize: 13, color: badge ? "var(--color-acento-claro)" : "#94a3b8" }}>{subtitulo}</span>
-      </span>
-      <span style={{ marginLeft: "auto", color: "#64748b" }}>→</span>
-      {badge ? (
-        <span
-          style={{
-            position: "absolute",
-            top: -8,
-            right: -8,
-            minWidth: 22,
-            height: 22,
-            borderRadius: "50%",
-            background: "var(--color-acento-claro)",
-            color: "var(--color-bg-elevado)",
-            fontSize: 12,
-            fontWeight: 800,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            padding: "0 4px",
-          }}
-        >
-          {badge}
+    <Link href={href} className={`panel${badge ? " alerta" : ""}`} style={{ display: "flex", alignItems: "center", gap: 14, padding: "15px 16px" }}>
+      <div className="icono-marco">{icono}</div>
+      <span style={{ flex: 1, minWidth: 0 }}>
+        <span style={{ display: "block", fontSize: 15, fontWeight: 700 }}>{titulo}</span>
+        <span style={{ display: "block", fontSize: 12.5, marginTop: 2, color: badge ? "var(--color-acento-claro)" : "var(--color-mist)" }}>
+          {subtitulo}
         </span>
-      ) : null}
+      </span>
+      <span style={{ color: "var(--color-mist-tenue)", fontSize: 15, flexShrink: 0 }}>→</span>
+      {badge ? <span className="insignia-brillo">{badge}</span> : null}
     </Link>
   );
 }
@@ -242,6 +207,7 @@ function PasoItem({ numero, texto }: { numero: number; texto: string }) {
           alignItems: "center",
           justifyContent: "center",
           fontSize: 13,
+          fontFamily: "var(--font-mono)",
           fontWeight: 700,
           color: "var(--color-azul-suave)",
         }}
@@ -260,17 +226,4 @@ const saludoCaja: CSSProperties = {
   border: "1px solid var(--color-borde)",
   background: "var(--color-superficie)",
   textAlign: "center",
-};
-
-const botonPrincipal: CSSProperties = {
-  display: "block",
-  marginTop: 22,
-  padding: "16px 20px",
-  borderRadius: 14,
-  textAlign: "center",
-  background: "linear-gradient(135deg, #FFAD01, #FF7F00)",
-  color: "#1c1c1c",
-  fontWeight: 800,
-  fontSize: 16,
-  textDecoration: "none",
 };

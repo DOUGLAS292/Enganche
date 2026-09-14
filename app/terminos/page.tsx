@@ -5,12 +5,12 @@ export const metadata = { title: "Términos y condiciones — Enganche" };
 export default function TerminosPage() {
   return (
     <main style={{ maxWidth: 640, margin: "0 auto", padding: "32px 20px 80px" }}>
-      <Link href="/" style={{ color: "var(--color-azul-suave)", fontSize: 13 }}>
+      <Link href="/" className="enlace-volver">
         ← Inicio
       </Link>
 
-      <h1 style={{ fontSize: 24, marginTop: 14 }}>Términos y condiciones</h1>
-      <p style={{ color: "#94a3b8", fontSize: 13 }}>Última actualización: septiembre de 2026 · Versión piloto</p>
+      <h1 className="titular" style={{ fontSize: 26, marginTop: 14, fontWeight: 700 }}>Términos y condiciones</h1>
+      <p style={{ color: "var(--color-mist)", fontSize: 13 }}>Última actualización: septiembre de 2026 · Versión piloto</p>
 
       <div style={{ marginTop: 16, display: "flex", flexDirection: "column", gap: 18, fontSize: 13, color: "#cbd5e1", lineHeight: 1.6 }}>
         <Clausula titulo="1. Qué es Enganche">

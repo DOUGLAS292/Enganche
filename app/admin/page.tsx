@@ -52,12 +52,12 @@ export default async function AdminComisiones() {
 
   return (
     <main style={{ maxWidth: 720, margin: "0 auto", padding: "32px 20px 80px" }}>
-      <Link href="/" style={{ color: "var(--color-azul-suave)", fontSize: 13 }}>
+      <Link href="/" className="enlace-volver">
         ← Inicio
       </Link>
 
-      <h1 style={{ fontSize: 24, marginTop: 14, marginBottom: 4 }}>Panel de comisiones</h1>
-      <p style={{ color: "#94a3b8", marginTop: 0, fontSize: 13 }}>Solo visible para el admin.</p>
+      <h1 className="titular" style={{ fontSize: 26, marginTop: 14, marginBottom: 4, fontWeight: 700 }}>Panel de comisiones</h1>
+      <p style={{ color: "var(--color-mist)", marginTop: 0, fontSize: 13 }}>Solo visible para el admin.</p>
 
       <div style={{ display: "flex", gap: 10, marginTop: 16, flexWrap: "wrap" }}>
         <TarjetaTotal etiqueta="Pendiente" valor={totales.pendiente} color="var(--color-acento-claro)" />
@@ -70,37 +70,29 @@ export default async function AdminComisiones() {
       </h2>
 
       {comisiones.length === 0 && (
-        <p style={{ color: "#94a3b8", fontSize: 13 }}>Todavía no hay comisiones generadas.</p>
+        <p style={{ color: "var(--color-mist)", fontSize: 13 }}>Todavía no hay comisiones generadas.</p>
       )}
 
       <div style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 8 }}>
         {comisiones.map((c) => {
           const estado = ESTADO_ETIQUETA[c.estado];
           return (
-            <div
-              key={c.id}
-              style={{
-                border: "1px solid var(--color-borde)",
-                borderRadius: 10,
-                padding: "12px 14px",
-                background: "var(--color-superficie)",
-              }}
-            >
+            <div key={c.id} className="panel" style={{ padding: "12px 14px" }}>
               <div style={{ display: "flex", justifyContent: "space-between", gap: 8 }}>
                 <div>
-                  <Link href={`/publicaciones/${c.publicacion_id}`} style={{ fontSize: 14, fontWeight: 600, color: "#eef2f5" }}>
+                  <Link href={`/publicaciones/${c.publicacion_id}`} style={{ fontSize: 14, fontWeight: 600, color: "var(--color-texto)" }}>
                     {c.sistema_o_proyecto}
                   </Link>
-                  <p style={{ margin: "2px 0 0", fontSize: 12, color: "#94a3b8" }}>
+                  <p style={{ margin: "2px 0 0", fontSize: 12, color: "var(--color-mist)" }}>
                     {c.ciudad} · {c.responsable_nombre} ({c.responsable_celular})
                   </p>
-                  <p style={{ margin: "2px 0 0", fontSize: 11, color: "#64748b" }}>
+                  <p style={{ margin: "2px 0 0", fontSize: 11, color: "var(--color-mist-tenue)" }}>
                     Generada {formatFecha(c.creado_en)}
                     {c.confirmada_en ? ` · confirmada ${formatFecha(c.confirmada_en)}` : ""}
                   </p>
                 </div>
                 <div style={{ textAlign: "right", flexShrink: 0 }}>
-                  <p style={{ margin: 0, fontSize: 16, fontWeight: 700 }}>
+                  <p style={{ margin: 0, fontSize: 16, fontWeight: 700, fontFamily: "var(--font-mono)" }}>
                     {c.valor_comision === 0 ? "Gratis" : formatCOP(c.valor_comision)}
                   </p>
                   <p style={{ margin: "2px 0 0", fontSize: 11, fontWeight: 700, color: estado.color }}>{estado.texto}</p>
@@ -117,9 +109,9 @@ export default async function AdminComisiones() {
 
 function TarjetaTotal({ etiqueta, valor, color }: { etiqueta: string; valor: number; color: string }) {
   return (
-    <div style={{ flex: 1, minWidth: 140, border: "1px solid var(--color-borde)", borderRadius: 10, padding: "10px 12px", background: "var(--color-superficie)" }}>
-      <p style={{ margin: 0, fontSize: 11, color: "#94a3b8" }}>{etiqueta}</p>
-      <p style={{ margin: "4px 0 0", fontSize: 16, fontWeight: 700, color }}>{formatCOP(valor)}</p>
+    <div className="panel" style={{ flex: 1, minWidth: 140, padding: "10px 12px" }}>
+      <p style={{ margin: 0, fontSize: 11, color: "var(--color-mist)" }}>{etiqueta}</p>
+      <p style={{ margin: "4px 0 0", fontSize: 16, fontWeight: 700, fontFamily: "var(--font-mono)", color }}>{formatCOP(valor)}</p>
     </div>
   );
 }

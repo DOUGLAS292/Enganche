@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type CSSProperties, type FormEvent, type ReactNode } from "react";
+import { useState, type FormEvent, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { PROYECTOS_SUGERIDOS } from "@/lib/constants/proyectos";
@@ -91,11 +91,11 @@ export default function PublicarForm() {
 
   return (
     <main style={{ maxWidth: 480, margin: "0 auto", padding: "48px 20px 80px" }}>
-      <Link href="/" style={{ color: "var(--color-azul-suave)", fontSize: 13 }}>
+      <Link href="/" className="enlace-volver">
         ← Inicio
       </Link>
-      <h1 style={{ fontSize: 24, marginTop: 14 }}>Publicar una oferta</h1>
-      <p style={{ color: "#94a3b8" }}>
+      <h1 className="titular" style={{ fontSize: 26, marginTop: 14, fontWeight: 700 }}>Publicar una oferta</h1>
+      <p style={{ color: "var(--color-mist)" }}>
         El valor lo defines tú. Los postulantes solo deciden si aceptan — no hay regateo.
       </p>
 
@@ -113,12 +113,12 @@ export default function PublicarForm() {
             value={descripcion}
             onChange={(e) => setDescripcion(e.target.value)}
             required
-            style={inputStyle}
+            className="input-vidrio"
             placeholder="Ej: Ventanas, puertas, divisiones de baño, gabinetes…"
           />
           <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginTop: 8 }}>
             {PROYECTOS_SUGERIDOS[nivelSistema].map((s) => (
-              <button type="button" key={s} onClick={() => setDescripcion(s)} style={chipStyle}>
+              <button type="button" key={s} onClick={() => setDescripcion(s)} className="chip-tecnico" style={{ cursor: "pointer", color: "var(--color-mist)" }}>
                 {s}
               </button>
             ))}
@@ -133,7 +133,7 @@ export default function PublicarForm() {
               value={cantidad}
               onChange={(e) => setCantidad(e.target.value)}
               required
-              style={inputStyle}
+              className="input-vidrio"
               placeholder="Ej: 3"
             />
           </Campo>
@@ -144,7 +144,7 @@ export default function PublicarForm() {
               step="0.1"
               value={mtr2}
               onChange={(e) => setMtr2(e.target.value)}
-              style={inputStyle}
+              className="input-vidrio"
               placeholder="Ej: 13,4"
             />
           </Campo>
@@ -158,25 +158,25 @@ export default function PublicarForm() {
             value={valorOfertado}
             onChange={(e) => setValorOfertado(e.target.value)}
             required
-            style={inputStyle}
+            className="input-vidrio"
           />
         </Campo>
 
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
           <Campo etiqueta="Fecha de inicio (opcional)">
-            <input type="date" value={fechaInicio} onChange={(e) => setFechaInicio(e.target.value)} style={inputStyle} />
+            <input type="date" value={fechaInicio} onChange={(e) => setFechaInicio(e.target.value)} className="input-vidrio" />
           </Campo>
           <Campo etiqueta="Fecha de finalización (opcional)">
-            <input type="date" value={fechaFin} onChange={(e) => setFechaFin(e.target.value)} style={inputStyle} />
+            <input type="date" value={fechaFin} onChange={(e) => setFechaFin(e.target.value)} className="input-vidrio" />
           </Campo>
         </div>
 
         <Campo etiqueta="Ciudad">
-          <input value={ciudad} onChange={(e) => setCiudad(e.target.value)} required style={inputStyle} placeholder="Ej: Cali" />
+          <input value={ciudad} onChange={(e) => setCiudad(e.target.value)} required className="input-vidrio" placeholder="Ej: Cali" />
         </Campo>
 
         <Campo etiqueta="Ubicación exacta (opcional, ayuda a que te vean por cercanía)">
-          <button type="button" onClick={pedirUbicacion} style={buttonStyleSecondary}>
+          <button type="button" onClick={pedirUbicacion} className="boton-linea" style={{ width: "100%", borderStyle: "dashed" }}>
             {estadoUbicacion === "lista"
               ? "✓ Ubicación capturada"
               : estadoUbicacion === "pidiendo"
@@ -197,7 +197,7 @@ export default function PublicarForm() {
 
         {error && <p style={{ color: "#f87171", fontSize: 14 }}>{error}</p>}
 
-        <button type="submit" disabled={cargando} style={buttonStyle}>
+        <button type="submit" disabled={cargando} className="boton-primario" style={{ marginTop: 24 }}>
           {cargando ? "Publicando…" : "Publicar oferta"}
         </button>
       </form>
@@ -235,9 +235,9 @@ function Radios<T extends string>({
           style={{
             textAlign: "center",
             padding: "8px 6px",
-            borderRadius: 8,
-            border: `1px solid ${valor === op.valor ? "var(--color-azul-suave)" : "var(--color-borde)"}`,
-            background: valor === op.valor ? "#1e3a5f" : "var(--color-superficie)",
+            borderRadius: 10,
+            border: `1px solid ${valor === op.valor ? "var(--color-acento-claro)" : "var(--color-borde)"}`,
+            background: valor === op.valor ? "var(--color-superficie-2)" : "var(--color-superficie)",
             cursor: "pointer",
             fontSize: 13,
           }}
@@ -257,46 +257,3 @@ function Radios<T extends string>({
   );
 }
 
-const inputStyle: CSSProperties = {
-  width: "100%",
-  padding: "10px 12px",
-  borderRadius: 8,
-  border: "1px solid var(--color-borde)",
-  background: "var(--color-superficie)",
-  color: "#eef2f5",
-  fontSize: 15,
-};
-
-const chipStyle: CSSProperties = {
-  padding: "5px 10px",
-  borderRadius: 999,
-  border: "1px solid var(--color-borde)",
-  background: "var(--color-superficie)",
-  color: "#94a3b8",
-  fontSize: 12,
-  cursor: "pointer",
-};
-
-const buttonStyle: CSSProperties = {
-  marginTop: 24,
-  width: "100%",
-  padding: "12px 18px",
-  borderRadius: 8,
-  border: "none",
-  background: "linear-gradient(135deg, #FFAD01, #FF7F00)",
-  color: "#1c1c1c",
-  fontWeight: 700,
-  cursor: "pointer",
-  fontSize: 15,
-};
-
-const buttonStyleSecondary: CSSProperties = {
-  width: "100%",
-  padding: "10px 12px",
-  borderRadius: 8,
-  border: "1px dashed #475569",
-  background: "transparent",
-  color: "#94a3b8",
-  cursor: "pointer",
-  fontSize: 13,
-};

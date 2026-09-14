@@ -145,16 +145,16 @@ export default function AccionesCompletada({
       {error && <p style={{ color: "#f87171", fontSize: 13, margin: 0 }}>{error}</p>}
 
       {comisionInicial && (
-        <div style={caja}>
-          <p style={{ margin: 0, fontSize: 13, color: "#94a3b8" }}>Comisión de la plataforma</p>
-          <p style={{ margin: "4px 0 0", fontSize: 18, fontWeight: 700 }}>
+        <div className="panel" style={{ padding: "14px 16px" }}>
+          <p style={{ margin: 0, fontSize: 13, color: "var(--color-mist)" }}>Comisión de la plataforma</p>
+          <p style={{ margin: "4px 0 0", fontSize: 18, fontWeight: 700, fontFamily: "var(--font-mono)", color: "var(--color-acento-claro)" }}>
             {comisionInicial.valor_comision === 0 ? "Gratis (ciudad en arranque)" : formatCOP(comisionInicial.valor_comision)}
           </p>
-          <p style={{ margin: "2px 0 0", fontSize: 12, color: "#94a3b8" }}>
+          <p style={{ margin: "2px 0 0", fontSize: 12, color: "var(--color-mist)" }}>
             {ESTADO_COMISION[comisionInicial.estado] ?? comisionInicial.estado}
           </p>
           {soyGanador && comisionInicial.estado === "pendiente" && comisionInicial.valor_comision > 0 && (
-            <button onClick={marcarComisionPagada} disabled={cargando === "comision"} style={{ ...botonChico, marginTop: 10, width: "100%" }}>
+            <button onClick={marcarComisionPagada} disabled={cargando === "comision"} className="boton-linea" style={{ marginTop: 10, width: "100%" }}>
               {cargando === "comision" ? "…" : "Marcar comisión como pagada"}
             </button>
           )}
@@ -162,7 +162,7 @@ export default function AccionesCompletada({
       )}
 
       {!yaCalifique && (
-        <form onSubmit={enviarCalificacion} style={caja}>
+        <form onSubmit={enviarCalificacion} className="panel" style={{ padding: "14px 16px" }}>
           <p style={{ margin: 0, fontSize: 14, fontWeight: 600 }}>Califica este trabajo</p>
           <div style={{ display: "flex", gap: 4, marginTop: 10 }}>
             {[1, 2, 3, 4, 5].map((n) => (
@@ -184,40 +184,40 @@ export default function AccionesCompletada({
             <input type="checkbox" checked={calidadEsperada} onChange={(e) => setCalidadEsperada(e.target.checked)} />
             La calidad fue la esperada
           </label>
-          <button type="submit" disabled={cargando === "calificar"} style={{ ...botonChico, marginTop: 10, width: "100%" }}>
+          <button type="submit" disabled={cargando === "calificar"} className="boton-primario" style={{ marginTop: 10 }}>
             {cargando === "calificar" ? "Enviando…" : "Enviar calificación"}
           </button>
         </form>
       )}
 
-      <div style={caja}>
+      <div className="panel" style={{ padding: "14px 16px" }}>
         <p style={{ margin: 0, fontSize: 14, fontWeight: 600 }}>Garantía (30 días desde el cierre)</p>
 
         {garantiasIniciales.length === 0 && (
-          <p style={{ margin: "6px 0 0", fontSize: 12, color: "#94a3b8" }}>Sin reportes de garantía.</p>
+          <p style={{ margin: "6px 0 0", fontSize: 12, color: "var(--color-mist)" }}>Sin reportes de garantía.</p>
         )}
 
         <div style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 8 }}>
           {garantiasIniciales.map((g) => {
             const estado = ESTADO_GARANTIA[g.estado];
             return (
-              <div key={g.id} style={{ border: "1px solid var(--color-borde)", borderRadius: 8, padding: "8px 10px" }}>
+              <div key={g.id} style={{ border: "1px solid var(--color-borde)", borderRadius: 10, padding: "8px 10px" }}>
                 <div style={{ display: "flex", justifyContent: "space-between" }}>
                   <span style={{ fontSize: 11, fontWeight: 700, color: estado.color }}>{estado.texto}</span>
                 </div>
                 <p style={{ margin: "4px 0 0", fontSize: 13 }}>{g.descripcion}</p>
                 {soyAutor && g.estado === "abierto" && (
                   <div style={{ display: "flex", gap: 6, marginTop: 6 }}>
-                    <button onClick={() => resolverGarantia(g.id, "atendido")} disabled={cargando === g.id} style={botonChico}>
+                    <button onClick={() => resolverGarantia(g.id, "atendido")} disabled={cargando === g.id} className="boton-linea">
                       Marcar atendida
                     </button>
-                    <button onClick={() => resolverGarantia(g.id, "no_atendido")} disabled={cargando === g.id} style={botonChico}>
+                    <button onClick={() => resolverGarantia(g.id, "no_atendido")} disabled={cargando === g.id} className="boton-linea">
                       Marcar no atendida
                     </button>
                   </div>
                 )}
                 {soyGanador && g.estado === "abierto" && (
-                  <p style={{ margin: "6px 0 0", fontSize: 12, color: "#94a3b8" }}>
+                  <p style={{ margin: "6px 0 0", fontSize: 12, color: "var(--color-mist)" }}>
                     Coordina la solución directamente por el chat.
                   </p>
                 )}
@@ -227,7 +227,7 @@ export default function AccionesCompletada({
         </div>
 
         {soyAutor && !mostrarFormGarantia && (
-          <button onClick={() => setMostrarFormGarantia(true)} style={{ ...botonChico, marginTop: 10, width: "100%" }}>
+          <button onClick={() => setMostrarFormGarantia(true)} className="boton-linea" style={{ marginTop: 10, width: "100%" }}>
             Reportar un problema
           </button>
         )}
@@ -238,13 +238,14 @@ export default function AccionesCompletada({
               value={descripcionGarantia}
               onChange={(e) => setDescripcionGarantia(e.target.value)}
               placeholder="Describe el problema…"
-              style={textareaStyle}
+              className="input-vidrio"
+              style={{ minHeight: 70, resize: "vertical", fontSize: 13 }}
             />
             <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
-              <button type="submit" disabled={cargando === "garantia" || !descripcionGarantia.trim()} style={{ ...botonChico, flex: 1 }}>
+              <button type="submit" disabled={cargando === "garantia" || !descripcionGarantia.trim()} className="boton-linea" style={{ flex: 1 }}>
                 {cargando === "garantia" ? "Enviando…" : "Enviar reporte"}
               </button>
-              <button type="button" onClick={() => setMostrarFormGarantia(false)} style={botonChico}>
+              <button type="button" onClick={() => setMostrarFormGarantia(false)} className="boton-linea">
                 Cancelar
               </button>
             </div>
@@ -255,13 +256,6 @@ export default function AccionesCompletada({
   );
 }
 
-const caja: CSSProperties = {
-  padding: "14px 16px",
-  borderRadius: 10,
-  border: "1px solid var(--color-borde)",
-  background: "var(--color-superficie)",
-};
-
 const etiquetaCheck: CSSProperties = {
   display: "flex",
   alignItems: "center",
@@ -270,24 +264,3 @@ const etiquetaCheck: CSSProperties = {
   marginTop: 8,
 };
 
-const botonChico: CSSProperties = {
-  padding: "6px 12px",
-  borderRadius: 8,
-  border: "1px solid var(--color-borde)",
-  background: "transparent",
-  color: "#eef2f5",
-  cursor: "pointer",
-  fontSize: 12,
-};
-
-const textareaStyle: CSSProperties = {
-  width: "100%",
-  minHeight: 70,
-  padding: "8px 10px",
-  borderRadius: 8,
-  border: "1px solid var(--color-borde)",
-  background: "var(--color-bg-elevado)",
-  color: "#eef2f5",
-  fontSize: 13,
-  resize: "vertical",
-};

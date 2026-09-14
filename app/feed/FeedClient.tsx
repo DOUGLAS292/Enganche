@@ -95,27 +95,27 @@ export default function FeedClient() {
 
   return (
     <main style={{ maxWidth: 640, margin: "0 auto", padding: "32px 20px 80px" }}>
-      <Link href="/" style={{ color: "var(--color-azul-suave)", fontSize: 13 }}>
+      <Link href="/" className="enlace-volver">
         ← Inicio
       </Link>
 
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginTop: 14 }}>
-        <h1 style={{ fontSize: 24, margin: 0 }}>Ofertas cerca de ti</h1>
-        <Link href="/publicar" style={{ color: "var(--color-azul-suave)", fontSize: 14 }}>
+        <h1 className="titular" style={{ fontSize: 24, margin: 0, fontWeight: 700 }}>Ofertas cerca de ti</h1>
+        <Link href="/publicar" className="enlace-volver">
           + Publicar
         </Link>
       </div>
 
       {estadoUbicacion === "denegada" && !coords && (
         <div style={{ marginTop: 12 }}>
-          <p style={{ color: "#94a3b8", fontSize: 13, margin: 0 }}>No pudimos usar tu ubicación. Filtra por ciudad:</p>
-          <input value={ciudadFiltro} onChange={(e) => setCiudadFiltro(e.target.value)} placeholder="Ej: Cali" style={inputStyle} />
+          <p style={{ color: "var(--color-mist)", fontSize: 13, margin: 0 }}>No pudimos usar tu ubicación. Filtra por ciudad:</p>
+          <input value={ciudadFiltro} onChange={(e) => setCiudadFiltro(e.target.value)} placeholder="Ej: Cali" className="input-vidrio" style={{ marginTop: 6 }} />
         </div>
       )}
 
       {coords && (
         <div style={{ marginTop: 12, display: "flex", alignItems: "center", gap: 8 }}>
-          <label style={{ fontSize: 13, color: "#94a3b8", whiteSpace: "nowrap" }}>Radio: {radioKm} km</label>
+          <label className="chip-tecnico" style={{ whiteSpace: "nowrap" }}>Radio: {radioKm} km</label>
           <input
             type="range"
             min={2}
@@ -154,9 +154,9 @@ export default function FeedClient() {
       </div>
 
       {error && <p style={{ color: "#f87171", marginTop: 16 }}>{error}</p>}
-      {publicaciones === null && !error && <p style={{ marginTop: 24, color: "#94a3b8" }}>Cargando ofertas…</p>}
+      {publicaciones === null && !error && <p style={{ marginTop: 24, color: "var(--color-mist)" }}>Cargando ofertas…</p>}
       {publicaciones?.length === 0 && (
-        <p style={{ marginTop: 24, color: "#94a3b8" }}>
+        <p style={{ marginTop: 24, color: "var(--color-mist)" }}>
           No hay ofertas abiertas por ahora{coords ? " en este radio" : ""}. Sé el primero en{" "}
           <Link href="/publicar" style={{ color: "var(--color-azul-suave)" }}>
             publicar una
@@ -167,55 +167,35 @@ export default function FeedClient() {
 
       <div style={{ marginTop: 16, display: "flex", flexDirection: "column", gap: 10 }}>
         {publicaciones?.map((p) => (
-          <Link key={p.id} href={`/publicaciones/${p.id}`} style={{ textDecoration: "none", color: "inherit" }}>
-            <article style={cardStyle}>
-              <div style={{ display: "flex", justifyContent: "space-between", gap: 8 }}>
-                <span style={badgeStyle(p.tipo_trabajo === "instalacion" ? "#1c5079" : "#bd5a26")}>
-                  {p.tipo_trabajo === "instalacion" ? "Instalación" : "Producción"}
-                </span>
-                {p.distancia_m != null && <span style={{ fontSize: 12, color: "#94a3b8" }}>{formatDistanciaKm(p.distancia_m)}</span>}
-              </div>
-              <h3 style={{ margin: "8px 0 2px", fontSize: 17 }}>{p.sistema_o_proyecto}</h3>
-              <p style={{ margin: 0, fontSize: 12, color: "#94a3b8" }}>
-                {NIVEL_ETIQUETA[p.nivel_sistema]} · {p.ciudad}
-              </p>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6, marginTop: 10, fontSize: 13 }}>
-                <span>
-                  {/^\d+$/.test(p.cantidad) ? `${p.cantidad} producto${p.cantidad === "1" ? "" : "s"}` : p.cantidad}
-                  {p.mtr2 ? ` · ${p.mtr2} m²` : ""}
-                </span>
-                <span style={{ textAlign: "right", fontWeight: 600 }}>{formatCOP(p.valor_ofertado)}</span>
-              </div>
-              <p style={{ marginTop: 8, marginBottom: 0, fontSize: 12, color: "#64748b" }}>
-                {p.autor_nombre}
-                {p.autor_verificado ? " ✓" : ""}
-                {p.autor_rating ? ` · ★ ${p.autor_rating}` : ""} · {formatFecha(p.creado_en)}
-              </p>
-            </article>
+          <Link key={p.id} href={`/publicaciones/${p.id}`} className="panel" style={{ padding: "14px 16px" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", gap: 8 }}>
+              <span style={badgeStyle(p.tipo_trabajo === "instalacion" ? "#1c5079" : "#bd5a26")}>
+                {p.tipo_trabajo === "instalacion" ? "Instalación" : "Producción"}
+              </span>
+              {p.distancia_m != null && <span className="chip-tecnico">{formatDistanciaKm(p.distancia_m)}</span>}
+            </div>
+            <h3 style={{ margin: "10px 0 2px", fontSize: 17 }}>{p.sistema_o_proyecto}</h3>
+            <p style={{ margin: 0, fontSize: 12, color: "var(--color-mist)" }}>
+              {NIVEL_ETIQUETA[p.nivel_sistema]} · {p.ciudad}
+            </p>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6, marginTop: 10, fontSize: 13, fontFamily: "var(--font-mono)" }}>
+              <span>
+                {/^\d+$/.test(p.cantidad) ? `${p.cantidad} producto${p.cantidad === "1" ? "" : "s"}` : p.cantidad}
+                {p.mtr2 ? ` · ${p.mtr2} m²` : ""}
+              </span>
+              <span style={{ textAlign: "right", fontWeight: 600, color: "var(--color-acento-claro)" }}>{formatCOP(p.valor_ofertado)}</span>
+            </div>
+            <p style={{ marginTop: 8, marginBottom: 0, fontSize: 12, color: "var(--color-mist-tenue)" }}>
+              {p.autor_nombre}
+              {p.autor_verificado ? " ✓" : ""}
+              {p.autor_rating ? ` · ★ ${p.autor_rating}` : ""} · {formatFecha(p.creado_en)}
+            </p>
           </Link>
         ))}
       </div>
     </main>
   );
 }
-
-const inputStyle: CSSProperties = {
-  width: "100%",
-  padding: "8px 10px",
-  borderRadius: 8,
-  border: "1px solid var(--color-borde)",
-  background: "var(--color-superficie)",
-  color: "#eef2f5",
-  fontSize: 14,
-  marginTop: 6,
-};
-
-const cardStyle: CSSProperties = {
-  border: "1px solid var(--color-borde)",
-  borderRadius: 10,
-  padding: "12px 14px",
-  background: "var(--color-superficie)",
-};
 
 function chipStyle(activo: boolean): CSSProperties {
   return {
@@ -226,7 +206,8 @@ function chipStyle(activo: boolean): CSSProperties {
     cursor: "pointer",
     border: `1px solid ${activo ? "var(--color-azul-suave)" : "var(--color-borde)"}`,
     background: activo ? "#1e3a5f" : "transparent",
-    color: activo ? "#eef2f5" : "#94a3b8",
+    color: activo ? "var(--color-texto)" : "var(--color-mist)",
+    fontFamily: "inherit",
   };
 }
 

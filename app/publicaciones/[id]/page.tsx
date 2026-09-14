@@ -151,7 +151,7 @@ export default async function PublicacionDetalle({ params }: { params: Promise<{
 
   return (
     <main style={{ maxWidth: 560, margin: "0 auto", padding: "32px 20px 80px" }}>
-      <Link href="/feed" style={{ color: "var(--color-azul-suave)", fontSize: 13 }}>
+      <Link href="/feed" className="enlace-volver">
         ← Volver a ofertas
       </Link>
 
@@ -159,23 +159,23 @@ export default async function PublicacionDetalle({ params }: { params: Promise<{
         <span style={badgeStyle(publicacion.tipo_trabajo === "instalacion" ? "#1c5079" : "#bd5a26")}>
           {publicacion.tipo_trabajo === "instalacion" ? "Instalación" : "Producción"}
         </span>
-        <span style={{ fontSize: 12, color: "#94a3b8" }}>{NIVEL_ETIQUETA[publicacion.nivel_sistema]}</span>
+        <span className="chip-tecnico" style={{ color: "var(--color-mist)" }}>{NIVEL_ETIQUETA[publicacion.nivel_sistema]}</span>
         <span style={{ fontSize: 12, fontWeight: 700, color: estadoEtiqueta.color }}>{estadoEtiqueta.texto}</span>
       </div>
 
-      <h1 style={{ fontSize: 24, marginBottom: 4 }}>{publicacion.sistema_o_proyecto}</h1>
-      <p style={{ color: "#94a3b8", marginTop: 0 }}>
+      <h1 className="titular" style={{ fontSize: 25, marginBottom: 4, marginTop: 14 }}>{publicacion.sistema_o_proyecto}</h1>
+      <p style={{ color: "var(--color-mist)", marginTop: 0 }}>
         {publicacion.ciudad}
         {publicacion.region ? ` · ${publicacion.region}` : ""}
       </p>
 
-      <div style={{ marginTop: 16, padding: "14px 16px", borderRadius: 10, border: "1px solid var(--color-borde)", background: "var(--color-superficie)" }}>
+      <div className="panel" style={{ marginTop: 16, padding: "14px 16px" }}>
         <Fila
           etiqueta="Cantidad"
           valor={/^\d+$/.test(publicacion.cantidad) ? `${publicacion.cantidad} producto${publicacion.cantidad === "1" ? "" : "s"}` : publicacion.cantidad}
         />
         {publicacion.mtr2 && <Fila etiqueta="Área" valor={`${publicacion.mtr2} m²`} />}
-        <Fila etiqueta="Valor ofertado" valor={formatCOP(publicacion.valor_ofertado)} />
+        <Fila etiqueta="Valor ofertado" valor={formatCOP(publicacion.valor_ofertado)} destacado />
         {publicacion.fecha_inicio && (
           <Fila
             etiqueta="Fechas"
@@ -186,13 +186,13 @@ export default async function PublicacionDetalle({ params }: { params: Promise<{
         <Fila etiqueta="Publicada" valor={formatFecha(publicacion.creado_en)} />
       </div>
 
-      <div style={{ marginTop: 16, padding: "14px 16px", borderRadius: 10, border: "1px solid var(--color-borde)", background: "var(--color-superficie)" }}>
-        <p style={{ margin: 0, fontSize: 13, color: "#94a3b8" }}>Publicada por</p>
+      <div className="panel" style={{ marginTop: 16, padding: "14px 16px" }}>
+        <p style={{ margin: 0, fontSize: 13, color: "var(--color-mist)" }}>Publicada por</p>
         <p style={{ margin: "4px 0 0", fontSize: 16, fontWeight: 600 }}>
           {publicacion.autor_nombre}
           {publicacion.autor_verificado ? " ✓ verificado" : ""}
         </p>
-        <p style={{ margin: "2px 0 0", fontSize: 13, color: "#94a3b8" }}>
+        <p style={{ margin: "2px 0 0", fontSize: 13, color: "var(--color-mist)" }}>
           {publicacion.autor_trabajos} trabajos completados
           {publicacion.autor_rating ? ` · ★ ${publicacion.autor_rating}` : " · sin calificaciones aún"}
         </p>
@@ -208,7 +208,7 @@ export default async function PublicacionDetalle({ params }: { params: Promise<{
       )}
 
       {!esAutor && esGanador && (
-        <div style={{ marginTop: 20, padding: "14px 16px", borderRadius: 10, border: `1px solid ${mensajesNuevos > 0 ? "var(--color-acento-claro)" : "#4ade80"}` }}>
+        <div className={`panel${mensajesNuevos > 0 ? " alerta" : ""}`} style={{ marginTop: 20, padding: "14px 16px", borderColor: mensajesNuevos > 0 ? undefined : "#4ade80" }}>
           <p style={{ margin: 0, fontWeight: 600, color: "#4ade80" }}>¡Fuiste elegido para este trabajo!</p>
           <Link href={`/publicaciones/${publicacion.id}/chat`} style={{ color: mensajesNuevos > 0 ? "var(--color-acento-claro)" : "#4ade80", textDecoration: "underline", fontSize: 13, fontWeight: mensajesNuevos > 0 ? 700 : 400 }}>
             {mensajesNuevos > 0 ? `🔔 Ir al chat (${mensajesNuevos} nuevo${mensajesNuevos === 1 ? "" : "s"})` : "Ir al chat con quien publicó"}
@@ -230,14 +230,14 @@ export default async function PublicacionDetalle({ params }: { params: Promise<{
       {!esAutor && !esGanador && (
         <>
           {miPostulacion ? (
-            <div style={{ marginTop: 20, padding: "12px 16px", borderRadius: 8, border: "1px dashed #475569", color: "#94a3b8", fontSize: 13 }}>
+            <div style={{ marginTop: 20, padding: "12px 16px", borderRadius: 10, border: "1px dashed var(--color-borde)", color: "var(--color-mist)", fontSize: 13 }}>
               {miPostulacion.estado === "pendiente" && "Ya te postulaste — pendiente de que el autor elija."}
               {miPostulacion.estado === "rechazada" && "No fuiste el elegido esta vez."}
             </div>
           ) : publicacion.estado === "abierta" ? (
             <AccionPostulante publicacionId={publicacion.id} />
           ) : (
-            <div style={{ marginTop: 20, padding: "12px 16px", borderRadius: 8, border: "1px dashed #475569", color: "#94a3b8", fontSize: 13 }}>
+            <div style={{ marginTop: 20, padding: "12px 16px", borderRadius: 10, border: "1px dashed var(--color-borde)", color: "var(--color-mist)", fontSize: 13 }}>
               Esta oferta ya no está abierta para postularse.
             </div>
           )}
@@ -247,11 +247,11 @@ export default async function PublicacionDetalle({ params }: { params: Promise<{
   );
 }
 
-function Fila({ etiqueta, valor }: { etiqueta: string; valor: string }) {
+function Fila({ etiqueta, valor, destacado }: { etiqueta: string; valor: string; destacado?: boolean }) {
   return (
     <div style={{ display: "flex", justifyContent: "space-between", padding: "6px 0", fontSize: 14 }}>
-      <span style={{ color: "#94a3b8" }}>{etiqueta}</span>
-      <span>{valor}</span>
+      <span style={{ color: "var(--color-mist)" }}>{etiqueta}</span>
+      <span style={destacado ? { fontFamily: "var(--font-mono)", color: "var(--color-acento-claro)", fontWeight: 600 } : undefined}>{valor}</span>
     </div>
   );
 }
