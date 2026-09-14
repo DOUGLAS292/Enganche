@@ -34,7 +34,7 @@ export async function POST(_request: Request, { params }: { params: Promise<{ id
 
   if (fila.ganador_id) {
     await query(
-      "update postulaciones set estado = 'rechazada' where publicacion_id = $1 and postulante_id = $2 and estado = 'elegida'",
+      "update postulaciones set estado = 'rechazada', notificado = false where publicacion_id = $1 and postulante_id = $2 and estado = 'elegida'",
       [id, fila.ganador_id]
     );
   }

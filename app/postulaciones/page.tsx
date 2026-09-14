@@ -25,6 +25,7 @@ type Fila = {
   estado_postulacion: string;
   creado_en: string;
   mensajes_nuevos: number;
+  notificado: boolean;
 };
 
 export default async function MisPostulacionesPage() {
@@ -36,7 +37,7 @@ export default async function MisPostulacionesPage() {
   const result = await query<Fila>(
     `select
        p.id, p.nivel_sistema, p.sistema_o_proyecto, p.ciudad, p.valor_ofertado,
-       po.estado as estado_postulacion, po.creado_en,
+       po.estado as estado_postulacion, po.creado_en, po.notificado,
        count(m.id) filter (
          where po.estado = 'elegida' and m.emisor_id != $1 and m.creado_en > coalesce(ml.leido_hasta, '-infinity')
        ) as mensajes_nuevos
@@ -46,7 +47,7 @@ export default async function MisPostulacionesPage() {
      left join mensajes_leidos ml on ml.usuario_id = $1 and ml.publicacion_id = p.id
      where po.postulante_id = $1
      group by po.id, p.id
-     order by po.creado_en desc`,
+     order by (po.notificado = false) desc, po.creado_en desc`,
     [usuarioId]
   );
 
@@ -71,11 +72,18 @@ export default async function MisPostulacionesPage() {
         {result.rows.map((p) => {
           const estado = ESTADO_POSTULACION[p.estado_postulacion] ?? { texto: p.estado_postulacion, color: "#94a3b8" };
           const hayMensajes = p.mensajes_nuevos > 0;
+          const hayNovedad = !p.notificado;
+          const textoNovedad =
+            p.estado_postulacion === "elegida"
+              ? "🔔 ¡Fuiste elegido!"
+              : p.estado_postulacion === "rechazada"
+                ? "🔔 Se reabrió la oferta"
+                : "";
           return (
             <Link key={p.id} href={`/publicaciones/${p.id}`} style={{ textDecoration: "none", color: "inherit" }}>
               <article
                 style={{
-                  border: `1px solid ${hayMensajes ? "var(--color-acento-claro)" : "var(--color-borde)"}`,
+                  border: `1px solid ${hayNovedad || hayMensajes ? "var(--color-acento-claro)" : "var(--color-borde)"}`,
                   borderRadius: 10,
                   padding: "12px 14px",
                   background: "var(--color-superficie)",
@@ -91,11 +99,11 @@ export default async function MisPostulacionesPage() {
                 </p>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 6 }}>
                   <p style={{ margin: 0, fontSize: 13, fontWeight: 600 }}>{formatCOP(p.valor_ofertado)}</p>
-                  {hayMensajes && (
-                    <span style={{ fontSize: 12, fontWeight: 700, color: "var(--color-acento-claro)" }}>
-                      🔔 {p.mensajes_nuevos} mensaje{p.mensajes_nuevos === 1 ? "" : "s"} nuevo{p.mensajes_nuevos === 1 ? "" : "s"}
-                    </span>
-                  )}
+                  <span style={{ fontSize: 12, fontWeight: 700, color: "var(--color-acento-claro)" }}>
+                    {hayNovedad && textoNovedad}
+                    {hayNovedad && hayMensajes && " · "}
+                    {hayMensajes && `🔔 ${p.mensajes_nuevos} mensaje${p.mensajes_nuevos === 1 ? "" : "s"} nuevo${p.mensajes_nuevos === 1 ? "" : "s"}`}
+                  </span>
                 </div>
               </article>
             </Link>

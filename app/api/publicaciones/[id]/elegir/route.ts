@@ -45,10 +45,10 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     return NextResponse.json({ ok: false, error: "La oferta cambió de estado, intenta de nuevo." }, { status: 409 });
   }
 
-  await query("update postulaciones set estado = 'elegida' where publicacion_id = $1 and postulante_id = $2", [
-    id,
-    postulanteId,
-  ]);
+  await query(
+    "update postulaciones set estado = 'elegida', notificado = false where publicacion_id = $1 and postulante_id = $2",
+    [id, postulanteId]
+  );
 
   return NextResponse.json({ ok: true });
 }

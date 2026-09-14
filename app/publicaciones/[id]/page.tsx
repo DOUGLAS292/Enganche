@@ -105,6 +105,15 @@ export default async function PublicacionDetalle({ params }: { params: Promise<{
     miPostulacion = r.rows[0] ?? null;
   }
 
+  if (!esAutor && (esGanador || miPostulacion)) {
+    // Ver el detalle es lo que hace desaparecer el aviso de "fuiste elegido"
+    // o "se reabrió la oferta" en el resto de la app.
+    await query(
+      "update postulaciones set notificado = true where publicacion_id = $1 and postulante_id = $2 and notificado = false",
+      [id, usuarioId]
+    );
+  }
+
   let comision: { valor_comision: number; estado: string } | null = null;
   let yaCalifique = false;
   let garantias: { id: string; descripcion: string; estado: "abierto" | "atendido" | "no_atendido"; fecha_reporte: string }[] = [];

@@ -11,6 +11,7 @@ export default async function Home() {
   let postulantesPorRevisar = 0;
   let mensajesNuevosAutor = 0;
   let mensajesNuevosGanador = 0;
+  let postulacionesSinVer = 0;
 
   if (usuarioId) {
     const result = await query<{ nombre_razon_social: string; ciudad: string | null; es_admin: boolean }>(
@@ -19,7 +20,7 @@ export default async function Home() {
     );
     usuario = result.rows[0] ?? null;
 
-    const [pendientes, mensajesAutor, mensajesGanador] = await Promise.all([
+    const [pendientes, mensajesAutor, mensajesGanador, sinVer] = await Promise.all([
       query<{ total: string }>(
         `select count(*) as total
          from postulaciones po
@@ -44,10 +45,15 @@ export default async function Home() {
          where p.ganador_id = $1 and m.emisor_id != $1 and m.creado_en > coalesce(ml.leido_hasta, '-infinity')`,
         [usuarioId]
       ),
+      query<{ total: string }>(
+        "select count(*) as total from postulaciones where postulante_id = $1 and notificado = false",
+        [usuarioId]
+      ),
     ]);
     postulantesPorRevisar = Number(pendientes.rows[0]?.total ?? 0);
     mensajesNuevosAutor = Number(mensajesAutor.rows[0]?.total ?? 0);
     mensajesNuevosGanador = Number(mensajesGanador.rows[0]?.total ?? 0);
+    postulacionesSinVer = Number(sinVer.rows[0]?.total ?? 0);
   }
 
   const primerNombre = usuario?.nombre_razon_social?.split(" ")[0] ?? "";
@@ -93,9 +99,16 @@ export default async function Home() {
               href="/postulaciones"
               icono="📋"
               titulo="Mis postulaciones"
-              subtitulo={mensajesNuevosGanador > 0 ? `${mensajesNuevosGanador} mensaje${mensajesNuevosGanador === 1 ? "" : "s"} nuevo${mensajesNuevosGanador === 1 ? "" : "s"}` : "Revisa en qué vas"}
+              subtitulo={
+                [
+                  postulacionesSinVer > 0 ? `${postulacionesSinVer} novedad${postulacionesSinVer === 1 ? "" : "es"}` : "",
+                  mensajesNuevosGanador > 0 ? `${mensajesNuevosGanador} mensaje${mensajesNuevosGanador === 1 ? "" : "s"} nuevo${mensajesNuevosGanador === 1 ? "" : "s"}` : "",
+                ]
+                  .filter(Boolean)
+                  .join(" · ") || "Revisa en qué vas"
+              }
               color="#04253A"
-              badge={mensajesNuevosGanador > 0 ? mensajesNuevosGanador : undefined}
+              badge={postulacionesSinVer + mensajesNuevosGanador > 0 ? postulacionesSinVer + mensajesNuevosGanador : undefined}
             />
             {usuario.es_admin && (
               <TarjetaAccion href="/admin" icono="🛡️" titulo="Panel admin" subtitulo="Comisiones del piloto" color="#3a3a3a" />
