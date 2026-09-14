@@ -33,6 +33,15 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
     [id]
   );
 
+  // Marca como leído hasta ahora: abrir el chat es lo que hace desaparecer
+  // el aviso de "mensajes nuevos" en el resto de la app.
+  await query(
+    `insert into mensajes_leidos (usuario_id, publicacion_id, leido_hasta)
+     values ($1, $2, now())
+     on conflict (usuario_id, publicacion_id) do update set leido_hasta = now()`,
+    [usuarioId, id]
+  );
+
   return NextResponse.json({ ok: true, mensajes: result.rows });
 }
 

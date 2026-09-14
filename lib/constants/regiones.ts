@@ -3,14 +3,88 @@
 // sin mezclar ciudades de mercados distintos (ver spec §2, "Precio de referencia
 // por zona"). Ampliar esta lista a medida que se abran nuevas plazas.
 export const REGION_POR_CIUDAD: Record<string, string> = {
+  // Suroccidente (Valle del Cauca, Cauca, Nariño)
   Cali: "Suroccidente",
   Jamundí: "Suroccidente",
   Palmira: "Suroccidente",
   Buenaventura: "Suroccidente",
+  Tuluá: "Suroccidente",
+  Buga: "Suroccidente",
+  Cartago: "Suroccidente",
+  Yumbo: "Suroccidente",
   Popayán: "Suroccidente",
+  Pasto: "Suroccidente",
+  Ipiales: "Suroccidente",
+  Tumaco: "Suroccidente",
+
+  // Antioquia
   Medellín: "Antioquia",
   Envigado: "Antioquia",
   Bello: "Antioquia",
+  Itagüí: "Antioquia",
+  Sabaneta: "Antioquia",
+  Rionegro: "Antioquia",
+  Apartadó: "Antioquia",
+  Turbo: "Antioquia",
+
+  // Caribe
+  Barranquilla: "Caribe",
+  Soledad: "Caribe",
+  Malambo: "Caribe",
+  Cartagena: "Caribe",
+  "Santa Marta": "Caribe",
+  Valledupar: "Caribe",
+  Montería: "Caribe",
+  Sincelejo: "Caribe",
+  Riohacha: "Caribe",
+  "San Andrés": "Caribe",
+
+  // Centro (Bogotá y Cundinamarca)
+  Bogotá: "Centro",
+  Soacha: "Centro",
+  Chía: "Centro",
+  Zipaquirá: "Centro",
+  Facatativá: "Centro",
+  Fusagasugá: "Centro",
+  Girardot: "Centro",
+
+  // Eje Cafetero
+  Pereira: "Eje Cafetero",
+  Dosquebradas: "Eje Cafetero",
+  Manizales: "Eje Cafetero",
+  Armenia: "Eje Cafetero",
+
+  // Santanderes
+  Bucaramanga: "Santanderes",
+  Floridablanca: "Santanderes",
+  Girón: "Santanderes",
+  Piedecuesta: "Santanderes",
+  Cúcuta: "Santanderes",
+
+  // Tolima Grande
+  Ibagué: "Tolima Grande",
+  Espinal: "Tolima Grande",
+  Neiva: "Tolima Grande",
+
+  // Boyacá
+  Tunja: "Boyacá",
+  Duitama: "Boyacá",
+  Sogamoso: "Boyacá",
+
+  // Orinoquía
+  Villavicencio: "Orinoquía",
+  Yopal: "Orinoquía",
+  Arauca: "Orinoquía",
+  "Puerto Carreño": "Orinoquía",
+
+  // Amazonía y Pacífico
+  Florencia: "Amazonía",
+  Mocoa: "Amazonía",
+  Leticia: "Amazonía",
+  "San José del Guaviare": "Amazonía",
+  Inírida: "Amazonía",
+  Mitú: "Amazonía",
+  Quibdó: "Pacífico",
 };
 
 // Quita tildes además de mayúsculas — "medellin" (muy común al escribir

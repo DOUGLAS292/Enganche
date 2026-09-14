@@ -8,9 +8,7 @@ type Fila = {
   ganador_id: string | null;
   sistema_o_proyecto: string;
   autor_nombre: string;
-  autor_celular: string;
   ganador_nombre: string | null;
-  ganador_celular: string | null;
 };
 
 export default async function ChatPage({ params }: { params: Promise<{ id: string }> }) {
@@ -23,8 +21,8 @@ export default async function ChatPage({ params }: { params: Promise<{ id: strin
   const result = await query<Fila>(
     `select
        p.autor_id, p.ganador_id, p.sistema_o_proyecto,
-       autor.nombre_razon_social as autor_nombre, autor.celular as autor_celular,
-       ganador.nombre_razon_social as ganador_nombre, ganador.celular as ganador_celular
+       autor.nombre_razon_social as autor_nombre,
+       ganador.nombre_razon_social as ganador_nombre
      from publicaciones p
      join usuarios autor on autor.id = p.autor_id
      left join usuarios ganador on ganador.id = p.ganador_id
@@ -41,9 +39,7 @@ export default async function ChatPage({ params }: { params: Promise<{ id: strin
   }
 
   const esAutor = usuarioId === fila.autor_id;
-  const contraparte = esAutor
-    ? { nombre: fila.ganador_nombre as string, celular: fila.ganador_celular as string }
-    : { nombre: fila.autor_nombre, celular: fila.autor_celular };
+  const nombreContraparte = esAutor ? (fila.ganador_nombre as string) : fila.autor_nombre;
 
-  return <ChatClient publicacionId={id} titulo={fila.sistema_o_proyecto} miId={usuarioId} contraparte={contraparte} />;
+  return <ChatClient publicacionId={id} titulo={fila.sistema_o_proyecto} miId={usuarioId} nombreContraparte={nombreContraparte} />;
 }

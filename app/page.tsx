@@ -9,6 +9,8 @@ export default async function Home() {
   const usuarioId = await obtenerUsuarioIdDeSesion();
   let usuario: { nombre_razon_social: string; ciudad: string | null; es_admin: boolean } | null = null;
   let postulantesPorRevisar = 0;
+  let mensajesNuevosAutor = 0;
+  let mensajesNuevosGanador = 0;
 
   if (usuarioId) {
     const result = await query<{ nombre_razon_social: string; ciudad: string | null; es_admin: boolean }>(
@@ -17,14 +19,34 @@ export default async function Home() {
     );
     usuario = result.rows[0] ?? null;
 
-    const pendientes = await query<{ total: string }>(
-      `select count(*) as total
-       from postulaciones po
-       join publicaciones p on p.id = po.publicacion_id
-       where p.autor_id = $1 and po.estado = 'pendiente' and p.estado = 'abierta'`,
-      [usuarioId]
-    );
+    const [pendientes, mensajesAutor, mensajesGanador] = await Promise.all([
+      query<{ total: string }>(
+        `select count(*) as total
+         from postulaciones po
+         join publicaciones p on p.id = po.publicacion_id
+         where p.autor_id = $1 and po.estado = 'pendiente' and p.estado = 'abierta'`,
+        [usuarioId]
+      ),
+      query<{ total: string }>(
+        `select count(*) as total
+         from mensajes m
+         join publicaciones p on p.id = m.publicacion_id
+         left join mensajes_leidos ml on ml.usuario_id = $1 and ml.publicacion_id = p.id
+         where p.autor_id = $1 and m.emisor_id != $1 and m.creado_en > coalesce(ml.leido_hasta, '-infinity')`,
+        [usuarioId]
+      ),
+      query<{ total: string }>(
+        `select count(*) as total
+         from mensajes m
+         join publicaciones p on p.id = m.publicacion_id
+         left join mensajes_leidos ml on ml.usuario_id = $1 and ml.publicacion_id = p.id
+         where p.ganador_id = $1 and m.emisor_id != $1 and m.creado_en > coalesce(ml.leido_hasta, '-infinity')`,
+        [usuarioId]
+      ),
+    ]);
     postulantesPorRevisar = Number(pendientes.rows[0]?.total ?? 0);
+    mensajesNuevosAutor = Number(mensajesAutor.rows[0]?.total ?? 0);
+    mensajesNuevosGanador = Number(mensajesGanador.rows[0]?.total ?? 0);
   }
 
   const primerNombre = usuario?.nombre_razon_social?.split(" ")[0] ?? "";
@@ -55,11 +77,25 @@ export default async function Home() {
               href="/mis-publicaciones"
               icono="📦"
               titulo="Mis publicaciones"
-              subtitulo={postulantesPorRevisar > 0 ? `${postulantesPorRevisar} postulación${postulantesPorRevisar === 1 ? "" : "es"} nueva${postulantesPorRevisar === 1 ? "" : "s"} por revisar` : "Lo que has publicado"}
+              subtitulo={
+                [
+                  postulantesPorRevisar > 0 ? `${postulantesPorRevisar} postulación${postulantesPorRevisar === 1 ? "" : "es"} nueva${postulantesPorRevisar === 1 ? "" : "s"}` : "",
+                  mensajesNuevosAutor > 0 ? `${mensajesNuevosAutor} mensaje${mensajesNuevosAutor === 1 ? "" : "s"} nuevo${mensajesNuevosAutor === 1 ? "" : "s"}` : "",
+                ]
+                  .filter(Boolean)
+                  .join(" · ") || "Lo que has publicado"
+              }
               color="#7c3aed"
-              badge={postulantesPorRevisar > 0 ? postulantesPorRevisar : undefined}
+              badge={postulantesPorRevisar + mensajesNuevosAutor > 0 ? postulantesPorRevisar + mensajesNuevosAutor : undefined}
             />
-            <TarjetaAccion href="/postulaciones" icono="📋" titulo="Mis postulaciones" subtitulo="Revisa en qué vas" color="#3f6212" />
+            <TarjetaAccion
+              href="/postulaciones"
+              icono="📋"
+              titulo="Mis postulaciones"
+              subtitulo={mensajesNuevosGanador > 0 ? `${mensajesNuevosGanador} mensaje${mensajesNuevosGanador === 1 ? "" : "s"} nuevo${mensajesNuevosGanador === 1 ? "" : "s"}` : "Revisa en qué vas"}
+              color="#3f6212"
+              badge={mensajesNuevosGanador > 0 ? mensajesNuevosGanador : undefined}
+            />
             {usuario.es_admin && (
               <TarjetaAccion href="/admin" icono="🛡️" titulo="Panel admin" subtitulo="Comisiones del piloto" color="#854d0e" />
             )}

@@ -24,6 +24,7 @@ type Fila = {
   valor_ofertado: number;
   estado_postulacion: string;
   creado_en: string;
+  mensajes_nuevos: number;
 };
 
 export default async function MisPostulacionesPage() {
@@ -35,10 +36,16 @@ export default async function MisPostulacionesPage() {
   const result = await query<Fila>(
     `select
        p.id, p.nivel_sistema, p.sistema_o_proyecto, p.ciudad, p.valor_ofertado,
-       po.estado as estado_postulacion, po.creado_en
+       po.estado as estado_postulacion, po.creado_en,
+       count(m.id) filter (
+         where po.estado = 'elegida' and m.emisor_id != $1 and m.creado_en > coalesce(ml.leido_hasta, '-infinity')
+       ) as mensajes_nuevos
      from postulaciones po
      join publicaciones p on p.id = po.publicacion_id
+     left join mensajes m on m.publicacion_id = p.id
+     left join mensajes_leidos ml on ml.usuario_id = $1 and ml.publicacion_id = p.id
      where po.postulante_id = $1
+     group by po.id, p.id
      order by po.creado_en desc`,
     [usuarioId]
   );
@@ -63,9 +70,17 @@ export default async function MisPostulacionesPage() {
       <div style={{ marginTop: 16, display: "flex", flexDirection: "column", gap: 10 }}>
         {result.rows.map((p) => {
           const estado = ESTADO_POSTULACION[p.estado_postulacion] ?? { texto: p.estado_postulacion, color: "#94a3b8" };
+          const hayMensajes = p.mensajes_nuevos > 0;
           return (
             <Link key={p.id} href={`/publicaciones/${p.id}`} style={{ textDecoration: "none", color: "inherit" }}>
-              <article style={{ border: "1px solid #334155", borderRadius: 10, padding: "12px 14px", background: "#1e293b" }}>
+              <article
+                style={{
+                  border: `1px solid ${hayMensajes ? "#facc15" : "#334155"}`,
+                  borderRadius: 10,
+                  padding: "12px 14px",
+                  background: "#1e293b",
+                }}
+              >
                 <div style={{ display: "flex", justifyContent: "space-between" }}>
                   <span style={{ fontSize: 11, fontWeight: 700, color: estado.color }}>{estado.texto}</span>
                   <span style={{ fontSize: 12, color: "#94a3b8" }}>{formatFecha(p.creado_en)}</span>
@@ -74,7 +89,14 @@ export default async function MisPostulacionesPage() {
                 <p style={{ margin: 0, fontSize: 12, color: "#94a3b8" }}>
                   {NIVEL_ETIQUETA[p.nivel_sistema]} · {p.ciudad}
                 </p>
-                <p style={{ margin: "6px 0 0", fontSize: 13, fontWeight: 600 }}>{formatCOP(p.valor_ofertado)}</p>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 6 }}>
+                  <p style={{ margin: 0, fontSize: 13, fontWeight: 600 }}>{formatCOP(p.valor_ofertado)}</p>
+                  {hayMensajes && (
+                    <span style={{ fontSize: 12, fontWeight: 700, color: "#facc15" }}>
+                      🔔 {p.mensajes_nuevos} mensaje{p.mensajes_nuevos === 1 ? "" : "s"} nuevo{p.mensajes_nuevos === 1 ? "" : "s"}
+                    </span>
+                  )}
+                </div>
               </article>
             </Link>
           );

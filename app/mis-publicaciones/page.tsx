@@ -20,6 +20,7 @@ type Fila = {
   creado_en: string;
   postulantes_pendientes: number;
   postulantes_total: number;
+  mensajes_nuevos: number;
 };
 
 export default async function MisPublicacionesPage() {
@@ -31,14 +32,19 @@ export default async function MisPublicacionesPage() {
   const result = await query<Fila>(
     `select
        p.id, p.sistema_o_proyecto, p.ciudad, p.valor_ofertado, p.estado, p.creado_en,
-       count(po.id) filter (where po.estado = 'pendiente') as postulantes_pendientes,
-       count(po.id) as postulantes_total
+       count(distinct po.id) filter (where po.estado = 'pendiente') as postulantes_pendientes,
+       count(distinct po.id) as postulantes_total,
+       count(m.id) filter (
+         where m.emisor_id != $1 and m.creado_en > coalesce(ml.leido_hasta, '-infinity')
+       ) as mensajes_nuevos
      from publicaciones p
      left join postulaciones po on po.publicacion_id = p.id
+     left join mensajes m on m.publicacion_id = p.id
+     left join mensajes_leidos ml on ml.usuario_id = $1 and ml.publicacion_id = p.id
      where p.autor_id = $1
      group by p.id
      order by
-       (count(po.id) filter (where po.estado = 'pendiente') > 0 and p.estado = 'abierta') desc,
+       (count(distinct po.id) filter (where po.estado = 'pendiente') > 0 and p.estado = 'abierta') desc,
        p.creado_en desc`,
     [usuarioId]
   );
@@ -63,7 +69,7 @@ export default async function MisPublicacionesPage() {
       <div style={{ marginTop: 16, display: "flex", flexDirection: "column", gap: 10 }}>
         {result.rows.map((p) => {
           const estado = ESTADO_ETIQUETA[p.estado] ?? { texto: p.estado, color: "#94a3b8" };
-          const hayNuevas = p.postulantes_pendientes > 0 && p.estado === "abierta";
+          const hayNuevas = (p.postulantes_pendientes > 0 && p.estado === "abierta") || p.mensajes_nuevos > 0;
           return (
             <Link
               key={p.id}
@@ -86,19 +92,19 @@ export default async function MisPublicacionesPage() {
               <p style={{ margin: 0, fontSize: 12, color: "#94a3b8" }}>{p.ciudad}</p>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 8 }}>
                 <p style={{ margin: 0, fontSize: 13, fontWeight: 600 }}>{formatCOP(p.valor_ofertado)}</p>
-                {p.postulantes_total > 0 && (
-                  <span
-                    style={{
-                      fontSize: 12,
-                      fontWeight: hayNuevas ? 700 : 400,
-                      color: hayNuevas ? "#facc15" : "#94a3b8",
-                    }}
-                  >
-                    {hayNuevas ? "🔔 " : ""}
-                    {p.postulantes_total} postulante{p.postulantes_total === 1 ? "" : "s"}
-                    {hayNuevas ? ` · ${p.postulantes_pendientes} por revisar` : ""}
-                  </span>
-                )}
+                <span
+                  style={{
+                    fontSize: 12,
+                    fontWeight: hayNuevas ? 700 : 400,
+                    color: hayNuevas ? "#facc15" : "#94a3b8",
+                    textAlign: "right",
+                  }}
+                >
+                  {p.mensajes_nuevos > 0 && `🔔 ${p.mensajes_nuevos} mensaje${p.mensajes_nuevos === 1 ? "" : "s"} nuevo${p.mensajes_nuevos === 1 ? "" : "s"}`}
+                  {p.mensajes_nuevos > 0 && p.postulantes_total > 0 && " · "}
+                  {p.postulantes_total > 0 &&
+                    `${p.postulantes_pendientes > 0 && p.estado === "abierta" ? "🔔 " : ""}${p.postulantes_total} postulante${p.postulantes_total === 1 ? "" : "s"}${p.postulantes_pendientes > 0 && p.estado === "abierta" ? ` · ${p.postulantes_pendientes} por revisar` : ""}`}
+                </span>
               </div>
             </Link>
           );

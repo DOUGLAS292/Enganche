@@ -18,10 +18,12 @@ export default function AccionesAutor({
   publicacionId,
   estadoPublicacion,
   postulantesIniciales,
+  mensajesNuevos = 0,
 }: {
   publicacionId: string;
   estadoPublicacion: string;
   postulantesIniciales: Postulante[];
+  mensajesNuevos?: number;
 }) {
   const router = useRouter();
   const [cargando, setCargando] = useState<string | null>(null);
@@ -150,8 +152,11 @@ export default function AccionesAutor({
       {estadoPublicacion === "en_proceso" && (
         <>
           <div style={{ marginTop: 14, display: "flex", gap: 8 }}>
-            <Link href={`/publicaciones/${publicacionId}/chat`} style={botonPrimarioLink}>
-              Ir al chat
+            <Link
+              href={`/publicaciones/${publicacionId}/chat`}
+              style={{ ...botonPrimarioLink, ...(mensajesNuevos > 0 ? { background: "#854d0e", borderColor: "#facc15" } : {}) }}
+            >
+              {mensajesNuevos > 0 ? `🔔 Ir al chat (${mensajesNuevos})` : "Ir al chat"}
             </Link>
             <button onClick={reabrir} disabled={cargando === "reabrir"} style={{ ...botonChico, flex: 1 }}>
               {cargando === "reabrir" ? "…" : "Reabrir publicación"}

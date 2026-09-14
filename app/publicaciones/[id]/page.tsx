@@ -108,6 +108,18 @@ export default async function PublicacionDetalle({ params }: { params: Promise<{
   let comision: { valor_comision: number; estado: string } | null = null;
   let yaCalifique = false;
   let garantias: { id: string; descripcion: string; estado: "abierto" | "atendido" | "no_atendido"; fecha_reporte: string }[] = [];
+  let mensajesNuevos = 0;
+
+  if ((esAutor || esGanador) && publicacion.ganador_id) {
+    const r = await query<{ total: string }>(
+      `select count(*) as total
+       from mensajes m
+       left join mensajes_leidos ml on ml.usuario_id = $2 and ml.publicacion_id = m.publicacion_id
+       where m.publicacion_id = $1 and m.emisor_id != $2 and m.creado_en > coalesce(ml.leido_hasta, '-infinity')`,
+      [id, usuarioId]
+    );
+    mensajesNuevos = Number(r.rows[0]?.total ?? 0);
+  }
 
   if ((esAutor || esGanador) && publicacion.estado === "completada") {
     const [rComision, rCalifique, rGarantias] = await Promise.all([
@@ -178,14 +190,19 @@ export default async function PublicacionDetalle({ params }: { params: Promise<{
       </div>
 
       {esAutor && (
-        <AccionesAutor publicacionId={publicacion.id} estadoPublicacion={publicacion.estado} postulantesIniciales={postulantes} />
+        <AccionesAutor
+          publicacionId={publicacion.id}
+          estadoPublicacion={publicacion.estado}
+          postulantesIniciales={postulantes}
+          mensajesNuevos={mensajesNuevos}
+        />
       )}
 
       {!esAutor && esGanador && (
-        <div style={{ marginTop: 20, padding: "14px 16px", borderRadius: 10, border: "1px solid #4ade80" }}>
+        <div style={{ marginTop: 20, padding: "14px 16px", borderRadius: 10, border: `1px solid ${mensajesNuevos > 0 ? "#facc15" : "#4ade80"}` }}>
           <p style={{ margin: 0, fontWeight: 600, color: "#4ade80" }}>¡Fuiste elegido para este trabajo!</p>
-          <Link href={`/publicaciones/${publicacion.id}/chat`} style={{ color: "#4ade80", textDecoration: "underline", fontSize: 13 }}>
-            Ir al chat con quien publicó
+          <Link href={`/publicaciones/${publicacion.id}/chat`} style={{ color: mensajesNuevos > 0 ? "#facc15" : "#4ade80", textDecoration: "underline", fontSize: 13, fontWeight: mensajesNuevos > 0 ? 700 : 400 }}>
+            {mensajesNuevos > 0 ? `🔔 Ir al chat (${mensajesNuevos} nuevo${mensajesNuevos === 1 ? "" : "s"})` : "Ir al chat con quien publicó"}
           </Link>
         </div>
       )}
