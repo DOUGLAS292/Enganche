@@ -162,10 +162,12 @@ A diferencia del piloto cerrado con 5 talleres aliados del proyecto de cotizador
 
 Esto implica que la moderación básica de publicaciones (spam, publicaciones falsas, contenido inapropiado) y el reporte de usuarios problemáticos son prioridad desde la Fase 1, no algo que se pueda posponer confiando en una comunidad pequeña y conocida.
 
-**Arranque en frío por ciudad — primer mes sin comisión**
-Para resolver el problema clásico de "feed vacío" y falta de confianza en cada ciudad/región nueva donde aún no hay historial ni calificaciones, la estrategia es: **las primeras transacciones en cada ciudad nueva, durante aproximadamente el primer mes de esa plaza, no cobran comisión.** Esto reduce a cero la fricción de costo mientras se construye masa crítica de usuarios, publicaciones activas y calificaciones reales. Pasado ese periodo de validación local, se activa el cobro normal del 3%.
+**Periodo de gracia — primeros 30 días sin comisión, por usuario** *(actualizado sept-2026: el modelo original era por ciudad nueva; Douglas decidió cambiarlo a por usuario tras la auditoría de 10 casos reales — ver razón abajo)*
+Cada usuario que trabaja en Enganche (el elegido para un trabajo, quien paga la comisión) tiene un único periodo de 30 días sin comisión en toda su vida en la plataforma, contado desde su **primer trabajo completado**, sin importar en qué ciudad esté ni cuántas ciudades distintas toque durante ese mes. Pasados esos 30 días desde su propio inicio, todo lo que complete después cobra el 3% normal — incluso si entra por primera vez a una ciudad totalmente nueva para la plataforma.
 
-Implicación técnica: el campo `porcentaje_comision` no debe ser una sola constante global fija, sino algo evaluable por ciudad/región y fecha de activación de esa plaza (ej. una tabla `ciudades_piloto` con `fecha_inicio_comision`, o una regla simple en el cálculo que compare la fecha de la publicación contra la fecha de lanzamiento comercial de esa ciudad). Se debe definir en Fase 0 cómo se registra "cuándo empezó a cobrar comisión" cada ciudad, para no tener que rehacer el modelo de comisión más adelante.
+Se descartó el modelo original (gratis por ciudad nueva, sin importar el usuario) porque no reflejaba cómo se mueve realmente el gremio: un mismo tallerista puede trabajar en Cali, y dos semanas después en Armenia — bajo el modelo por ciudad, cada ciudad nueva le regalaría otro mes gratis distinto; bajo el modelo por usuario, tiene un solo mes de bienvenida y ya.
+
+Implicación técnica: cada usuario tiene una columna `comision_gratis_hasta` (fecha), que se fija la primera vez que se le paga una comisión (aunque sea $0) y nunca se reinicia. El cálculo en `completar` compara `now()` contra esa fecha, no contra ninguna tabla de ciudades.
 
 **Visión de producto a largo plazo:** Enganche no se piensa solo como tablero de ofertas puntuales, sino como un **directorio nacional del gremio de sistemas vidriados** — un lugar donde cualquiera en el sector, en cualquier ciudad del país, puede encontrar y validar (por calificación e historial) a quién contratar para producción o instalación, de forma permanente y no solo transaccional.
 

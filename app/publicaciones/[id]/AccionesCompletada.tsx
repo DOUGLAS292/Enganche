@@ -148,7 +148,7 @@ export default function AccionesCompletada({
         <div className="panel" style={{ padding: "14px 16px" }}>
           <p style={{ margin: 0, fontSize: 13, color: "var(--color-mist)" }}>Comisión de la plataforma</p>
           <p style={{ margin: "4px 0 0", fontSize: 18, fontWeight: 700, fontFamily: "var(--font-mono)", color: "var(--color-acento-claro)" }}>
-            {comisionInicial.valor_comision === 0 ? "Gratis (ciudad en arranque)" : formatCOP(comisionInicial.valor_comision)}
+            {comisionInicial.valor_comision === 0 ? "Gratis (periodo de bienvenida)" : formatCOP(comisionInicial.valor_comision)}
           </p>
           <p style={{ margin: "2px 0 0", fontSize: 12, color: "var(--color-mist)" }}>
             {ESTADO_COMISION[comisionInicial.estado] ?? comisionInicial.estado}

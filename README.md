@@ -23,8 +23,10 @@ reutilizable:
 
 ### Fase 0 — esqueleto de datos ✅
 
-- [x] 8 tablas: `usuarios`, `publicaciones`, `postulaciones`, `mensajes`,
-      `calificaciones`, `comisiones`, `garantias`, `ciudades_piloto`
+- [x] 7 tablas: `usuarios`, `publicaciones`, `postulaciones`, `mensajes`,
+      `calificaciones`, `comisiones`, `garantias`
+      (`ciudades_piloto` existió hasta sept-2026, eliminada al cambiar el
+      periodo de gracia de "por ciudad" a "por usuario" — ver Fase 4)
 - [x] Extensión PostGIS + índices GIST para `ST_DWithin` / `ST_Distance`
 - [x] Reglas de negocio impuestas a nivel de base de datos:
       - un solo postulante `elegida` activo por publicación (índice único parcial)
@@ -110,11 +112,12 @@ dejó pendiente de aprobación por Meta.
 
 - [x] "Marcar trabajo completado" (autor, solo desde `en_proceso`) — genera la
       comisión automáticamente, sin depender de que nadie califique
-- [x] **Arranque en frío por ciudad, implementado de verdad**: la primera vez
-      que se completa un trabajo en una ciudad nueva, se registra en
-      `ciudades_piloto` con 30 días sin comisión desde ese momento; pasado ese
-      plazo cobra el 3% normal — probado contra la base real con una ciudad
-      nueva (comisión $0) y una ciudad ya establecida (comisión normal)
+- [x] **Periodo de gracia por usuario** (cambiado de "por ciudad" a "por
+      usuario" en sept-2026, ver `docs/SPEC.md`): el primer trabajo
+      completado de cada usuario le arranca 30 días sin comisión en toda la
+      plataforma, sin importar la ciudad; pasado ese plazo personal cobra el
+      3% normal — probado contra la base real: mismo usuario gratis en su
+      primer trabajo y cobrando en el segundo, en ciudades distintas
 - [x] `completada_en` nuevo en `publicaciones` (migración `0013`, ya aplicada
       en producción) para poder contar los 30 días de garantía
 - [x] Calificación mutua (autor ↔ ganador), independiente y no bloqueante

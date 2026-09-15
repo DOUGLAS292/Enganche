@@ -108,9 +108,9 @@ function tituloSimple(ciudad: string): string {
 
 // "cali", "CALI", "medellin" (sin tilde) → "Cali", "Medellín". Si la ciudad
 // ya está en REGION_POR_CIUDAD (comparando sin tildes/mayúsculas), se guarda
-// con esa ortografía exacta — así ciudades_piloto nunca termina con dos
-// filas distintas para la misma ciudad real. Si no está en el mapa, se
-// guarda con capitalización simple.
+// con esa ortografía exacta — así el campo `ciudad` de publicaciones nunca
+// termina con dos filas distintas para la misma ciudad real. Si no está en
+// el mapa, se guarda con capitalización simple.
 export function normalizarCiudad(ciudad: string): string {
   const normalizado = llaveComparable(ciudad);
   const clave = Object.keys(REGION_POR_CIUDAD).find((c) => llaveComparable(c) === normalizado);
