@@ -3,6 +3,7 @@ import Link from "next/link";
 import { obtenerUsuarioIdDeSesion } from "@/lib/auth/session";
 import { query } from "@/lib/db";
 import { formatFecha } from "@/lib/format";
+import SubirFotoBoton from "./SubirFotoBoton";
 
 const TIPO_USUARIO_ETIQUETA: Record<string, string> = {
   empresa: "Empresa",
@@ -26,6 +27,7 @@ type Usuario = {
   rating_promedio: number | null;
   trabajos_completados: number;
   creado_en: string;
+  foto_url: string | null;
 };
 
 type Calificacion = {
@@ -50,7 +52,7 @@ export default async function PerfilPage({ params }: { params: Promise<{ id: str
 
   const result = await query<Usuario>(
     `select id, nombre_razon_social, tipo_usuario, ciudad, ofrece, verificado,
-            rating_promedio, trabajos_completados, creado_en
+            rating_promedio, trabajos_completados, creado_en, foto_url
      from usuarios where id = $1`,
     [id]
   );
@@ -85,7 +87,18 @@ export default async function PerfilPage({ params }: { params: Promise<{ id: str
       </Link>
 
       <div style={{ marginTop: 18, display: "flex", alignItems: "center", gap: 14 }}>
-        <div className="icono-marco" style={{ width: 56, height: 56, fontSize: 26 }}>👤</div>
+        {perfil.foto_url ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={perfil.foto_url}
+            alt={perfil.nombre_razon_social}
+            width={56}
+            height={56}
+            style={{ width: 56, height: 56, borderRadius: 10, objectFit: "cover", border: "1px solid var(--color-borde)", flexShrink: 0 }}
+          />
+        ) : (
+          <div className="icono-marco" style={{ width: 56, height: 56, fontSize: 26 }}>👤</div>
+        )}
         <div style={{ minWidth: 0 }}>
           <h1 className="titular" style={{ fontSize: 21, margin: 0, fontWeight: 700 }}>
             {perfil.nombre_razon_social}
@@ -99,9 +112,12 @@ export default async function PerfilPage({ params }: { params: Promise<{ id: str
       </div>
 
       {esMiPropioPerfil && (
-        <p style={{ marginTop: 10, fontSize: 12, color: "var(--color-mist-tenue)" }}>
-          Así es como te ve el resto del gremio.
-        </p>
+        <>
+          <p style={{ marginTop: 10, fontSize: 12, color: "var(--color-mist-tenue)" }}>
+            Así es como te ve el resto del gremio.
+          </p>
+          <SubirFotoBoton />
+        </>
       )}
 
       <div className="panel" style={{ marginTop: 20, padding: "18px 16px", display: "flex", gap: 18, alignItems: "center" }}>
