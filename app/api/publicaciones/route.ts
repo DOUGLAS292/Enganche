@@ -41,12 +41,25 @@ export async function GET(request: Request) {
     const lngIdx = params.length - 1;
     const latIdx = params.length;
     const punto = `ST_SetSRID(ST_MakePoint($${lngIdx}, $${latIdx}), 4326)::geography`;
-    // Una oferta sin ubicación guardada (compartirla al publicar es opcional)
-    // no debe desaparecer del feed: se muestra sin distancia calculada, en
-    // vez de quedar excluida por el filtro de cercanía.
     distanciaSelect = `case when p.ubicacion is not null then ST_Distance(p.ubicacion, ${punto}) end as distancia_m`;
     params.push(radioKm * 1000);
-    condiciones.push(`(p.ubicacion is null or ST_DWithin(p.ubicacion, ${punto}, $${params.length}))`);
+    const radioIdx = params.length;
+
+    // Una oferta sin ubicación guardada (compartirla al publicar es opcional)
+    // no debe desaparecer del feed, pero tampoco debe aparecerle a cualquiera
+    // en cualquier ciudad del país solo por no tener GPS: se muestra por
+    // cercanía cuando tiene ubicación, y por coincidencia de ciudad
+    // declarada (la del buscador, tomada de su propio perfil) cuando no.
+    const miCiudad = await query<{ ciudad: string | null }>("select ciudad from usuarios where id = $1", [usuarioId]);
+    const ciudadBuscador = miCiudad.rows[0]?.ciudad;
+    if (ciudadBuscador) {
+      params.push(ciudadBuscador);
+      condiciones.push(
+        `((p.ubicacion is not null and ST_DWithin(p.ubicacion, ${punto}, $${radioIdx})) or (p.ubicacion is null and p.ciudad ilike $${params.length}))`
+      );
+    } else {
+      condiciones.push(`p.ubicacion is not null and ST_DWithin(p.ubicacion, ${punto}, $${radioIdx})`);
+    }
     orderBy = "distancia_m asc nulls last, p.creado_en desc";
   } else if (ciudad) {
     params.push(`%${ciudad}%`);
