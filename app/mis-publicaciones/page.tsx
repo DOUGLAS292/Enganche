@@ -9,6 +9,7 @@ const ESTADO_ETIQUETA: Record<string, { texto: string; color: string }> = {
   en_proceso: { texto: "Enganchada", color: "var(--color-azul-suave)" },
   completada: { texto: "Completada", color: "#94a3b8" },
   cancelada: { texto: "Cancelada", color: "#f87171" },
+  expirada: { texto: "Expirada", color: "#eab308" },
 };
 
 type Fila = {

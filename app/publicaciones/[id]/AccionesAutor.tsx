@@ -107,8 +107,33 @@ export default function AccionesAutor({
     }
   }
 
+  async function renovar() {
+    setError(null);
+    setCargando("renovar");
+    try {
+      const res = await fetch(`/api/publicaciones/${publicacionId}/renovar`, { method: "POST" });
+      const data = await res.json();
+      if (!data.ok) {
+        setError(data.error ?? "No se pudo renovar.");
+        return;
+      }
+      router.refresh();
+    } catch {
+      setError("Error de conexión.");
+    } finally {
+      setCargando(null);
+    }
+  }
+
   return (
     <div style={{ marginTop: 20 }}>
+      {estadoPublicacion === "expirada" && (
+        <p style={{ margin: "0 0 12px", fontSize: 13, color: "var(--color-mist)" }}>
+          Esta oferta expiró por 15 días sin postulantes nuevos y ya no aparece en el feed. Renuévala si todavía
+          necesitas el trabajo, o déjala cerrada.
+        </p>
+      )}
+
       <h2 style={{ fontSize: 16, margin: 0 }}>
         Postulantes{postulantesIniciales.length > 0 ? ` (${postulantesIniciales.length})` : ""}
       </h2>
@@ -144,8 +169,19 @@ export default function AccionesAutor({
       </div>
 
       {estadoPublicacion === "abierta" && (
-        <button onClick={cancelar} disabled={cargando === "cancelar"} className="boton-linea" style={{ marginTop: 14, width: "100%" }}>
-          Cancelar publicación
+        <div style={{ marginTop: 14, display: "flex", gap: 8 }}>
+          <button onClick={renovar} disabled={cargando === "renovar"} className="boton-linea" style={{ flex: 1 }}>
+            {cargando === "renovar" ? "…" : "Renovar (reinicia los 15 días)"}
+          </button>
+          <button onClick={cancelar} disabled={cargando === "cancelar"} className="boton-linea" style={{ flex: 1 }}>
+            Cancelar publicación
+          </button>
+        </div>
+      )}
+
+      {estadoPublicacion === "expirada" && (
+        <button onClick={renovar} disabled={cargando === "renovar"} className="boton-primario" style={{ marginTop: 14 }}>
+          {cargando === "renovar" ? "…" : "Renovar publicación"}
         </button>
       )}
 

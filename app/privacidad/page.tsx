@@ -11,10 +11,6 @@ export default function PrivacidadPage() {
 
       <h1 className="titular" style={{ fontSize: 26, marginTop: 14, fontWeight: 700 }}>Política de privacidad</h1>
       <p style={{ color: "var(--color-mist)", fontSize: 13 }}>Última actualización: septiembre de 2026</p>
-      <p style={{ color: "var(--color-mist)", fontSize: 13 }}>
-        Responsable del tratamiento: <strong>La Ventanería Ingeniería y Diseño S.A.S.</strong>, empresa colombiana
-        propietaria y operadora de la plataforma Enganche.
-      </p>
 
       <div style={{ marginTop: 16, display: "flex", flexDirection: "column", gap: 18, fontSize: 13, color: "#cbd5e1", lineHeight: 1.6 }}>
         <Clausula titulo="1. Alcance de esta política">
@@ -57,8 +53,11 @@ export default function PrivacidadPage() {
           Conforme a la Ley 1581 de 2012 y sus decretos reglamentarios (protección de datos personales en
           Colombia), puedes conocer, actualizar y rectificar tus datos; solicitar prueba de la autorización
           otorgada; ser informado del uso dado a tus datos; solicitar su eliminación cuando no exista un deber
-          legal de conservarlos; y revocar tu autorización en cualquier momento, escribiendo a los canales de
-          contacto oficiales de Enganche.
+          legal de conservarlos; y revocar tu autorización en cualquier momento, escribiendo a{" "}
+          <a href="mailto:contacto.enganche@gmail.com" style={{ color: "var(--color-azul-suave)" }}>
+            contacto.enganche@gmail.com
+          </a>
+          .
         </Clausula>
 
         <Clausula titulo="7. Conservación de los datos">
@@ -78,10 +77,18 @@ export default function PrivacidadPage() {
         </Clausula>
 
         <Clausula titulo="10. Contacto">
-          Para preguntas sobre esta política o para ejercer tus derechos de Habeas Data, contacta a La
-          Ventanería Ingeniería y Diseño S.A.S. a través de sus canales oficiales de atención.
+          Para preguntas sobre esta política o para ejercer tus derechos de Habeas Data, escribe a{" "}
+          <a href="mailto:contacto.enganche@gmail.com" style={{ color: "var(--color-azul-suave)" }}>
+            contacto.enganche@gmail.com
+          </a>
+          .
         </Clausula>
       </div>
+
+      <p style={{ marginTop: 28, fontSize: 11, color: "var(--color-mist-tenue)" }}>
+        Enganche es operado por La Ventanería Ingeniería y Diseño S.A.S., NIT 901.593.033-5, empresa colombiana
+        responsable del tratamiento de datos descrito en esta política.
+      </p>
     </main>
   );
 }

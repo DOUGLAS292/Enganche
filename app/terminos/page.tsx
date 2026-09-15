@@ -66,7 +66,11 @@ export default function TerminosPage() {
           mostrarte ofertas cercanas, y permitir el contacto entre las partes de un trabajo
           elegido. Conforme a la Ley 1581 de 2012 y sus decretos reglamentarios (habeas data en
           Colombia), puedes solicitar en cualquier momento la consulta, corrección o eliminación
-          de tus datos escribiendo a través de los canales de contacto de Enganche.
+          de tus datos escribiendo a{" "}
+          <a href="mailto:contacto.enganche@gmail.com" style={{ color: "var(--color-azul-suave)" }}>
+            contacto.enganche@gmail.com
+          </a>
+          .
         </Clausula>
 
         <Clausula titulo="8. Cambios a estos términos">
@@ -79,6 +83,11 @@ export default function TerminosPage() {
           estos términos y condiciones para poder usar Enganche.
         </Clausula>
       </div>
+
+      <p style={{ marginTop: 28, fontSize: 11, color: "var(--color-mist-tenue)" }}>
+        Enganche es operado por La Ventanería Ingeniería y Diseño S.A.S., NIT 901.593.033-5, empresa colombiana
+        responsable de esta plataforma frente a la ley.
+      </p>
     </main>
   );
 }

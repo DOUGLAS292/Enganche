@@ -37,5 +37,12 @@ export async function POST(_request: Request, { params }: { params: Promise<{ id
     throw err;
   }
 
+  // Una postulación nueva reinicia el contador de los 15 días de
+  // inactividad que usa la auto-expiración.
+  await query(
+    "update publicaciones set ultima_actividad_en = now(), aviso_expiracion_enviado = false where id = $1",
+    [id]
+  );
+
   return NextResponse.json({ ok: true });
 }
