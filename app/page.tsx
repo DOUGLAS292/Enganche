@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { CSSProperties } from "react";
 import { obtenerUsuarioIdDeSesion } from "@/lib/auth/session";
 import { query } from "@/lib/db";
+import { formatCOP } from "@/lib/format";
 import HealthCheck from "./HealthCheck";
 import CerrarSesionBoton from "./CerrarSesionBoton";
 
@@ -12,6 +13,7 @@ export default async function Home() {
   let mensajesNuevosAutor = 0;
   let mensajesNuevosGanador = 0;
   let postulacionesSinVer = 0;
+  let deudaComision: { publicacionId: string; sistemaOProyecto: string; total: number; cantidad: number; bloqueado: boolean } | null = null;
 
   if (usuarioId) {
     const result = await query<{ nombre_razon_social: string; ciudad: string | null; es_admin: boolean }>(
@@ -20,7 +22,7 @@ export default async function Home() {
     );
     usuario = result.rows[0] ?? null;
 
-    const [pendientes, mensajesAutor, mensajesGanador, sinVer] = await Promise.all([
+    const [pendientes, mensajesAutor, mensajesGanador, sinVer, comisionesDeuda] = await Promise.all([
       query<{ total: string }>(
         `select count(*) as total
          from postulaciones po
@@ -50,11 +52,34 @@ export default async function Home() {
         "select count(*) as total from postulaciones where postulante_id = $1 and notificado = false",
         [usuarioId]
       ),
+      query<{ publicacion_id: string; sistema_o_proyecto: string; valor_comision: number; estado: string; creado_en: string }>(
+        `select c.publicacion_id, p.sistema_o_proyecto, c.valor_comision, c.estado, c.creado_en
+         from comisiones c
+         join publicaciones p on p.id = c.publicacion_id
+         where c.responsable_pago_id = $1 and c.estado in ('pendiente', 'rechazada') and c.valor_comision > 0
+         order by c.creado_en asc`,
+        [usuarioId]
+      ),
     ]);
     postulantesPorRevisar = Number(pendientes.rows[0]?.total ?? 0);
     mensajesNuevosAutor = Number(mensajesAutor.rows[0]?.total ?? 0);
     mensajesNuevosGanador = Number(mensajesGanador.rows[0]?.total ?? 0);
     postulacionesSinVer = Number(sinVer.rows[0]?.total ?? 0);
+
+    if (comisionesDeuda.rows.length > 0) {
+      const total = comisionesDeuda.rows.reduce((acc, c) => acc + Number(c.valor_comision), 0);
+      const bloqueado = comisionesDeuda.rows.some(
+        (c) => c.estado === "rechazada" || Date.now() - new Date(c.creado_en).getTime() >= 7 * 24 * 60 * 60 * 1000
+      );
+      const primera = comisionesDeuda.rows[0];
+      deudaComision = {
+        publicacionId: primera.publicacion_id,
+        sistemaOProyecto: primera.sistema_o_proyecto,
+        total,
+        cantidad: comisionesDeuda.rows.length,
+        bloqueado,
+      };
+    }
   }
 
   const primerNombre = usuario?.nombre_razon_social?.split(" ")[0] ?? "";
@@ -71,6 +96,31 @@ export default async function Home() {
 
       {usuario ? (
         <>
+          {deudaComision && (
+            <Link
+              href={`/publicaciones/${deudaComision.publicacionId}`}
+              className="panel"
+              style={{
+                display: "block",
+                marginTop: 22,
+                padding: "14px 16px",
+                borderColor: deudaComision.bloqueado ? "#f87171" : "var(--color-acento-claro)",
+                background: deudaComision.bloqueado ? "rgba(248, 113, 113, 0.08)" : "rgba(251, 191, 36, 0.08)",
+              }}
+            >
+              <p style={{ margin: 0, fontSize: 14, fontWeight: 700, color: deudaComision.bloqueado ? "#f87171" : "var(--color-acento-claro)" }}>
+                {deudaComision.bloqueado ? "🚫 No puedes postularte a ofertas nuevas" : "⚠️ Tienes comisión pendiente de pago"}
+              </p>
+              <p style={{ margin: "4px 0 0", fontSize: 13, color: "var(--color-mist)" }}>
+                Debes {formatCOP(deudaComision.total)}
+                {deudaComision.cantidad > 1 ? ` en ${deudaComision.cantidad} comisiones` : ` de "${deudaComision.sistemaOProyecto}"`}.
+                {deudaComision.bloqueado
+                  ? " Estás perdiendo trabajos nuevos hasta que pagues."
+                  : " Págala pronto para no perder acceso a ofertas nuevas."}
+              </p>
+            </Link>
+          )}
+
           <div style={saludoCaja}>
             <p style={{ margin: 0, fontSize: 15, fontWeight: 700 }}>¡Hola, {primerNombre}! 👋</p>
             {usuario.ciudad && (

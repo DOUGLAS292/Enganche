@@ -17,6 +17,7 @@ const ESTADO_COMISION: Record<string, string> = {
   pendiente: "Pendiente de pago",
   marcada_pagada: "Marcada como pagada — a la espera de confirmación",
   confirmada: "Confirmada",
+  rechazada: "Rechazada — el pago no fue confirmado, vuelve a marcarla cuando lo resuelvas",
 };
 
 const ESTADO_GARANTIA: Record<string, { texto: string; color: string }> = {
@@ -153,7 +154,7 @@ export default function AccionesCompletada({
           <p style={{ margin: "2px 0 0", fontSize: 12, color: "var(--color-mist)" }}>
             {ESTADO_COMISION[comisionInicial.estado] ?? comisionInicial.estado}
           </p>
-          {soyGanador && comisionInicial.estado === "pendiente" && comisionInicial.valor_comision > 0 && (
+          {soyGanador && (comisionInicial.estado === "pendiente" || comisionInicial.estado === "rechazada") && comisionInicial.valor_comision > 0 && (
             <button onClick={marcarComisionPagada} disabled={cargando === "comision"} className="boton-linea" style={{ marginTop: 10, width: "100%" }}>
               {cargando === "comision" ? "…" : "Marcar comisión como pagada"}
             </button>

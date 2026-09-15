@@ -86,3 +86,31 @@ export async function enviarAvisoPostulantesPendientes(
     `Aviso de postulantes esperando (WhatsApp no configurado) para ${celular}: "${sistemaOProyecto}" tiene ${postulantesPendientes} postulante(s) hace ${diasEsperando} días sin que elijas a nadie.`
   );
 }
+
+export async function enviarAvisoComisionPendiente(
+  celular: string,
+  sistemaOProyecto: string,
+  valorComision: string
+): Promise<void> {
+  await enviarPlantillaUtilidad(
+    celular,
+    process.env.WHATSAPP_AVISO_COMISION_PENDIENTE_TEMPLATE,
+    process.env.WHATSAPP_AVISO_COMISION_PENDIENTE_TEMPLATE_LANG || "es",
+    [sistemaOProyecto, valorComision],
+    `Aviso de comisión pendiente (WhatsApp no configurado) para ${celular}: debe ${valorComision} por "${sistemaOProyecto}".`
+  );
+}
+
+export async function enviarAvisoComisionRechazada(
+  celular: string,
+  sistemaOProyecto: string,
+  valorComision: string
+): Promise<void> {
+  await enviarPlantillaUtilidad(
+    celular,
+    process.env.WHATSAPP_AVISO_COMISION_RECHAZADA_TEMPLATE,
+    process.env.WHATSAPP_AVISO_COMISION_RECHAZADA_TEMPLATE_LANG || "es",
+    [sistemaOProyecto, valorComision],
+    `Aviso de comisión rechazada (WhatsApp no configurado) para ${celular}: el pago de ${valorComision} por "${sistemaOProyecto}" no fue confirmado.`
+  );
+}

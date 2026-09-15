@@ -27,30 +27,38 @@ export async function POST(_request: Request, { params }: { params: Promise<{ id
     return NextResponse.json({ ok: false, error: "Esta oferta ya no está abierta." }, { status: 400 });
   }
 
-  // Una sola comisión vencida (más de 7 días sin marcarla pagada) bloquea
-  // postularse a ofertas nuevas hasta que se ponga al día — no bloquea
-  // publicar ni usar el resto de la app, solo tomar trabajo nuevo. Se
-  // excluyen las comisiones en $0 (periodo de gracia del usuario): esas
-  // no tienen botón de "marcar pagada" porque no hay nada que pagar, así
-  // que nunca deben poder bloquear a nadie.
-  const comisionVencida = await query<{ valor_comision: number; sistema_o_proyecto: string }>(
-    `select c.valor_comision, p.sistema_o_proyecto
+  // Una comisión vencida (más de 7 días sin marcarla pagada) o rechazada
+  // por el admin (el pago que marcó no llegó de verdad) bloquea postularse
+  // a ofertas nuevas hasta que se ponga al día — no bloquea publicar ni
+  // usar el resto de la app, solo tomar trabajo nuevo. La rechazada
+  // bloquea de inmediato, sin esperar los 7 días, porque ya hubo un
+  // intento de pago cuestionado. Se excluyen las comisiones en $0
+  // (periodo de gracia del usuario): esas no tienen botón de "marcar
+  // pagada" porque no hay nada que pagar, así que nunca deben bloquear.
+  const comisionVencida = await query<{ valor_comision: number; sistema_o_proyecto: string; estado: string }>(
+    `select c.valor_comision, p.sistema_o_proyecto, c.estado
      from comisiones c
      join publicaciones p on p.id = c.publicacion_id
      where c.responsable_pago_id = $1
-       and c.estado = 'pendiente'
        and c.valor_comision > 0
-       and now() - c.creado_en >= interval '${DIAS_GRACIA_COMISION} days'
+       and (
+         c.estado = 'rechazada'
+         or (c.estado = 'pendiente' and now() - c.creado_en >= interval '${DIAS_GRACIA_COMISION} days')
+       )
      order by c.creado_en asc
      limit 1`,
     [usuarioId]
   );
   const deuda = comisionVencida.rows[0];
   if (deuda) {
+    const motivo =
+      deuda.estado === "rechazada"
+        ? `El pago que marcaste de ${formatCOP(deuda.valor_comision)} de "${deuda.sistema_o_proyecto}" fue rechazado`
+        : `Tienes una comisión sin pagar hace más de ${DIAS_GRACIA_COMISION} días (${formatCOP(deuda.valor_comision)} de "${deuda.sistema_o_proyecto}")`;
     return NextResponse.json(
       {
         ok: false,
-        error: `Tienes una comisión sin pagar hace más de ${DIAS_GRACIA_COMISION} días (${formatCOP(deuda.valor_comision)} de "${deuda.sistema_o_proyecto}"). Márcala como pagada para poder postularte a nuevas ofertas.`,
+        error: `${motivo}. Márcala como pagada para poder postularte a nuevas ofertas.`,
       },
       { status: 403 }
     );

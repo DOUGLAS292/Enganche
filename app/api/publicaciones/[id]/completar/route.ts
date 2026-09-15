@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { query } from "@/lib/db";
 import { obtenerUsuarioIdDeSesion } from "@/lib/auth/session";
+import { enviarAvisoComisionPendiente } from "@/lib/whatsapp/notificaciones";
+import { formatCOP } from "@/lib/format";
 
 const PORCENTAJE_COMISION = 0.03;
 const DIAS_PERIODO_GRATIS_USUARIO = 30;
@@ -17,7 +19,8 @@ export async function POST(_request: Request, { params }: { params: Promise<{ id
     estado: string;
     ganador_id: string | null;
     valor_ofertado: number;
-  }>("select autor_id, estado, ganador_id, valor_ofertado from publicaciones where id = $1", [id]);
+    sistema_o_proyecto: string;
+  }>("select autor_id, estado, ganador_id, valor_ofertado, sistema_o_proyecto from publicaciones where id = $1", [id]);
   const fila = publicacion.rows[0];
   if (!fila || fila.autor_id !== usuarioId) {
     return NextResponse.json({ ok: false, error: "No autorizado." }, { status: 403 });
@@ -56,12 +59,23 @@ export async function POST(_request: Request, { params }: { params: Promise<{ id
   const enPeriodoGratis = new Date(gratisHasta).getTime() > Date.now();
   const valorComision = enPeriodoGratis ? 0 : Math.round(fila.valor_ofertado * PORCENTAJE_COMISION);
 
-  await query(
+  const comisionCreada = await query<{ id: string }>(
     `insert into comisiones (publicacion_id, valor_comision, responsable_pago_id, estado)
      values ($1, $2, $3, 'pendiente')
-     on conflict (publicacion_id) do nothing`,
+     on conflict (publicacion_id) do nothing
+     returning id`,
     [id, valorComision, fila.ganador_id]
   );
+
+  // Solo se avisa si la fila se creó de verdad (no en un reintento) y si
+  // hay algo que pagar — en el periodo de gracia no hay nada que cobrar.
+  if (comisionCreada.rows[0] && valorComision > 0) {
+    const info = await query<{ celular: string }>("select celular from usuarios where id = $1", [fila.ganador_id]);
+    const ganadorInfo = info.rows[0];
+    if (ganadorInfo) {
+      await enviarAvisoComisionPendiente(ganadorInfo.celular, fila.sistema_o_proyecto, formatCOP(valorComision));
+    }
+  }
 
   return NextResponse.json({ ok: true, valorComision, enPeriodoGratis });
 }

@@ -9,13 +9,14 @@ const ESTADO_ETIQUETA: Record<string, { texto: string; color: string }> = {
   pendiente: { texto: "Pendiente", color: "var(--color-acento-claro)" },
   marcada_pagada: { texto: "Marcada pagada", color: "var(--color-azul-suave)" },
   confirmada: { texto: "Confirmada", color: "#4ade80" },
+  rechazada: { texto: "Rechazada", color: "#f87171" },
 };
 
 type Comision = {
   id: string;
   publicacion_id: string;
   valor_comision: number;
-  estado: "pendiente" | "marcada_pagada" | "confirmada";
+  estado: "pendiente" | "marcada_pagada" | "confirmada" | "rechazada";
   creado_en: string;
   confirmada_en: string | null;
   sistema_o_proyecto: string;
@@ -47,7 +48,7 @@ export default async function AdminComisiones() {
       acc[c.estado] += c.valor_comision;
       return acc;
     },
-    { pendiente: 0, marcada_pagada: 0, confirmada: 0 } as Record<string, number>
+    { pendiente: 0, marcada_pagada: 0, confirmada: 0, rechazada: 0 } as Record<string, number>
   );
 
   return (
@@ -63,6 +64,7 @@ export default async function AdminComisiones() {
         <TarjetaTotal etiqueta="Pendiente" valor={totales.pendiente} color="var(--color-acento-claro)" />
         <TarjetaTotal etiqueta="Marcada pagada" valor={totales.marcada_pagada} color="var(--color-azul-suave)" />
         <TarjetaTotal etiqueta="Confirmada" valor={totales.confirmada} color="#4ade80" />
+        <TarjetaTotal etiqueta="Rechazada" valor={totales.rechazada} color="#f87171" />
       </div>
 
       <h2 style={{ fontSize: 16, marginTop: 28 }}>

@@ -36,7 +36,7 @@ export async function PATCH(_request: Request, { params }: { params: Promise<{ i
   const actualizada = await query(
     `update comisiones
        set estado = 'marcada_pagada'
-     where publicacion_id = $1 and responsable_pago_id = $2 and estado = 'pendiente'
+     where publicacion_id = $1 and responsable_pago_id = $2 and estado in ('pendiente', 'rechazada')
      returning id`,
     [id, usuarioId]
   );

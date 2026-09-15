@@ -26,6 +26,8 @@ type Fila = {
   creado_en: string;
   mensajes_nuevos: number;
   notificado: boolean;
+  comision_estado: string | null;
+  comision_valor: number | null;
 };
 
 export default async function MisPostulacionesPage() {
@@ -41,13 +43,15 @@ export default async function MisPostulacionesPage() {
        count(m.id) filter (
          where po.estado = 'elegida' and m.ganador_id = p.ganador_id
            and m.emisor_id != $1 and m.creado_en > coalesce(ml.leido_hasta, '-infinity')
-       ) as mensajes_nuevos
+       ) as mensajes_nuevos,
+       c.estado as comision_estado, c.valor_comision as comision_valor
      from postulaciones po
      join publicaciones p on p.id = po.publicacion_id
      left join mensajes m on m.publicacion_id = p.id
      left join mensajes_leidos ml on ml.usuario_id = $1 and ml.publicacion_id = p.id
+     left join comisiones c on c.publicacion_id = p.id and c.responsable_pago_id = $1
      where po.postulante_id = $1
-     group by po.id, p.id
+     group by po.id, p.id, c.id
      order by (po.notificado = false) desc, po.creado_en desc`,
     [usuarioId]
   );
@@ -74,6 +78,8 @@ export default async function MisPostulacionesPage() {
           const estado = ESTADO_POSTULACION[p.estado_postulacion] ?? { texto: p.estado_postulacion, color: "#94a3b8" };
           const hayMensajes = p.mensajes_nuevos > 0;
           const hayNovedad = !p.notificado;
+          const comisionPendiente =
+            (p.comision_estado === "pendiente" || p.comision_estado === "rechazada") && (p.comision_valor ?? 0) > 0;
           const textoNovedad =
             p.estado_postulacion === "elegida"
               ? "🔔 ¡Fuiste elegido!"
@@ -81,7 +87,7 @@ export default async function MisPostulacionesPage() {
                 ? "🔔 Se reabrió la oferta"
                 : "";
           return (
-            <Link key={p.id} href={`/publicaciones/${p.id}`} className={`panel${hayNovedad || hayMensajes ? " alerta" : ""}`} style={{ padding: "14px 16px" }}>
+            <Link key={p.id} href={`/publicaciones/${p.id}`} className={`panel${hayNovedad || hayMensajes || comisionPendiente ? " alerta" : ""}`} style={{ padding: "14px 16px" }}>
               <div style={{ display: "flex", justifyContent: "space-between" }}>
                 <span style={{ fontSize: 11, fontWeight: 700, color: estado.color }}>{estado.texto}</span>
                 <span style={{ fontSize: 12, color: "var(--color-mist-tenue)" }}>{formatFecha(p.creado_en)}</span>
@@ -90,6 +96,11 @@ export default async function MisPostulacionesPage() {
               <p style={{ margin: 0, fontSize: 12, color: "var(--color-mist)" }}>
                 {NIVEL_ETIQUETA[p.nivel_sistema]} · {p.ciudad}
               </p>
+              {comisionPendiente && (
+                <p style={{ margin: "6px 0 0", fontSize: 12, fontWeight: 700, color: "#f87171" }}>
+                  {p.comision_estado === "rechazada" ? "❌ Pago rechazado" : "💳 Debes pagar comisión"}: {formatCOP(p.comision_valor ?? 0)}
+                </p>
+              )}
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 8 }}>
                 <p style={{ margin: 0, fontSize: 13, fontWeight: 600, fontFamily: "var(--font-mono)", color: "var(--color-acento-claro)" }}>{formatCOP(p.valor_ofertado)}</p>
                 <span style={{ fontSize: 12, fontWeight: 700, color: "var(--color-acento-claro)" }}>
