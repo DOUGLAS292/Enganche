@@ -16,6 +16,7 @@ type Publicacion = {
   ciudad: string;
   region: string | null;
   creado_en: string;
+  lugar_fabricacion: "instalaciones_ofertante" | "taller_postulante" | null;
   autor_nombre: string;
   autor_rating: number | null;
   autor_trabajos: number;
@@ -27,6 +28,11 @@ const NIVEL_ETIQUETA: Record<string, string> = {
   tradicional: "Nivel 1 · Tradicional",
   superior: "Nivel 2 · Superior",
   especializada: "Nivel 3 · Especializada",
+};
+
+const LUGAR_FABRICACION_ETIQUETA: Record<string, string> = {
+  instalaciones_ofertante: "🏭 Instalaciones del autor",
+  taller_postulante: "🏭 Taller propio requerido",
 };
 
 type EstadoUbicacion = "pidiendo" | "lista" | "denegada";
@@ -178,6 +184,11 @@ export default function FeedClient() {
             <p style={{ margin: 0, fontSize: 12, color: "var(--color-mist)" }}>
               {NIVEL_ETIQUETA[p.nivel_sistema]} · {p.ciudad}
             </p>
+            {p.lugar_fabricacion && (
+              <span className="chip-tecnico" style={{ marginTop: 6, display: "inline-block" }}>
+                {LUGAR_FABRICACION_ETIQUETA[p.lugar_fabricacion]}
+              </span>
+            )}
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6, marginTop: 10, fontSize: 13, fontFamily: "var(--font-mono)" }}>
               <span>
                 {/^\d+$/.test(p.cantidad) ? `${p.cantidad} producto${p.cantidad === "1" ? "" : "s"}` : p.cantidad}

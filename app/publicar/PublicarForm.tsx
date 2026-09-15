@@ -16,6 +16,11 @@ const NIVELES = [
   { valor: "especializada", etiqueta: "Nivel 3 · Especializada" },
 ] as const;
 
+const LUGARES_FABRICACION = [
+  { valor: "instalaciones_ofertante", etiqueta: "En mis instalaciones (el postulante solo pone la mano de obra)" },
+  { valor: "taller_postulante", etiqueta: "El postulante debe tener su propio taller" },
+] as const;
+
 type NivelSistema = keyof typeof PROYECTOS_SUGERIDOS;
 type EstadoUbicacion = "sin_pedir" | "pidiendo" | "lista" | "denegada";
 
@@ -23,6 +28,7 @@ export default function PublicarForm() {
   const router = useRouter();
   const [tipoTrabajo, setTipoTrabajo] = useState<string>("instalacion");
   const [nivelSistema, setNivelSistema] = useState<NivelSistema>("tradicional");
+  const [lugarFabricacion, setLugarFabricacion] = useState<string>("instalaciones_ofertante");
   const [descripcion, setDescripcion] = useState("");
   const [cantidad, setCantidad] = useState("");
   const [mtr2, setMtr2] = useState("");
@@ -73,6 +79,7 @@ export default function PublicarForm() {
           lat: coords?.lat,
           lng: coords?.lng,
           requiereSeguridad,
+          lugarFabricacion: tipoTrabajo === "produccion" ? lugarFabricacion : undefined,
         }),
       });
       const data = await res.json();
@@ -107,6 +114,12 @@ export default function PublicarForm() {
         <Campo etiqueta="Nivel del sistema">
           <Radios opciones={NIVELES} valor={nivelSistema} onChange={(v) => setNivelSistema(v as NivelSistema)} nombre="nivelSistema" columnas={1} />
         </Campo>
+
+        {tipoTrabajo === "produccion" && (
+          <Campo etiqueta="¿Dónde se fabrica?">
+            <Radios opciones={LUGARES_FABRICACION} valor={lugarFabricacion} onChange={setLugarFabricacion} nombre="lugarFabricacion" columnas={1} />
+          </Campo>
+        )}
 
         <Campo etiqueta="Descripción">
           <input

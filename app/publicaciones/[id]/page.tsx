@@ -43,6 +43,12 @@ type Publicacion = {
   fecha_fin: string | null;
   requiere_seguridad: boolean;
   mtr2: string | null;
+  lugar_fabricacion: "instalaciones_ofertante" | "taller_postulante" | null;
+};
+
+const LUGAR_FABRICACION_ETIQUETA: Record<string, string> = {
+  instalaciones_ofertante: "En instalaciones del autor",
+  taller_postulante: "El postulante debe tener taller propio",
 };
 
 type Postulante = {
@@ -66,7 +72,7 @@ export default async function PublicacionDetalle({ params }: { params: Promise<{
     `select
        p.id, p.tipo_trabajo, p.nivel_sistema, p.sistema_o_proyecto, p.cantidad,
        p.valor_ofertado, p.ciudad, p.region, p.estado, p.creado_en,
-       p.autor_id, p.ganador_id, p.fecha_inicio, p.fecha_fin, p.requiere_seguridad, p.mtr2,
+       p.autor_id, p.ganador_id, p.fecha_inicio, p.fecha_fin, p.requiere_seguridad, p.mtr2, p.lugar_fabricacion,
        u.nombre_razon_social as autor_nombre, u.rating_promedio as autor_rating,
        u.trabajos_completados as autor_trabajos, u.verificado as autor_verificado
      from publicaciones p
@@ -176,6 +182,9 @@ export default async function PublicacionDetalle({ params }: { params: Promise<{
           valor={/^\d+$/.test(publicacion.cantidad) ? `${publicacion.cantidad} producto${publicacion.cantidad === "1" ? "" : "s"}` : publicacion.cantidad}
         />
         {publicacion.mtr2 && <Fila etiqueta="Área" valor={`${publicacion.mtr2} m²`} />}
+        {publicacion.lugar_fabricacion && (
+          <Fila etiqueta="Dónde se fabrica" valor={LUGAR_FABRICACION_ETIQUETA[publicacion.lugar_fabricacion]} />
+        )}
         <Fila etiqueta="Valor ofertado" valor={formatCOP(publicacion.valor_ofertado)} destacado />
         {publicacion.fecha_inicio && (
           <Fila

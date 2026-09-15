@@ -69,7 +69,7 @@ export async function GET(request: Request) {
   const sql = `
     select
       p.id, p.tipo_trabajo, p.nivel_sistema, p.sistema_o_proyecto, p.cantidad, p.mtr2,
-      p.tiempo_entrega, p.valor_ofertado, p.ciudad, p.region, p.creado_en,
+      p.tiempo_entrega, p.valor_ofertado, p.ciudad, p.region, p.creado_en, p.lugar_fabricacion,
       u.nombre_razon_social as autor_nombre, u.rating_promedio as autor_rating,
       u.trabajos_completados as autor_trabajos, u.verificado as autor_verificado,
       ${distanciaSelect}
@@ -104,6 +104,11 @@ export async function POST(request: Request) {
   const requiereSeguridad = Boolean(body?.requiereSeguridad);
   const mtr2Raw = body?.mtr2 != null && body.mtr2 !== "" ? Number(body.mtr2) : null;
   const mtr2 = mtr2Raw != null && Number.isFinite(mtr2Raw) && mtr2Raw > 0 ? mtr2Raw : null;
+  const LUGARES_FABRICACION = ["instalaciones_ofertante", "taller_postulante"];
+  const lugarFabricacionRaw = body?.lugarFabricacion ? String(body.lugarFabricacion) : null;
+  // Solo aplica a producción: en instalación el trabajo siempre es en la
+  // obra del cliente, no hay ambigüedad de dónde se fabrica.
+  const lugarFabricacion = tipoTrabajo === "produccion" ? lugarFabricacionRaw : null;
 
   if (
     !TIPOS_TRABAJO.includes(tipoTrabajo) ||
@@ -113,7 +118,8 @@ export async function POST(request: Request) {
     Number(cantidad) <= 0 ||
     !ciudad ||
     !Number.isFinite(valorOfertado) ||
-    valorOfertado <= 0
+    valorOfertado <= 0 ||
+    (tipoTrabajo === "produccion" && !LUGARES_FABRICACION.includes(lugarFabricacionRaw ?? ""))
   ) {
     return NextResponse.json({ ok: false, error: "Completa los campos obligatorios." }, { status: 400 });
   }
@@ -136,6 +142,7 @@ export async function POST(request: Request) {
     fechaFin,
     requiereSeguridad,
     mtr2,
+    lugarFabricacion,
   ];
 
   let ubicacionExpr = "null";
@@ -148,8 +155,8 @@ export async function POST(request: Request) {
     `insert into publicaciones
        (autor_id, tipo_trabajo, nivel_sistema, sistema_o_proyecto, cantidad,
         valor_ofertado, ciudad, region, fecha_inicio, fecha_fin,
-        requiere_seguridad, mtr2, ubicacion, estado, creado_en)
-     values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, ${ubicacionExpr}, 'abierta', now())
+        requiere_seguridad, mtr2, lugar_fabricacion, ubicacion, estado, creado_en)
+     values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, ${ubicacionExpr}, 'abierta', now())
      returning id`,
     params
   );
