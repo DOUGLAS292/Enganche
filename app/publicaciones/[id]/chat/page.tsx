@@ -40,6 +40,15 @@ export default async function ChatPage({ params }: { params: Promise<{ id: strin
 
   const esAutor = usuarioId === fila.autor_id;
   const nombreContraparte = esAutor ? (fila.ganador_nombre as string) : fila.autor_nombre;
+  const idContraparte = esAutor ? (fila.ganador_id as string) : fila.autor_id;
 
-  return <ChatClient publicacionId={id} titulo={fila.sistema_o_proyecto} miId={usuarioId} nombreContraparte={nombreContraparte} />;
+  return (
+    <ChatClient
+      publicacionId={id}
+      titulo={fila.sistema_o_proyecto}
+      miId={usuarioId}
+      nombreContraparte={nombreContraparte}
+      idContraparte={idContraparte}
+    />
+  );
 }

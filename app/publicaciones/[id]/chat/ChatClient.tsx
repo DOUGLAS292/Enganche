@@ -16,11 +16,13 @@ export default function ChatClient({
   titulo,
   miId,
   nombreContraparte,
+  idContraparte,
 }: {
   publicacionId: string;
   titulo: string;
   miId: string;
   nombreContraparte: string;
+  idContraparte: string;
 }) {
   const [mensajes, setMensajes] = useState<Mensaje[]>([]);
   const [texto, setTexto] = useState("");
@@ -81,7 +83,12 @@ export default function ChatClient({
           ← Volver a la oferta
         </Link>
         <h1 className="titular" style={{ fontSize: 18, margin: "8px 0 2px", fontWeight: 700 }}>{titulo}</h1>
-        <p style={{ margin: 0, fontSize: 13, color: "var(--color-mist)" }}>Con {nombreContraparte}</p>
+        <p style={{ margin: 0, fontSize: 13, color: "var(--color-mist)" }}>
+          Con{" "}
+          <Link href={`/perfil/${idContraparte}`} style={{ color: "var(--color-azul-suave)" }}>
+            {nombreContraparte}
+          </Link>
+        </p>
       </div>
 
       <div style={{ flex: 1, overflowY: "auto", padding: "12px 0", display: "flex", flexDirection: "column", gap: 8 }}>

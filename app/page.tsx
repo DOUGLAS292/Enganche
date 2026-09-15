@@ -110,6 +110,7 @@ export default async function Home() {
               }
               badge={postulacionesSinVer + mensajesNuevosGanador > 0 ? postulacionesSinVer + mensajesNuevosGanador : undefined}
             />
+            <TarjetaAccion href={`/perfil/${usuarioId}`} icono="⭐" titulo="Mi perfil" subtitulo="Tu reputación en el gremio" />
             {usuario.es_admin && (
               <TarjetaAccion href="/admin" icono="🛡️" titulo="Panel admin" subtitulo="Comisiones del piloto" />
             )}

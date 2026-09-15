@@ -148,10 +148,10 @@ export default function AccionesAutor({
         {postulantesIniciales.map((p) => (
           <div key={p.postulante_id} className="panel" style={{ padding: "10px 12px", display: "flex", justifyContent: "space-between", alignItems: "center", gap: 10 }}>
             <div>
-              <p style={{ margin: 0, fontSize: 14, fontWeight: 600 }}>
+              <Link href={`/perfil/${p.postulante_id}`} style={{ fontSize: 14, fontWeight: 600, color: "var(--color-texto)", textDecoration: "none" }}>
                 {p.nombre_razon_social}
                 {p.verificado ? " ✓" : ""}
-              </p>
+              </Link>
               <p style={{ margin: "2px 0 0", fontSize: 12, color: "var(--color-mist)" }}>
                 {p.ciudad ?? "Sin ciudad"} · {p.trabajos_completados} trabajos
                 {p.rating_promedio ? ` · ★ ${p.rating_promedio}` : ""}

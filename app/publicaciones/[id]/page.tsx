@@ -198,10 +198,10 @@ export default async function PublicacionDetalle({ params }: { params: Promise<{
 
       <div className="panel" style={{ marginTop: 16, padding: "14px 16px" }}>
         <p style={{ margin: 0, fontSize: 13, color: "var(--color-mist)" }}>Publicada por</p>
-        <p style={{ margin: "4px 0 0", fontSize: 16, fontWeight: 600 }}>
+        <Link href={`/perfil/${publicacion.autor_id}`} style={{ display: "block", marginTop: 4, fontSize: 16, fontWeight: 600, color: "var(--color-texto)", textDecoration: "none" }}>
           {publicacion.autor_nombre}
           {publicacion.autor_verificado ? " ✓ verificado" : ""}
-        </p>
+        </Link>
         <p style={{ margin: "2px 0 0", fontSize: 13, color: "var(--color-mist)" }}>
           {publicacion.autor_trabajos} trabajos completados
           {publicacion.autor_rating ? ` · ★ ${publicacion.autor_rating}` : " · sin calificaciones aún"}
