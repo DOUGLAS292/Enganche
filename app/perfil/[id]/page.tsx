@@ -32,8 +32,9 @@ type Usuario = {
 
 type Calificacion = {
   estrellas: number;
-  cumplio_tiempo: boolean;
-  calidad_esperada: boolean;
+  cumplio_tiempo: boolean | null;
+  calidad_esperada: boolean | null;
+  buena_comunicacion: boolean | null;
   creado_en: string;
   calificador_id: string;
   calificador_nombre: string;
@@ -62,7 +63,7 @@ export default async function PerfilPage({ params }: { params: Promise<{ id: str
   }
 
   const calificacionesResult = await query<Calificacion>(
-    `select c.estrellas, c.cumplio_tiempo, c.calidad_esperada, c.creado_en,
+    `select c.estrellas, c.cumplio_tiempo, c.calidad_esperada, c.buena_comunicacion, c.creado_en,
             c.calificador_id, cal.nombre_razon_social as calificador_nombre,
             p.sistema_o_proyecto, p.tipo_trabajo, p.ciudad
      from calificaciones c
@@ -75,8 +76,18 @@ export default async function PerfilPage({ params }: { params: Promise<{ id: str
   const calificaciones = calificacionesResult.rows;
 
   const total = calificaciones.length;
-  const pctCumplioTiempo = total > 0 ? Math.round((100 * calificaciones.filter((c) => c.cumplio_tiempo).length) / total) : null;
-  const pctCalidadEsperada = total > 0 ? Math.round((100 * calificaciones.filter((c) => c.calidad_esperada).length) / total) : null;
+  // Como ejecutor (lo calificó un autor): tiempo y calidad del trabajo.
+  const comoEjecutor = calificaciones.filter((c) => c.cumplio_tiempo !== null);
+  const pctCumplioTiempo =
+    comoEjecutor.length > 0 ? Math.round((100 * comoEjecutor.filter((c) => c.cumplio_tiempo).length) / comoEjecutor.length) : null;
+  const pctCalidadEsperada =
+    comoEjecutor.length > 0 ? Math.round((100 * comoEjecutor.filter((c) => c.calidad_esperada).length) / comoEjecutor.length) : null;
+  // Como contratante (lo calificó su ganador): solo comunicación, por ahora.
+  const comoContratante = calificaciones.filter((c) => c.buena_comunicacion !== null);
+  const pctBuenaComunicacion =
+    comoContratante.length > 0
+      ? Math.round((100 * comoContratante.filter((c) => c.buena_comunicacion).length) / comoContratante.length)
+      : null;
 
   const esMiPropioPerfil = id === usuarioId;
 
@@ -131,10 +142,27 @@ export default async function PerfilPage({ params }: { params: Promise<{ id: str
         </div>
         <div style={{ flex: 1, borderLeft: "1px solid var(--color-borde)", paddingLeft: 18, display: "flex", flexDirection: "column", gap: 6 }}>
           <FilaEstadistica etiqueta="Trabajos completados" valor={String(perfil.trabajos_completados)} />
-          <FilaEstadistica etiqueta="Cumplió el tiempo acordado" valor={pctCumplioTiempo != null ? `${pctCumplioTiempo}%` : "—"} />
-          <FilaEstadistica etiqueta="Calidad esperada" valor={pctCalidadEsperada != null ? `${pctCalidadEsperada}%` : "—"} />
         </div>
       </div>
+
+      {(pctCumplioTiempo != null || pctCalidadEsperada != null) && (
+        <div className="panel" style={{ marginTop: 12, padding: "12px 16px" }}>
+          <p style={{ margin: 0, fontSize: 12, fontWeight: 700, color: "var(--color-mist)" }}>Como ejecutor del trabajo</p>
+          <div style={{ display: "flex", flexDirection: "column", gap: 6, marginTop: 8 }}>
+            <FilaEstadistica etiqueta="Cumplió el tiempo acordado" valor={pctCumplioTiempo != null ? `${pctCumplioTiempo}%` : "—"} />
+            <FilaEstadistica etiqueta="Calidad esperada" valor={pctCalidadEsperada != null ? `${pctCalidadEsperada}%` : "—"} />
+          </div>
+        </div>
+      )}
+
+      {pctBuenaComunicacion != null && (
+        <div className="panel" style={{ marginTop: 12, padding: "12px 16px" }}>
+          <p style={{ margin: 0, fontSize: 12, fontWeight: 700, color: "var(--color-mist)" }}>Como quien contrata</p>
+          <div style={{ display: "flex", flexDirection: "column", gap: 6, marginTop: 8 }}>
+            <FilaEstadistica etiqueta="Buena comunicación" valor={`${pctBuenaComunicacion}%`} />
+          </div>
+        </div>
+      )}
 
       <h2 style={{ fontSize: 15, marginTop: 28 }}>
         Historial de trabajos{total > 0 ? ` (${total})` : ""}
@@ -157,7 +185,13 @@ export default async function PerfilPage({ params }: { params: Promise<{ id: str
               {c.sistema_o_proyecto} <span style={{ color: "var(--color-mist)" }}>· {c.tipo_trabajo === "instalacion" ? "Instalación" : "Producción"} · {c.ciudad}</span>
             </p>
             <p style={{ margin: "4px 0 0", fontSize: 12, color: "var(--color-mist)" }}>
-              {c.cumplio_tiempo ? "✓ Cumplió el tiempo" : "✗ No cumplió el tiempo"} · {c.calidad_esperada ? "✓ Calidad esperada" : "✗ Calidad no esperada"}
+              {c.cumplio_tiempo !== null
+                ? `${c.cumplio_tiempo ? "✓ Cumplió el tiempo" : "✗ No cumplió el tiempo"} · ${c.calidad_esperada ? "✓ Calidad esperada" : "✗ Calidad no esperada"}`
+                : c.buena_comunicacion !== null
+                  ? c.buena_comunicacion
+                    ? "✓ Buena comunicación"
+                    : "✗ Mala comunicación"
+                  : null}
             </p>
             <p style={{ margin: "4px 0 0", fontSize: 11, color: "var(--color-mist-tenue)" }}>
               Calificado por{" "}

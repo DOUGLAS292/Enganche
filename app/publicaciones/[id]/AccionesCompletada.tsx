@@ -48,6 +48,7 @@ export default function AccionesCompletada({
   const [estrellas, setEstrellas] = useState(5);
   const [cumplioTiempo, setCumplioTiempo] = useState(true);
   const [calidadEsperada, setCalidadEsperada] = useState(true);
+  const [buenaComunicacion, setBuenaComunicacion] = useState(true);
 
   const [mostrarFormGarantia, setMostrarFormGarantia] = useState(false);
   const [descripcionGarantia, setDescripcionGarantia] = useState("");
@@ -78,7 +79,7 @@ export default function AccionesCompletada({
       const res = await fetch(`/api/publicaciones/${publicacionId}/calificar`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ estrellas, cumplioTiempo, calidadEsperada }),
+        body: JSON.stringify(soyAutor ? { estrellas, cumplioTiempo, calidadEsperada } : { estrellas, buenaComunicacion }),
       });
       const data = await res.json();
       if (!data.ok) {
@@ -177,14 +178,23 @@ export default function AccionesCompletada({
               </button>
             ))}
           </div>
-          <label style={etiquetaCheck}>
-            <input type="checkbox" checked={cumplioTiempo} onChange={(e) => setCumplioTiempo(e.target.checked)} />
-            Cumplió el tiempo acordado
-          </label>
-          <label style={etiquetaCheck}>
-            <input type="checkbox" checked={calidadEsperada} onChange={(e) => setCalidadEsperada(e.target.checked)} />
-            La calidad fue la esperada
-          </label>
+          {soyAutor ? (
+            <>
+              <label style={etiquetaCheck}>
+                <input type="checkbox" checked={cumplioTiempo} onChange={(e) => setCumplioTiempo(e.target.checked)} />
+                Cumplió el tiempo acordado
+              </label>
+              <label style={etiquetaCheck}>
+                <input type="checkbox" checked={calidadEsperada} onChange={(e) => setCalidadEsperada(e.target.checked)} />
+                La calidad fue la esperada
+              </label>
+            </>
+          ) : (
+            <label style={etiquetaCheck}>
+              <input type="checkbox" checked={buenaComunicacion} onChange={(e) => setBuenaComunicacion(e.target.checked)} />
+              Buena comunicación
+            </label>
+          )}
           <button type="submit" disabled={cargando === "calificar"} className="boton-primario" style={{ marginTop: 10 }}>
             {cargando === "calificar" ? "Enviando…" : "Enviar calificación"}
           </button>

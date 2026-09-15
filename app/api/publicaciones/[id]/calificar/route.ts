@@ -23,19 +23,26 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
 
   const body = await request.json().catch(() => null);
   const estrellas = Number(body?.estrellas);
-  const cumplioTiempo = Boolean(body?.cumplioTiempo);
-  const calidadEsperada = Boolean(body?.calidadEsperada);
   if (!Number.isInteger(estrellas) || estrellas < 1 || estrellas > 5) {
     return NextResponse.json({ ok: false, error: "Elige de 1 a 5 estrellas." }, { status: 400 });
   }
 
-  const calificadoId = usuarioId === fila.autor_id ? fila.ganador_id : fila.autor_id;
+  const calificaAlGanador = usuarioId === fila.autor_id;
+  const calificadoId = calificaAlGanador ? fila.ganador_id : fila.autor_id;
+
+  // El autor califica el trabajo ejecutado (tiempo y calidad). El ganador
+  // califica a quien lo contrató — decisión de negocio (sept-2026): para
+  // no ahogar a los primeros ofertantes, esa dirección se queda solo en
+  // estrellas + buena comunicación, sin preguntas que puedan asustarlos.
+  const cumplioTiempo = calificaAlGanador ? Boolean(body?.cumplioTiempo) : null;
+  const calidadEsperada = calificaAlGanador ? Boolean(body?.calidadEsperada) : null;
+  const buenaComunicacion = calificaAlGanador ? null : Boolean(body?.buenaComunicacion);
 
   try {
     await query(
-      `insert into calificaciones (publicacion_id, calificador_id, calificado_id, estrellas, cumplio_tiempo, calidad_esperada)
-       values ($1, $2, $3, $4, $5, $6)`,
-      [id, usuarioId, calificadoId, estrellas, cumplioTiempo, calidadEsperada]
+      `insert into calificaciones (publicacion_id, calificador_id, calificado_id, estrellas, cumplio_tiempo, calidad_esperada, buena_comunicacion)
+       values ($1, $2, $3, $4, $5, $6, $7)`,
+      [id, usuarioId, calificadoId, estrellas, cumplioTiempo, calidadEsperada, buenaComunicacion]
     );
   } catch (err) {
     const codigo = err instanceof Error && "code" in err ? (err as { code?: string }).code : undefined;
