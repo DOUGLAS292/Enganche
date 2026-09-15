@@ -3,6 +3,7 @@ import { query } from "@/lib/db";
 import { obtenerUsuarioIdDeSesion } from "@/lib/auth/session";
 import { enviarAvisoSolicitudUrgente } from "@/lib/whatsapp/notificaciones";
 import { formatCOP } from "@/lib/format";
+import { crearLinkDePago } from "@/lib/wompi";
 
 const VALOR_URGENTE = 18000;
 
@@ -34,6 +35,14 @@ export async function POST(_request: Request, { params }: { params: Promise<{ id
   );
   if (!creado.rows[0]) {
     return NextResponse.json({ ok: false, error: "Ya hay una solicitud de urgente para esta oferta." }, { status: 409 });
+  }
+
+  const linkId = await crearLinkDePago({
+    nombre: `Urgente Enganche - ${fila.sistema_o_proyecto}`,
+    montoEnCentavos: VALOR_URGENTE * 100,
+  });
+  if (linkId) {
+    await query("update impulsos_urgentes set wompi_link_id = $1 where id = $2", [linkId, creado.rows[0].id]);
   }
 
   const admins = await query<{ celular: string }>("select celular from usuarios where es_admin = true");

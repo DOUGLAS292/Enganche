@@ -3,6 +3,7 @@ import { query } from "@/lib/db";
 import { obtenerUsuarioIdDeSesion } from "@/lib/auth/session";
 import { enviarAvisoComisionPendiente } from "@/lib/whatsapp/notificaciones";
 import { formatCOP } from "@/lib/format";
+import { crearLinkDePago } from "@/lib/wompi";
 
 const PORCENTAJE_COMISION = 0.03;
 const DIAS_PERIODO_GRATIS_USUARIO = 30;
@@ -70,6 +71,14 @@ export async function POST(_request: Request, { params }: { params: Promise<{ id
   // Solo se avisa si la fila se creó de verdad (no en un reintento) y si
   // hay algo que pagar — en el periodo de gracia no hay nada que cobrar.
   if (comisionCreada.rows[0] && valorComision > 0) {
+    const linkId = await crearLinkDePago({
+      nombre: `Comisión Enganche - ${fila.sistema_o_proyecto}`,
+      montoEnCentavos: valorComision * 100,
+    });
+    if (linkId) {
+      await query("update comisiones set wompi_link_id = $1 where id = $2", [linkId, comisionCreada.rows[0].id]);
+    }
+
     const info = await query<{ celular: string }>("select celular from usuarios where id = $1", [fila.ganador_id]);
     const ganadorInfo = info.rows[0];
     if (ganadorInfo) {

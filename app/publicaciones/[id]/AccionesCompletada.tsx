@@ -4,7 +4,7 @@ import { useState, type CSSProperties, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { formatCOP } from "@/lib/format";
 
-type Comision = { valor_comision: number; estado: string } | null;
+type Comision = { valor_comision: number; estado: string; urlPago: string | null } | null;
 
 type Garantia = {
   id: string;
@@ -156,9 +156,16 @@ export default function AccionesCompletada({
             {ESTADO_COMISION[comisionInicial.estado] ?? comisionInicial.estado}
           </p>
           {soyGanador && (comisionInicial.estado === "pendiente" || comisionInicial.estado === "rechazada") && comisionInicial.valor_comision > 0 && (
-            <button onClick={marcarComisionPagada} disabled={cargando === "comision"} className="boton-linea" style={{ marginTop: 10, width: "100%" }}>
-              {cargando === "comision" ? "…" : "Marcar comisión como pagada"}
-            </button>
+            <>
+              {comisionInicial.urlPago && (
+                <a href={comisionInicial.urlPago} target="_blank" rel="noopener noreferrer" className="boton-primario" style={{ display: "block", marginTop: 10, textAlign: "center" }}>
+                  Pagar con Wompi
+                </a>
+              )}
+              <button onClick={marcarComisionPagada} disabled={cargando === "comision"} className="boton-linea" style={{ marginTop: 8, width: "100%" }}>
+                {cargando === "comision" ? "…" : "Ya pagué por otro medio"}
+              </button>
+            </>
           )}
         </div>
       )}

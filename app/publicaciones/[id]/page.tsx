@@ -4,6 +4,7 @@ import type { CSSProperties } from "react";
 import { obtenerUsuarioIdDeSesion } from "@/lib/auth/session";
 import { query } from "@/lib/db";
 import { formatCOP, formatFecha } from "@/lib/format";
+import { urlLinkDePago } from "@/lib/wompi";
 import AccionesAutor from "./AccionesAutor";
 import AccionPostulante from "./AccionPostulante";
 import AccionesCompletada from "./AccionesCompletada";
@@ -121,16 +122,19 @@ export default async function PublicacionDetalle({ params }: { params: Promise<{
     );
   }
 
-  let comision: { valor_comision: number; estado: string } | null = null;
+  let comision: { valor_comision: number; estado: string; urlPago: string | null } | null = null;
   let yaCalifique = false;
   let garantias: { id: string; descripcion: string; estado: "abierto" | "atendido" | "no_atendido"; fecha_reporte: string }[] = [];
   let mensajesNuevos = 0;
 
-  const urgenteResult = await query<{ estado: "pendiente" | "confirmada" | "rechazada"; valor: number }>(
-    "select estado, valor from impulsos_urgentes where publicacion_id = $1",
+  const urgenteResult = await query<{ estado: "pendiente" | "confirmada" | "rechazada"; valor: number; wompi_link_id: string | null }>(
+    "select estado, valor, wompi_link_id from impulsos_urgentes where publicacion_id = $1",
     [id]
   );
-  const urgente = urgenteResult.rows[0] ?? null;
+  const urgenteFila = urgenteResult.rows[0] ?? null;
+  const urgente = urgenteFila
+    ? { estado: urgenteFila.estado, valor: urgenteFila.valor, urlPago: urgenteFila.wompi_link_id ? urlLinkDePago(urgenteFila.wompi_link_id) : null }
+    : null;
 
   if ((esAutor || esGanador) && publicacion.ganador_id) {
     const r = await query<{ total: string }>(
@@ -146,8 +150,8 @@ export default async function PublicacionDetalle({ params }: { params: Promise<{
 
   if ((esAutor || esGanador) && publicacion.estado === "completada") {
     const [rComision, rCalifique, rGarantias] = await Promise.all([
-      query<{ valor_comision: number; estado: string }>(
-        "select valor_comision, estado from comisiones where publicacion_id = $1",
+      query<{ valor_comision: number; estado: string; wompi_link_id: string | null }>(
+        "select valor_comision, estado, wompi_link_id from comisiones where publicacion_id = $1",
         [id]
       ),
       query("select 1 from calificaciones where publicacion_id = $1 and calificador_id = $2", [id, usuarioId]),
@@ -156,7 +160,10 @@ export default async function PublicacionDetalle({ params }: { params: Promise<{
         [id]
       ),
     ]);
-    comision = rComision.rows[0] ?? null;
+    const comisionFila = rComision.rows[0] ?? null;
+    comision = comisionFila
+      ? { valor_comision: comisionFila.valor_comision, estado: comisionFila.estado, urlPago: comisionFila.wompi_link_id ? urlLinkDePago(comisionFila.wompi_link_id) : null }
+      : null;
     yaCalifique = rCalifique.rows.length > 0;
     garantias = rGarantias.rows;
   }

@@ -26,7 +26,7 @@ export default function AccionesAutor({
   estadoPublicacion: string;
   postulantesIniciales: Postulante[];
   mensajesNuevos?: number;
-  urgente?: { estado: "pendiente" | "confirmada" | "rechazada"; valor: number } | null;
+  urgente?: { estado: "pendiente" | "confirmada" | "rechazada"; valor: number; urlPago: string | null } | null;
 }) {
   const router = useRouter();
   const [cargando, setCargando] = useState<string | null>(null);
@@ -202,9 +202,16 @@ export default function AccionesAutor({
             </button>
           )}
           {urgente?.estado === "pendiente" && (
-            <p style={{ marginTop: 14, fontSize: 12, color: "var(--color-mist)" }}>
-              🚨 Urgente solicitado ({formatCOP(urgente.valor)}) — esperando confirmación de pago.
-            </p>
+            <div style={{ marginTop: 14 }}>
+              <p style={{ margin: 0, fontSize: 12, color: "var(--color-mist)" }}>
+                🚨 Urgente solicitado ({formatCOP(urgente.valor)}) — esperando confirmación de pago.
+              </p>
+              {urgente.urlPago && (
+                <a href={urgente.urlPago} target="_blank" rel="noopener noreferrer" className="boton-primario" style={{ display: "block", marginTop: 8, textAlign: "center" }}>
+                  Pagar con Wompi
+                </a>
+              )}
+            </div>
           )}
           {urgente?.estado === "confirmada" && (
             <p style={{ marginTop: 14, fontSize: 12, color: "#f87171", fontWeight: 700 }}>
