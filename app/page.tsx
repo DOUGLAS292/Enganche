@@ -33,7 +33,7 @@ export default async function Home() {
          from mensajes m
          join publicaciones p on p.id = m.publicacion_id
          left join mensajes_leidos ml on ml.usuario_id = $1 and ml.publicacion_id = p.id
-         where p.autor_id = $1 and p.ganador_id is not null
+         where p.autor_id = $1 and p.ganador_id is not null and m.ganador_id = p.ganador_id
            and m.emisor_id != $1 and m.creado_en > coalesce(ml.leido_hasta, '-infinity')`,
         [usuarioId]
       ),
@@ -42,7 +42,8 @@ export default async function Home() {
          from mensajes m
          join publicaciones p on p.id = m.publicacion_id
          left join mensajes_leidos ml on ml.usuario_id = $1 and ml.publicacion_id = p.id
-         where p.ganador_id = $1 and m.emisor_id != $1 and m.creado_en > coalesce(ml.leido_hasta, '-infinity')`,
+         where p.ganador_id = $1 and m.ganador_id = p.ganador_id
+           and m.emisor_id != $1 and m.creado_en > coalesce(ml.leido_hasta, '-infinity')`,
         [usuarioId]
       ),
       query<{ total: string }>(

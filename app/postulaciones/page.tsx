@@ -39,7 +39,8 @@ export default async function MisPostulacionesPage() {
        p.id, p.nivel_sistema, p.sistema_o_proyecto, p.ciudad, p.valor_ofertado,
        po.estado as estado_postulacion, po.creado_en, po.notificado,
        count(m.id) filter (
-         where po.estado = 'elegida' and m.emisor_id != $1 and m.creado_en > coalesce(ml.leido_hasta, '-infinity')
+         where po.estado = 'elegida' and m.ganador_id = p.ganador_id
+           and m.emisor_id != $1 and m.creado_en > coalesce(ml.leido_hasta, '-infinity')
        ) as mensajes_nuevos
      from postulaciones po
      join publicaciones p on p.id = po.publicacion_id

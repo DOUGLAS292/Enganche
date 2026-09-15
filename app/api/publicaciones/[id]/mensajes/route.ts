@@ -2,14 +2,15 @@ import { NextResponse } from "next/server";
 import { query } from "@/lib/db";
 import { obtenerUsuarioIdDeSesion } from "@/lib/auth/session";
 
-async function verificarAcceso(id: string, usuarioId: string): Promise<boolean> {
+async function obtenerAcceso(id: string, usuarioId: string): Promise<{ autorId: string; ganadorId: string } | null> {
   const result = await query<{ autor_id: string; ganador_id: string | null }>(
     "select autor_id, ganador_id from publicaciones where id = $1",
     [id]
   );
   const fila = result.rows[0];
-  if (!fila || !fila.ganador_id) return false;
-  return usuarioId === fila.autor_id || usuarioId === fila.ganador_id;
+  if (!fila || !fila.ganador_id) return null;
+  if (usuarioId !== fila.autor_id && usuarioId !== fila.ganador_id) return null;
+  return { autorId: fila.autor_id, ganadorId: fila.ganador_id };
 }
 
 export async function GET(_request: Request, { params }: { params: Promise<{ id: string }> }) {
@@ -19,18 +20,22 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
   }
   const { id } = await params;
 
-  if (!(await verificarAcceso(id, usuarioId))) {
+  const acceso = await obtenerAcceso(id, usuarioId);
+  if (!acceso) {
     return NextResponse.json({ ok: false, error: "No autorizado." }, { status: 403 });
   }
 
+  // El chat es personal entre el autor y el ganador ACTUAL — si la oferta
+  // se reabrió y se eligió a alguien distinto antes, esos mensajes son de
+  // otra persona y no deben verse aquí.
   const result = await query(
     `select m.id, m.emisor_id, m.contenido, m.creado_en, u.nombre_razon_social as emisor_nombre
      from mensajes m
      join usuarios u on u.id = m.emisor_id
-     where m.publicacion_id = $1
+     where m.publicacion_id = $1 and m.ganador_id = $2
      order by m.creado_en asc
      limit 200`,
-    [id]
+    [id, acceso.ganadorId]
   );
 
   // Marca como leído hasta ahora: abrir el chat es lo que hace desaparecer
@@ -52,7 +57,8 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
   }
   const { id } = await params;
 
-  if (!(await verificarAcceso(id, usuarioId))) {
+  const acceso = await obtenerAcceso(id, usuarioId);
+  if (!acceso) {
     return NextResponse.json({ ok: false, error: "No autorizado." }, { status: 403 });
   }
 
@@ -62,10 +68,14 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     return NextResponse.json({ ok: false, error: "Escribe un mensaje." }, { status: 400 });
   }
 
-  await query("insert into mensajes (publicacion_id, emisor_id, contenido) values ($1, $2, $3)", [
+  // Se etiqueta con el ganador actual: si la oferta se reabre y se elige a
+  // otra persona más adelante, este mensaje sigue perteneciendo a esta
+  // ronda, no a la nueva.
+  await query("insert into mensajes (publicacion_id, emisor_id, contenido, ganador_id) values ($1, $2, $3, $4)", [
     id,
     usuarioId,
     contenido,
+    acceso.ganadorId,
   ]);
 
   return NextResponse.json({ ok: true });

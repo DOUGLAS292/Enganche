@@ -131,8 +131,9 @@ export default async function PublicacionDetalle({ params }: { params: Promise<{
       `select count(*) as total
        from mensajes m
        left join mensajes_leidos ml on ml.usuario_id = $2 and ml.publicacion_id = m.publicacion_id
-       where m.publicacion_id = $1 and m.emisor_id != $2 and m.creado_en > coalesce(ml.leido_hasta, '-infinity')`,
-      [id, usuarioId]
+       where m.publicacion_id = $1 and m.ganador_id = $3
+         and m.emisor_id != $2 and m.creado_en > coalesce(ml.leido_hasta, '-infinity')`,
+      [id, usuarioId, publicacion.ganador_id]
     );
     mensajesNuevos = Number(r.rows[0]?.total ?? 0);
   }
