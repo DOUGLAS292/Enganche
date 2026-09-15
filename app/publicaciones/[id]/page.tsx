@@ -126,6 +126,12 @@ export default async function PublicacionDetalle({ params }: { params: Promise<{
   let garantias: { id: string; descripcion: string; estado: "abierto" | "atendido" | "no_atendido"; fecha_reporte: string }[] = [];
   let mensajesNuevos = 0;
 
+  const urgenteResult = await query<{ estado: "pendiente" | "confirmada" | "rechazada"; valor: number }>(
+    "select estado, valor from impulsos_urgentes where publicacion_id = $1",
+    [id]
+  );
+  const urgente = urgenteResult.rows[0] ?? null;
+
   if ((esAutor || esGanador) && publicacion.ganador_id) {
     const r = await query<{ total: string }>(
       `select count(*) as total
@@ -169,6 +175,7 @@ export default async function PublicacionDetalle({ params }: { params: Promise<{
         </span>
         <span className="chip-tecnico" style={{ color: "var(--color-mist)" }}>{NIVEL_ETIQUETA[publicacion.nivel_sistema]}</span>
         <span style={{ fontSize: 12, fontWeight: 700, color: estadoEtiqueta.color }}>{estadoEtiqueta.texto}</span>
+        {urgente?.estado === "confirmada" && <span style={badgeStyle("#f87171")}>🚨 Urgente</span>}
       </div>
 
       <h1 className="titular" style={{ fontSize: 25, marginBottom: 4, marginTop: 14 }}>{publicacion.sistema_o_proyecto}</h1>
@@ -215,6 +222,7 @@ export default async function PublicacionDetalle({ params }: { params: Promise<{
           estadoPublicacion={publicacion.estado}
           postulantesIniciales={postulantes}
           mensajesNuevos={mensajesNuevos}
+          urgente={urgente}
         />
       )}
 

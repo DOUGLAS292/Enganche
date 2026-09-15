@@ -21,6 +21,7 @@ type Publicacion = {
   autor_rating: number | null;
   autor_trabajos: number;
   autor_verificado: boolean;
+  es_urgente: boolean;
   distancia_m: number | null;
 };
 
@@ -173,11 +174,14 @@ export default function FeedClient() {
 
       <div style={{ marginTop: 16, display: "flex", flexDirection: "column", gap: 10 }}>
         {publicaciones?.map((p) => (
-          <Link key={p.id} href={`/publicaciones/${p.id}`} className="panel" style={{ padding: "14px 16px" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", gap: 8 }}>
-              <span style={badgeStyle(p.tipo_trabajo === "instalacion" ? "#1c5079" : "#bd5a26")}>
-                {p.tipo_trabajo === "instalacion" ? "Instalación" : "Producción"}
-              </span>
+          <Link key={p.id} href={`/publicaciones/${p.id}`} className="panel" style={{ padding: "14px 16px", ...(p.es_urgente ? { borderColor: "#f87171" } : {}) }}>
+            <div style={{ display: "flex", justifyContent: "space-between", gap: 8, flexWrap: "wrap" }}>
+              <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+                <span style={badgeStyle(p.tipo_trabajo === "instalacion" ? "#1c5079" : "#bd5a26")}>
+                  {p.tipo_trabajo === "instalacion" ? "Instalación" : "Producción"}
+                </span>
+                {p.es_urgente && <span style={badgeStyle("#f87171")}>🚨 Urgente</span>}
+              </div>
               {p.distancia_m != null && <span className="chip-tecnico">{formatDistanciaKm(p.distancia_m)}</span>}
             </div>
             <h3 style={{ margin: "10px 0 2px", fontSize: 17 }}>{p.sistema_o_proyecto}</h3>

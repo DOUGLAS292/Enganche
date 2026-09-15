@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { formatCOP } from "@/lib/format";
 
 type Postulante = {
   postulante_id: string;
@@ -19,11 +20,13 @@ export default function AccionesAutor({
   estadoPublicacion,
   postulantesIniciales,
   mensajesNuevos = 0,
+  urgente = null,
 }: {
   publicacionId: string;
   estadoPublicacion: string;
   postulantesIniciales: Postulante[];
   mensajesNuevos?: number;
+  urgente?: { estado: "pendiente" | "confirmada" | "rechazada"; valor: number } | null;
 }) {
   const router = useRouter();
   const [cargando, setCargando] = useState<string | null>(null);
@@ -107,6 +110,24 @@ export default function AccionesAutor({
     }
   }
 
+  async function marcarUrgente() {
+    setError(null);
+    setCargando("urgente");
+    try {
+      const res = await fetch(`/api/publicaciones/${publicacionId}/urgente`, { method: "POST" });
+      const data = await res.json();
+      if (!data.ok) {
+        setError(data.error ?? "No se pudo solicitar urgente.");
+        return;
+      }
+      router.refresh();
+    } catch {
+      setError("Error de conexión.");
+    } finally {
+      setCargando(null);
+    }
+  }
+
   async function renovar() {
     setError(null);
     setCargando("renovar");
@@ -169,14 +190,41 @@ export default function AccionesAutor({
       </div>
 
       {estadoPublicacion === "abierta" && (
-        <div style={{ marginTop: 14, display: "flex", gap: 8 }}>
-          <button onClick={renovar} disabled={cargando === "renovar"} className="boton-linea" style={{ flex: 1 }}>
-            {cargando === "renovar" ? "…" : "Renovar (reinicia los 15 días)"}
-          </button>
-          <button onClick={cancelar} disabled={cargando === "cancelar"} className="boton-linea" style={{ flex: 1 }}>
-            Cancelar publicación
-          </button>
-        </div>
+        <>
+          {!urgente && (
+            <button
+              onClick={marcarUrgente}
+              disabled={cargando === "urgente"}
+              className="boton-linea"
+              style={{ marginTop: 14, width: "100%", borderColor: "#f87171", color: "#f87171" }}
+            >
+              {cargando === "urgente" ? "…" : "🚨 Marcar como urgente ($18.000)"}
+            </button>
+          )}
+          {urgente?.estado === "pendiente" && (
+            <p style={{ marginTop: 14, fontSize: 12, color: "var(--color-mist)" }}>
+              🚨 Urgente solicitado ({formatCOP(urgente.valor)}) — esperando confirmación de pago.
+            </p>
+          )}
+          {urgente?.estado === "confirmada" && (
+            <p style={{ marginTop: 14, fontSize: 12, color: "#f87171", fontWeight: 700 }}>
+              🚨 Urgente activo — se avisó a los postulantes cercanos.
+            </p>
+          )}
+          {urgente?.estado === "rechazada" && (
+            <p style={{ marginTop: 14, fontSize: 12, color: "var(--color-mist)" }}>
+              La solicitud de urgente fue rechazada (no se confirmó el pago).
+            </p>
+          )}
+          <div style={{ marginTop: 8, display: "flex", gap: 8 }}>
+            <button onClick={renovar} disabled={cargando === "renovar"} className="boton-linea" style={{ flex: 1 }}>
+              {cargando === "renovar" ? "…" : "Renovar (reinicia los 15 días)"}
+            </button>
+            <button onClick={cancelar} disabled={cargando === "cancelar"} className="boton-linea" style={{ flex: 1 }}>
+              Cancelar publicación
+            </button>
+          </div>
+        </>
       )}
 
       {estadoPublicacion === "expirada" && (

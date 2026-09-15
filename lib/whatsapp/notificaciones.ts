@@ -101,6 +101,47 @@ export async function enviarAvisoComisionPendiente(
   );
 }
 
+export async function enviarAvisoSolicitudUrgente(
+  celular: string,
+  sistemaOProyecto: string,
+  valor: string
+): Promise<void> {
+  await enviarPlantillaUtilidad(
+    celular,
+    process.env.WHATSAPP_AVISO_SOLICITUD_URGENTE_TEMPLATE,
+    process.env.WHATSAPP_AVISO_SOLICITUD_URGENTE_TEMPLATE_LANG || "es",
+    [sistemaOProyecto, valor],
+    `Aviso de solicitud de "Urgente" (WhatsApp no configurado): "${sistemaOProyecto}" pidió activarlo por ${valor} — confirma el pago en el panel admin para ${celular}.`
+  );
+}
+
+export async function enviarAvisoUrgenteConfirmado(
+  celular: string,
+  sistemaOProyecto: string
+): Promise<void> {
+  await enviarPlantillaUtilidad(
+    celular,
+    process.env.WHATSAPP_AVISO_URGENTE_CONFIRMADO_TEMPLATE,
+    process.env.WHATSAPP_AVISO_URGENTE_CONFIRMADO_TEMPLATE_LANG || "es",
+    [sistemaOProyecto],
+    `Aviso de "Urgente" confirmado (WhatsApp no configurado) para ${celular}: "${sistemaOProyecto}" ya está activa como urgente.`
+  );
+}
+
+export async function enviarAvisoOfertaUrgenteCerca(
+  celular: string,
+  sistemaOProyecto: string,
+  ciudad: string
+): Promise<void> {
+  await enviarPlantillaUtilidad(
+    celular,
+    process.env.WHATSAPP_AVISO_OFERTA_URGENTE_TEMPLATE,
+    process.env.WHATSAPP_AVISO_OFERTA_URGENTE_TEMPLATE_LANG || "es",
+    [sistemaOProyecto, ciudad],
+    `Aviso de oferta urgente cerca (WhatsApp no configurado) para ${celular}: "${sistemaOProyecto}" en ${ciudad} necesita a alguien ya.`
+  );
+}
+
 export async function enviarAvisoComisionRechazada(
   celular: string,
   sistemaOProyecto: string,
