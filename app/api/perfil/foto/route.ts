@@ -15,8 +15,11 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: false, error: "No autenticado." }, { status: 401 });
   }
 
-  const supabaseUrl = process.env.SUPABASE_URL;
-  const supabaseAnonKey = process.env.SUPABASE_ANON_KEY;
+  // .trim() por si el valor quedó con un espacio o salto de línea de más
+  // al copiarlo en Vercel — eso rompe el header HTTP con un error críptico
+  // ("Cannot convert argument to a ByteString") en vez de uno claro.
+  const supabaseUrl = process.env.SUPABASE_URL?.trim();
+  const supabaseAnonKey = process.env.SUPABASE_ANON_KEY?.trim();
   if (!supabaseUrl || !supabaseAnonKey) {
     return NextResponse.json({ ok: false, error: "Subida de fotos no configurada todavía." }, { status: 500 });
   }
@@ -36,15 +39,21 @@ export async function POST(request: Request) {
   const extension = archivo.type === "image/png" ? "png" : archivo.type === "image/webp" ? "webp" : "jpg";
   const ruta = `${usuarioId}-${Date.now()}.${extension}`;
 
-  const subida = await fetch(`${supabaseUrl}/storage/v1/object/avatares/${ruta}`, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${supabaseAnonKey}`,
-      apikey: supabaseAnonKey,
-      "Content-Type": archivo.type,
-    },
-    body: await archivo.arrayBuffer(),
-  });
+  let subida: Response;
+  try {
+    subida = await fetch(`${supabaseUrl}/storage/v1/object/avatares/${ruta}`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${supabaseAnonKey}`,
+        apikey: supabaseAnonKey,
+        "Content-Type": archivo.type,
+      },
+      body: await archivo.arrayBuffer(),
+    });
+  } catch (err) {
+    console.error("[Enganche] Error de red subiendo foto a Supabase Storage:", err);
+    return NextResponse.json({ ok: false, error: "No se pudo subir la foto. Intenta de nuevo." }, { status: 502 });
+  }
 
   if (!subida.ok) {
     const detalle = await subida.text();
