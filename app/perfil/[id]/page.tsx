@@ -4,6 +4,7 @@ import { obtenerUsuarioIdDeSesion } from "@/lib/auth/session";
 import { query } from "@/lib/db";
 import { formatFecha } from "@/lib/format";
 import SubirFotoBoton from "./SubirFotoBoton";
+import EditarNombreBoton from "./EditarNombreBoton";
 
 const TIPO_USUARIO_ETIQUETA: Record<string, string> = {
   empresa: "Empresa",
@@ -119,6 +120,7 @@ export default async function PerfilPage({ params }: { params: Promise<{ id: str
             {TIPO_USUARIO_ETIQUETA[perfil.tipo_usuario] ?? perfil.tipo_usuario}
             {perfil.ciudad ? ` · ${perfil.ciudad}` : ""} · Ofrece {OFRECE_ETIQUETA[perfil.ofrece] ?? perfil.ofrece}
           </p>
+          {esMiPropioPerfil && <EditarNombreBoton nombreActual={perfil.nombre_razon_social} />}
         </div>
       </div>
 
