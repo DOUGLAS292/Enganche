@@ -74,8 +74,8 @@ export default function TerminosPage() {
           elegido. Conforme a la Ley 1581 de 2012 y sus decretos reglamentarios (habeas data en
           Colombia), puedes solicitar en cualquier momento la consulta, corrección o eliminación
           de tus datos escribiendo a{" "}
-          <a href="mailto:contacto.enganche@gmail.com" style={{ color: "var(--color-azul-suave)" }}>
-            contacto.enganche@gmail.com
+          <a href="mailto:Enganche.App.Contacto@gmail.com" style={{ color: "var(--color-azul-suave)" }}>
+            Enganche.App.Contacto@gmail.com
           </a>
           .
         </Clausula>

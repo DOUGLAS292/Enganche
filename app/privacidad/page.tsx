@@ -54,8 +54,8 @@ export default function PrivacidadPage() {
           Colombia), puedes conocer, actualizar y rectificar tus datos; solicitar prueba de la autorización
           otorgada; ser informado del uso dado a tus datos; solicitar su eliminación cuando no exista un deber
           legal de conservarlos; y revocar tu autorización en cualquier momento, escribiendo a{" "}
-          <a href="mailto:contacto.enganche@gmail.com" style={{ color: "var(--color-azul-suave)" }}>
-            contacto.enganche@gmail.com
+          <a href="mailto:Enganche.App.Contacto@gmail.com" style={{ color: "var(--color-azul-suave)" }}>
+            Enganche.App.Contacto@gmail.com
           </a>
           .
         </Clausula>
@@ -78,8 +78,8 @@ export default function PrivacidadPage() {
 
         <Clausula titulo="10. Contacto">
           Para preguntas sobre esta política o para ejercer tus derechos de Habeas Data, escribe a{" "}
-          <a href="mailto:contacto.enganche@gmail.com" style={{ color: "var(--color-azul-suave)" }}>
-            contacto.enganche@gmail.com
+          <a href="mailto:Enganche.App.Contacto@gmail.com" style={{ color: "var(--color-azul-suave)" }}>
+            Enganche.App.Contacto@gmail.com
           </a>
           .
         </Clausula>
