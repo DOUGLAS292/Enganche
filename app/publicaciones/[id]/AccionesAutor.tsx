@@ -21,12 +21,14 @@ export default function AccionesAutor({
   postulantesIniciales,
   mensajesNuevos = 0,
   urgente = null,
+  valorUrgenteActual,
 }: {
   publicacionId: string;
   estadoPublicacion: string;
   postulantesIniciales: Postulante[];
   mensajesNuevos?: number;
   urgente?: { estado: "pendiente" | "confirmada" | "rechazada"; valor: number; urlPago: string | null } | null;
+  valorUrgenteActual: number;
 }) {
   const router = useRouter();
   const [cargando, setCargando] = useState<string | null>(null);
@@ -198,7 +200,7 @@ export default function AccionesAutor({
               className="boton-linea"
               style={{ marginTop: 14, width: "100%", borderColor: "#f87171", color: "#f87171" }}
             >
-              {cargando === "urgente" ? "…" : "🚨 Marcar como urgente ($18.000)"}
+              {cargando === "urgente" ? "…" : `🚨 Marcar como urgente (${formatCOP(valorUrgenteActual)})`}
             </button>
           )}
           {urgente?.estado === "pendiente" && (

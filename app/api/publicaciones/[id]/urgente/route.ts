@@ -4,8 +4,7 @@ import { obtenerUsuarioIdDeSesion } from "@/lib/auth/session";
 import { enviarAvisoSolicitudUrgente } from "@/lib/whatsapp/notificaciones";
 import { formatCOP } from "@/lib/format";
 import { crearLinkDePago } from "@/lib/wompi";
-
-const VALOR_URGENTE = 18000;
+import { valorUrgenteVigente } from "@/lib/pagos/precioUrgente";
 
 export async function POST(_request: Request, { params }: { params: Promise<{ id: string }> }) {
   const usuarioId = await obtenerUsuarioIdDeSesion();
@@ -26,12 +25,14 @@ export async function POST(_request: Request, { params }: { params: Promise<{ id
     return NextResponse.json({ ok: false, error: "Solo puedes marcar como urgente una oferta abierta." }, { status: 400 });
   }
 
+  const valorUrgente = valorUrgenteVigente();
+
   const creado = await query<{ id: string }>(
     `insert into impulsos_urgentes (publicacion_id, solicitado_por_id, valor)
      values ($1, $2, $3)
      on conflict (publicacion_id) do nothing
      returning id`,
-    [id, usuarioId, VALOR_URGENTE]
+    [id, usuarioId, valorUrgente]
   );
   if (!creado.rows[0]) {
     return NextResponse.json({ ok: false, error: "Ya hay una solicitud de urgente para esta oferta." }, { status: 409 });
@@ -39,7 +40,7 @@ export async function POST(_request: Request, { params }: { params: Promise<{ id
 
   const linkId = await crearLinkDePago({
     nombre: `Urgente Enganche - ${fila.sistema_o_proyecto}`,
-    montoEnCentavos: VALOR_URGENTE * 100,
+    montoEnCentavos: valorUrgente * 100,
   });
   if (linkId) {
     await query("update impulsos_urgentes set wompi_link_id = $1 where id = $2", [linkId, creado.rows[0].id]);
@@ -47,8 +48,8 @@ export async function POST(_request: Request, { params }: { params: Promise<{ id
 
   const admins = await query<{ celular: string }>("select celular from usuarios where es_admin = true");
   await Promise.all(
-    admins.rows.map((admin) => enviarAvisoSolicitudUrgente(admin.celular, fila.sistema_o_proyecto, formatCOP(VALOR_URGENTE)))
+    admins.rows.map((admin) => enviarAvisoSolicitudUrgente(admin.celular, fila.sistema_o_proyecto, formatCOP(valorUrgente)))
   );
 
-  return NextResponse.json({ ok: true, valor: VALOR_URGENTE });
+  return NextResponse.json({ ok: true, valor: valorUrgente });
 }

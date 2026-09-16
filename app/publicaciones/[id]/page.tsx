@@ -5,6 +5,7 @@ import { obtenerUsuarioIdDeSesion } from "@/lib/auth/session";
 import { query } from "@/lib/db";
 import { formatCOP, formatFecha } from "@/lib/format";
 import { urlLinkDePago } from "@/lib/wompi";
+import { valorUrgenteVigente } from "@/lib/pagos/precioUrgente";
 import AccionesAutor from "./AccionesAutor";
 import AccionPostulante from "./AccionPostulante";
 import AccionesCompletada from "./AccionesCompletada";
@@ -230,6 +231,7 @@ export default async function PublicacionDetalle({ params }: { params: Promise<{
           postulantesIniciales={postulantes}
           mensajesNuevos={mensajesNuevos}
           urgente={urgente}
+          valorUrgenteActual={valorUrgenteVigente()}
         />
       )}
 
