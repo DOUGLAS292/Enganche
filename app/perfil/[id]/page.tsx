@@ -4,7 +4,7 @@ import { obtenerUsuarioIdDeSesion } from "@/lib/auth/session";
 import { query } from "@/lib/db";
 import { formatFecha } from "@/lib/format";
 import SubirFotoBoton from "./SubirFotoBoton";
-import EditarNombreBoton from "./EditarNombreBoton";
+import EditarPerfilBoton from "./EditarPerfilBoton";
 
 const TIPO_USUARIO_ETIQUETA: Record<string, string> = {
   empresa: "Empresa",
@@ -24,6 +24,8 @@ type Usuario = {
   tipo_usuario: string;
   ciudad: string | null;
   ofrece: string;
+  sistema_linea: string | null;
+  anos_experiencia: number | null;
   verificado: boolean;
   rating_promedio: number | null;
   trabajos_completados: number;
@@ -53,8 +55,8 @@ export default async function PerfilPage({ params }: { params: Promise<{ id: str
   const { id } = await params;
 
   const result = await query<Usuario>(
-    `select id, nombre_razon_social, tipo_usuario, ciudad, ofrece, verificado,
-            rating_promedio, trabajos_completados, creado_en, foto_url
+    `select id, nombre_razon_social, tipo_usuario, ciudad, ofrece, sistema_linea, anos_experiencia,
+            verificado, rating_promedio, trabajos_completados, creado_en, foto_url
      from usuarios where id = $1`,
     [id]
   );
@@ -120,7 +122,6 @@ export default async function PerfilPage({ params }: { params: Promise<{ id: str
             {TIPO_USUARIO_ETIQUETA[perfil.tipo_usuario] ?? perfil.tipo_usuario}
             {perfil.ciudad ? ` · ${perfil.ciudad}` : ""} · Ofrece {OFRECE_ETIQUETA[perfil.ofrece] ?? perfil.ofrece}
           </p>
-          {esMiPropioPerfil && <EditarNombreBoton nombreActual={perfil.nombre_razon_social} />}
         </div>
       </div>
 
@@ -130,6 +131,16 @@ export default async function PerfilPage({ params }: { params: Promise<{ id: str
             Así es como te ve el resto del gremio.
           </p>
           <SubirFotoBoton />
+          <EditarPerfilBoton
+            perfilInicial={{
+              nombreRazonSocial: perfil.nombre_razon_social,
+              ciudad: perfil.ciudad ?? "",
+              tipoUsuario: perfil.tipo_usuario,
+              ofrece: perfil.ofrece,
+              sistemaLinea: perfil.sistema_linea ?? "",
+              anosExperiencia: perfil.anos_experiencia != null ? String(perfil.anos_experiencia) : "",
+            }}
+          />
         </>
       )}
 
