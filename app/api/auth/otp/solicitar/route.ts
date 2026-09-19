@@ -1,7 +1,12 @@
 import { NextResponse } from "next/server";
 import { normalizarCelularCO } from "@/lib/validation/telefono";
-import { generarYGuardarOtp } from "@/lib/auth/otp";
+import { generarYGuardarOtp, ipExcedioLimite, registrarSolicitudIp } from "@/lib/auth/otp";
 import { enviarOtpWhatsApp, otpEnModoDesarrollo } from "@/lib/auth/whatsapp";
+
+function obtenerIp(request: Request): string {
+  const forwardedFor = request.headers.get("x-forwarded-for");
+  return forwardedFor?.split(",")[0]?.trim() || "desconocida";
+}
 
 export async function POST(request: Request) {
   const body = await request.json().catch(() => null);
@@ -13,6 +18,15 @@ export async function POST(request: Request) {
       { status: 400 }
     );
   }
+
+  const ip = obtenerIp(request);
+  if (await ipExcedioLimite(ip)) {
+    return NextResponse.json(
+      { ok: false, error: "Demasiados intentos desde esta conexión. Espera un momento e intenta de nuevo." },
+      { status: 429 }
+    );
+  }
+  await registrarSolicitudIp(ip);
 
   const resultado = await generarYGuardarOtp(celular);
   if ("errorCooldown" in resultado) {

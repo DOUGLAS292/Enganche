@@ -4,6 +4,8 @@ import { query } from "@/lib/db";
 const OTP_TTL_MS = 5 * 60 * 1000; // 5 minutos
 const OTP_RESEND_COOLDOWN_MS = 60 * 1000; // 60 segundos entre reenvíos
 const OTP_MAX_INTENTOS = 5;
+const OTP_LIMITE_POR_IP = 8;
+const OTP_VENTANA_IP_MS = 60 * 60 * 1000; // 1 hora
 
 function pepper(): string {
   const secret = process.env.AUTH_SECRET;
@@ -20,6 +22,19 @@ function hashesIguales(a: string, b: string): boolean {
   const bufB = Buffer.from(b, "hex");
   if (bufA.length !== bufB.length) return false;
   return timingSafeEqual(bufA, bufB);
+}
+
+export async function ipExcedioLimite(ip: string): Promise<boolean> {
+  const desde = new Date(Date.now() - OTP_VENTANA_IP_MS).toISOString();
+  const resultado = await query<{ total: string }>(
+    "select count(*) as total from otp_solicitudes_ip where ip = $1 and creado_en > $2",
+    [ip, desde]
+  );
+  return Number(resultado.rows[0]?.total ?? 0) >= OTP_LIMITE_POR_IP;
+}
+
+export async function registrarSolicitudIp(ip: string): Promise<void> {
+  await query("insert into otp_solicitudes_ip (ip) values ($1)", [ip]);
 }
 
 export async function generarYGuardarOtp(
