@@ -5,26 +5,30 @@
    "Enganche Vidriado" — el mismo lenguaje visual se ejecuta como vidrio y
    aluminio: paneles con profundidad y brillo direccional, marcos con
    escuadras técnicas, retícula de fondo tipo marco de ventana, y una
-   monoespaciada para cifras/ciudades que recuerda a una ficha técnica. */
-:root {
-  color-scheme: dark;
+   monoespaciada para cifras/ciudades que recuerda a una ficha técnica.
 
-  --color-bg: #051622;
-  --color-bg-elevado: #0a2436;
-  --color-superficie: #0f3049;
-  --color-superficie-2: #16324a;
-  --color-borde: #1c4a66;
-  --color-borde-suave: rgba(28, 74, 102, 0.55);
+   Versión "a la luz del día" (sept-2026): el vidrio ya no se ve de noche,
+   se ve de día — fondo claro y luminoso, paneles blancos con sombra suave
+   en vez de brillo sobre oscuro, mismos acentos de marca. */
+:root {
+  color-scheme: light;
+
+  --color-bg: #f3f6fa;
+  --color-bg-elevado: #ffffff;
+  --color-superficie: #ffffff;
+  --color-superficie-2: #eaf0f6;
+  --color-borde: #d7e1ea;
+  --color-borde-suave: rgba(4, 37, 58, 0.08);
 
   --color-marca: #04253a;
   --color-acento: #ff7f00;
-  --color-acento-claro: #ffad01;
-  --color-azul-suave: #5b9bc9;
+  --color-acento-claro: #e08a00;
+  --color-azul-suave: #2f76a3;
 
-  --color-texto: #f7f7f7;
-  --color-texto-tenue: #a9c2d1;
-  --color-mist: #89a5ba;
-  --color-mist-tenue: #5f7b90;
+  --color-texto: #12222c;
+  --color-texto-tenue: #3f5768;
+  --color-mist: #54707f;
+  --color-mist-tenue: #8298a6;
   --color-negro: #1c1c1c;
 
   --radio: 14px;
@@ -37,7 +41,9 @@
 body {
   margin: 0;
   font-family: var(--font-sans), system-ui, -apple-system, "Segoe UI", sans-serif;
-  background: var(--color-bg);
+  background:
+    radial-gradient(1100px 520px at 50% -12%, rgba(255, 173, 1, 0.10), transparent 60%),
+    var(--color-bg);
   color: var(--color-texto);
 }
 
@@ -47,7 +53,7 @@ h1, h2, h3 {
 
 code {
   font-family: var(--font-mono), ui-monospace, "SF Mono", monospace;
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(4, 37, 58, 0.06);
   padding: 1px 5px;
   border-radius: 4px;
 }
@@ -56,6 +62,7 @@ code {
 .titular {
   font-family: var(--font-display), var(--font-sans), sans-serif;
   font-weight: 800;
+  color: var(--color-marca);
 }
 
 /* ---------- retícula tipo marco de ventana + resplandor ---------- */
@@ -68,9 +75,9 @@ code {
   inset: -32px -20px auto -20px;
   height: 340px;
   background-image:
-    repeating-linear-gradient(90deg, var(--color-borde) 0 1px, transparent 1px 84px),
-    repeating-linear-gradient(0deg, var(--color-borde) 0 1px, transparent 1px 84px);
-  opacity: 0.16;
+    repeating-linear-gradient(90deg, rgba(4, 37, 58, 0.5) 0 1px, transparent 1px 84px),
+    repeating-linear-gradient(0deg, rgba(4, 37, 58, 0.5) 0 1px, transparent 1px 84px);
+  opacity: 0.14;
   -webkit-mask-image: linear-gradient(to bottom, black, transparent);
   mask-image: linear-gradient(to bottom, black, transparent);
   pointer-events: none;
@@ -82,7 +89,7 @@ code {
   left: 6%;
   width: 320px;
   height: 260px;
-  background: radial-gradient(closest-side, rgba(255, 138, 43, 0.28), rgba(255, 138, 43, 0) 70%);
+  background: radial-gradient(closest-side, rgba(255, 138, 43, 0.30), rgba(255, 138, 43, 0) 70%);
   filter: blur(6px);
   pointer-events: none;
   animation: derivar 16s ease-in-out infinite alternate;
@@ -101,30 +108,32 @@ code {
   display: block;
   border: 1px solid var(--color-borde);
   border-radius: var(--radio);
-  background: linear-gradient(160deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0) 55%), var(--color-superficie);
+  background: linear-gradient(160deg, rgba(4, 37, 58, 0.028), rgba(4, 37, 58, 0) 55%), var(--color-superficie);
+  box-shadow: 0 1px 2px rgba(4, 37, 58, 0.05), 0 10px 26px -16px rgba(4, 37, 58, 0.28);
   overflow: hidden;
   text-decoration: none;
   color: inherit;
-  transition: transform 0.2s ease, border-color 0.2s ease;
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
 }
 .panel::before {
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(115deg, transparent 40%, rgba(255, 255, 255, 0.09) 50%, transparent 60%);
+  background: linear-gradient(115deg, transparent 40%, rgba(91, 155, 201, 0.18) 50%, transparent 60%);
   transform: translateX(-120%);
   transition: transform 0.7s ease;
   pointer-events: none;
 }
 .panel:hover, .panel:focus-visible {
-  transform: translateY(-1px);
+  transform: translateY(-2px);
   border-color: var(--color-acento-claro);
+  box-shadow: 0 4px 10px rgba(4, 37, 58, 0.07), 0 18px 34px -16px rgba(4, 37, 58, 0.32);
 }
 .panel:hover::before, .panel:focus-visible::before {
   transform: translateX(120%);
 }
 .panel.alerta {
-  border-color: rgba(255, 207, 125, 0.6);
+  border-color: rgba(224, 138, 0, 0.55);
 }
 
 /* ---------- marco de ícono (escuadras técnicas) ---------- */
@@ -137,7 +146,8 @@ code {
   align-items: center;
   justify-content: center;
   font-size: 21px;
-  background: var(--color-bg-elevado);
+  background: var(--color-superficie-2);
+  border: 1px solid var(--color-borde);
   border-radius: 10px;
 }
 .icono-marco::before, .icono-marco::after {
@@ -165,9 +175,9 @@ code {
   font-family: var(--font-mono), monospace;
   font-weight: 600;
   font-size: 11px;
-  color: #26160a;
+  color: #2a1600;
   background: radial-gradient(circle at 30% 30%, var(--color-acento-claro), var(--color-acento));
-  box-shadow: 0 0 14px 2px rgba(255, 138, 43, 0.55);
+  box-shadow: 0 2px 10px 0 rgba(224, 138, 0, 0.45);
 }
 
 /* ---------- chip técnico (monoespaciada) ---------- */
@@ -176,7 +186,7 @@ code {
   font-size: 11px;
   letter-spacing: 0.03em;
   color: var(--color-acento-claro);
-  border: 1px solid var(--color-borde);
+  border: 1px solid rgba(224, 138, 0, 0.35);
   padding: 5px 10px;
   border-radius: 999px;
   background: rgba(255, 138, 43, 0.08);
@@ -199,7 +209,7 @@ code {
   font-size: 15px;
   text-align: center;
   text-decoration: none;
-  box-shadow: 0 10px 26px -10px rgba(255, 138, 43, 0.55);
+  box-shadow: 0 10px 26px -10px rgba(224, 138, 0, 0.55);
   font-family: inherit;
 }
 .boton-primario:disabled {
@@ -215,7 +225,7 @@ code {
   padding: 8px 14px;
   border-radius: 9px;
   border: 1px solid var(--color-borde);
-  background: transparent;
+  background: var(--color-superficie);
   color: var(--color-texto);
   cursor: pointer;
   font-size: 13px;
@@ -241,7 +251,7 @@ code {
 .input-vidrio:focus, .input-vidrio:focus-visible {
   outline: none;
   border-color: var(--color-acento-claro);
-  box-shadow: 0 0 0 3px rgba(255, 173, 1, 0.15);
+  box-shadow: 0 0 0 3px rgba(224, 138, 0, 0.14);
 }
 
 .enlace-volver {

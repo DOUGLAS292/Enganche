@@ -160,7 +160,7 @@ export default function FeedClient() {
         ))}
       </div>
 
-      {error && <p style={{ color: "#f87171", marginTop: 16 }}>{error}</p>}
+      {error && <p style={{ color: "#dc2626", marginTop: 16 }}>{error}</p>}
       {publicaciones === null && !error && <p style={{ marginTop: 24, color: "var(--color-mist)" }}>Cargando ofertas…</p>}
       {publicaciones?.length === 0 && (
         <p style={{ marginTop: 24, color: "var(--color-mist)" }}>
@@ -174,13 +174,13 @@ export default function FeedClient() {
 
       <div style={{ marginTop: 16, display: "flex", flexDirection: "column", gap: 10 }}>
         {publicaciones?.map((p) => (
-          <Link key={p.id} href={`/publicaciones/${p.id}`} className="panel" style={{ padding: "14px 16px", ...(p.es_urgente ? { borderColor: "#f87171" } : {}) }}>
+          <Link key={p.id} href={`/publicaciones/${p.id}`} className="panel" style={{ padding: "14px 16px", ...(p.es_urgente ? { borderColor: "#dc2626" } : {}) }}>
             <div style={{ display: "flex", justifyContent: "space-between", gap: 8, flexWrap: "wrap" }}>
               <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
                 <span style={badgeStyle(p.tipo_trabajo === "instalacion" ? "#1c5079" : "#bd5a26")}>
                   {p.tipo_trabajo === "instalacion" ? "Instalación" : "Producción"}
                 </span>
-                {p.es_urgente && <span style={badgeStyle("#f87171")}>🚨 Urgente</span>}
+                {p.es_urgente && <span style={badgeStyle("#dc2626")}>🚨 Urgente</span>}
               </div>
               {p.distancia_m != null && <span className="chip-tecnico">{formatDistanciaKm(p.distancia_m)}</span>}
             </div>

@@ -5,11 +5,11 @@ import { query } from "@/lib/db";
 import { formatCOP, formatFecha } from "@/lib/format";
 
 const ESTADO_ETIQUETA: Record<string, { texto: string; color: string }> = {
-  abierta: { texto: "Abierta", color: "#4ade80" },
+  abierta: { texto: "Abierta", color: "#15803d" },
   en_proceso: { texto: "Enganchada", color: "var(--color-azul-suave)" },
-  completada: { texto: "Completada", color: "#94a3b8" },
-  cancelada: { texto: "Cancelada", color: "#f87171" },
-  expirada: { texto: "Expirada", color: "#eab308" },
+  completada: { texto: "Completada", color: "#475569" },
+  cancelada: { texto: "Cancelada", color: "#dc2626" },
+  expirada: { texto: "Expirada", color: "#a16207" },
 };
 
 type Fila = {
@@ -70,7 +70,7 @@ export default async function MisPublicacionesPage() {
 
       <div style={{ marginTop: 16, display: "flex", flexDirection: "column", gap: 10 }}>
         {result.rows.map((p) => {
-          const estado = ESTADO_ETIQUETA[p.estado] ?? { texto: p.estado, color: "#94a3b8" };
+          const estado = ESTADO_ETIQUETA[p.estado] ?? { texto: p.estado, color: "#475569" };
           const hayNuevas = (p.postulantes_pendientes > 0 && p.estado === "abierta") || p.mensajes_nuevos > 0;
           return (
             <Link key={p.id} href={`/publicaciones/${p.id}`} className={`panel${hayNuevas ? " alerta" : ""}`} style={{ padding: "14px 16px" }}>

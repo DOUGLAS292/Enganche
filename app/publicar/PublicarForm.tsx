@@ -208,7 +208,7 @@ export default function PublicarForm() {
           Requiere seguridad / registro de acceso
         </label>
 
-        {error && <p style={{ color: "#f87171", fontSize: 14 }}>{error}</p>}
+        {error && <p style={{ color: "#dc2626", fontSize: 14 }}>{error}</p>}
 
         <button type="submit" disabled={cargando} className="boton-primario" style={{ marginTop: 24 }}>
           {cargando ? "Publicando…" : "Publicar oferta"}
@@ -221,7 +221,7 @@ export default function PublicarForm() {
 function Campo({ etiqueta, children }: { etiqueta: string; children: ReactNode }) {
   return (
     <div style={{ marginTop: 18 }}>
-      <label style={{ display: "block", marginBottom: 6, fontSize: 14, color: "#cbd5e1" }}>{etiqueta}</label>
+      <label style={{ display: "block", marginBottom: 6, fontSize: 14, color: "var(--color-texto-tenue)" }}>{etiqueta}</label>
       {children}
     </div>
   );

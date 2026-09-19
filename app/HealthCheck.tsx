@@ -36,9 +36,9 @@ export default function HealthCheck() {
       </button>
       {health.status === "loading" && <p>Consultando…</p>}
       {health.status === "ok" && (
-        <p style={{ color: "#4ade80" }}>✓ Conectado — {health.db.postgis_version}</p>
+        <p style={{ color: "#15803d" }}>✓ Conectado — {health.db.postgis_version}</p>
       )}
-      {health.status === "error" && <p style={{ color: "#f87171" }}>✗ {health.message}</p>}
+      {health.status === "error" && <p style={{ color: "#dc2626" }}>✗ {health.message}</p>}
     </div>
   );
 }
@@ -48,7 +48,7 @@ const buttonStyle: CSSProperties = {
   borderRadius: 8,
   border: "1px solid var(--color-borde)",
   background: "var(--color-superficie)",
-  color: "#eef2f5",
+  color: "var(--color-marca)",
   cursor: "pointer",
   fontSize: 14,
 };

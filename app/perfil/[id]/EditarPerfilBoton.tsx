@@ -130,7 +130,7 @@ export default function EditarPerfilBoton({ perfilInicial }: { perfilInicial: Pe
         />
       </Campo>
 
-      {error && <p style={{ color: "#f87171", fontSize: 12, margin: 0 }}>{error}</p>}
+      {error && <p style={{ color: "#dc2626", fontSize: 12, margin: 0 }}>{error}</p>}
 
       <div style={{ display: "flex", gap: 8, marginTop: 4 }}>
         <button

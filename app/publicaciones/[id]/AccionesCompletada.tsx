@@ -22,8 +22,8 @@ const ESTADO_COMISION: Record<string, string> = {
 
 const ESTADO_GARANTIA: Record<string, { texto: string; color: string }> = {
   abierto: { texto: "Abierto", color: "var(--color-acento-claro)" },
-  atendido: { texto: "Atendido", color: "#4ade80" },
-  no_atendido: { texto: "No atendido", color: "#f87171" },
+  atendido: { texto: "Atendido", color: "#15803d" },
+  no_atendido: { texto: "No atendido", color: "#dc2626" },
 };
 
 export default function AccionesCompletada({
@@ -144,7 +144,7 @@ export default function AccionesCompletada({
 
   return (
     <div style={{ marginTop: 20, display: "flex", flexDirection: "column", gap: 16 }}>
-      {error && <p style={{ color: "#f87171", fontSize: 13, margin: 0 }}>{error}</p>}
+      {error && <p style={{ color: "#dc2626", fontSize: 13, margin: 0 }}>{error}</p>}
 
       {comisionInicial && (
         <div className="panel" style={{ padding: "14px 16px" }}>

@@ -28,13 +28,13 @@ export default function AccionesAdmin({ comisionId }: { comisionId: string }) {
 
   return (
     <div style={{ marginTop: 10 }}>
-      {error && <p style={{ color: "#f87171", fontSize: 12, margin: "0 0 6px" }}>{error}</p>}
+      {error && <p style={{ color: "#dc2626", fontSize: 12, margin: "0 0 6px" }}>{error}</p>}
       <div style={{ display: "flex", gap: 8 }}>
         <button
           onClick={() => accionar("confirmar")}
           disabled={cargando}
           className="boton-linea"
-          style={{ flex: 1, borderColor: "#4ade80", color: "#4ade80" }}
+          style={{ flex: 1, borderColor: "#15803d", color: "#15803d" }}
         >
           {cargando ? "…" : "Confirmar pago recibido"}
         </button>
@@ -42,7 +42,7 @@ export default function AccionesAdmin({ comisionId }: { comisionId: string }) {
           onClick={() => accionar("rechazar")}
           disabled={cargando}
           className="boton-linea"
-          style={{ flex: 1, borderColor: "#f87171", color: "#f87171" }}
+          style={{ flex: 1, borderColor: "#dc2626", color: "#dc2626" }}
         >
           {cargando ? "…" : "Rechazar pago"}
         </button>

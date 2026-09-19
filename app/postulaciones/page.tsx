@@ -12,8 +12,8 @@ const NIVEL_ETIQUETA: Record<string, string> = {
 
 const ESTADO_POSTULACION: Record<string, { texto: string; color: string }> = {
   pendiente: { texto: "Pendiente", color: "var(--color-acento-claro)" },
-  elegida: { texto: "¡Elegido!", color: "#4ade80" },
-  rechazada: { texto: "No elegido", color: "#94a3b8" },
+  elegida: { texto: "¡Elegido!", color: "#15803d" },
+  rechazada: { texto: "No elegido", color: "#475569" },
 };
 
 type Fila = {
@@ -75,7 +75,7 @@ export default async function MisPostulacionesPage() {
 
       <div style={{ marginTop: 16, display: "flex", flexDirection: "column", gap: 10 }}>
         {result.rows.map((p) => {
-          const estado = ESTADO_POSTULACION[p.estado_postulacion] ?? { texto: p.estado_postulacion, color: "#94a3b8" };
+          const estado = ESTADO_POSTULACION[p.estado_postulacion] ?? { texto: p.estado_postulacion, color: "#475569" };
           const hayMensajes = p.mensajes_nuevos > 0;
           const hayNovedad = !p.notificado;
           const comisionPendiente =
@@ -97,7 +97,7 @@ export default async function MisPostulacionesPage() {
                 {NIVEL_ETIQUETA[p.nivel_sistema]} · {p.ciudad}
               </p>
               {comisionPendiente && (
-                <p style={{ margin: "6px 0 0", fontSize: 12, fontWeight: 700, color: "#f87171" }}>
+                <p style={{ margin: "6px 0 0", fontSize: 12, fontWeight: 700, color: "#dc2626" }}>
                   {p.comision_estado === "rechazada" ? "❌ Pago rechazado" : "💳 Debes pagar comisión"}: {formatCOP(p.comision_valor ?? 0)}
                 </p>
               )}

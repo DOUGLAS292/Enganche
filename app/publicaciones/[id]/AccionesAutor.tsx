@@ -161,7 +161,7 @@ export default function AccionesAutor({
         Postulantes{postulantesIniciales.length > 0 ? ` (${postulantesIniciales.length})` : ""}
       </h2>
 
-      {error && <p style={{ color: "#f87171", fontSize: 13 }}>{error}</p>}
+      {error && <p style={{ color: "#dc2626", fontSize: 13 }}>{error}</p>}
 
       {postulantesIniciales.length === 0 && (
         <p style={{ color: "var(--color-mist)", fontSize: 13 }}>Nadie se ha postulado todavía.</p>
@@ -185,7 +185,7 @@ export default function AccionesAutor({
                 {cargando === p.postulante_id ? "…" : "Elegir"}
               </button>
             )}
-            {p.estado === "elegida" && <span style={{ fontSize: 12, color: "#4ade80" }}>Elegido</span>}
+            {p.estado === "elegida" && <span style={{ fontSize: 12, color: "#15803d" }}>Elegido</span>}
             {p.estado === "rechazada" && <span style={{ fontSize: 12, color: "var(--color-mist)" }}>No elegido</span>}
           </div>
         ))}
@@ -198,7 +198,7 @@ export default function AccionesAutor({
               onClick={marcarUrgente}
               disabled={cargando === "urgente"}
               className="boton-linea"
-              style={{ marginTop: 14, width: "100%", borderColor: "#f87171", color: "#f87171" }}
+              style={{ marginTop: 14, width: "100%", borderColor: "#dc2626", color: "#dc2626" }}
             >
               {cargando === "urgente" ? "…" : `🚨 Marcar como urgente (${formatCOP(valorUrgenteActual)})`}
             </button>
@@ -216,7 +216,7 @@ export default function AccionesAutor({
             </div>
           )}
           {urgente?.estado === "confirmada" && (
-            <p style={{ marginTop: 14, fontSize: 12, color: "#f87171", fontWeight: 700 }}>
+            <p style={{ marginTop: 14, fontSize: 12, color: "#dc2626", fontWeight: 700 }}>
               🚨 Urgente activo — se avisó a los postulantes cercanos.
             </p>
           )}
@@ -260,7 +260,7 @@ export default function AccionesAutor({
             onClick={completar}
             disabled={cargando === "completar"}
             className="boton-linea"
-            style={{ marginTop: 8, width: "100%", borderColor: "#4ade80", color: "#4ade80" }}
+            style={{ marginTop: 8, width: "100%", borderColor: "#15803d", color: "#15803d" }}
           >
             {cargando === "completar" ? "…" : "Marcar trabajo completado"}
           </button>

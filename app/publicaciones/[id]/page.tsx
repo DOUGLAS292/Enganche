@@ -17,11 +17,11 @@ const NIVEL_ETIQUETA: Record<string, string> = {
 };
 
 const ESTADO_ETIQUETA: Record<string, { texto: string; color: string }> = {
-  abierta: { texto: "Abierta", color: "#4ade80" },
+  abierta: { texto: "Abierta", color: "#15803d" },
   en_proceso: { texto: "Enganchada", color: "var(--color-azul-suave)" },
-  completada: { texto: "Completada", color: "#94a3b8" },
-  cancelada: { texto: "Cancelada", color: "#f87171" },
-  expirada: { texto: "Expirada", color: "#eab308" },
+  completada: { texto: "Completada", color: "#475569" },
+  cancelada: { texto: "Cancelada", color: "#dc2626" },
+  expirada: { texto: "Expirada", color: "#a16207" },
 };
 
 type Publicacion = {
@@ -169,7 +169,7 @@ export default async function PublicacionDetalle({ params }: { params: Promise<{
     garantias = rGarantias.rows;
   }
 
-  const estadoEtiqueta = ESTADO_ETIQUETA[publicacion.estado] ?? { texto: publicacion.estado, color: "#94a3b8" };
+  const estadoEtiqueta = ESTADO_ETIQUETA[publicacion.estado] ?? { texto: publicacion.estado, color: "#475569" };
 
   return (
     <main style={{ maxWidth: 560, margin: "0 auto", padding: "32px 20px 80px" }}>
@@ -183,7 +183,7 @@ export default async function PublicacionDetalle({ params }: { params: Promise<{
         </span>
         <span className="chip-tecnico" style={{ color: "var(--color-mist)" }}>{NIVEL_ETIQUETA[publicacion.nivel_sistema]}</span>
         <span style={{ fontSize: 12, fontWeight: 700, color: estadoEtiqueta.color }}>{estadoEtiqueta.texto}</span>
-        {urgente?.estado === "confirmada" && <span style={badgeStyle("#f87171")}>🚨 Urgente</span>}
+        {urgente?.estado === "confirmada" && <span style={badgeStyle("#dc2626")}>🚨 Urgente</span>}
       </div>
 
       <h1 className="titular" style={{ fontSize: 25, marginBottom: 4, marginTop: 14 }}>{publicacion.sistema_o_proyecto}</h1>
@@ -236,9 +236,9 @@ export default async function PublicacionDetalle({ params }: { params: Promise<{
       )}
 
       {!esAutor && esGanador && (
-        <div className={`panel${mensajesNuevos > 0 ? " alerta" : ""}`} style={{ marginTop: 20, padding: "14px 16px", borderColor: mensajesNuevos > 0 ? undefined : "#4ade80" }}>
-          <p style={{ margin: 0, fontWeight: 600, color: "#4ade80" }}>¡Fuiste elegido para este trabajo!</p>
-          <Link href={`/publicaciones/${publicacion.id}/chat`} style={{ color: mensajesNuevos > 0 ? "var(--color-acento-claro)" : "#4ade80", textDecoration: "underline", fontSize: 13, fontWeight: mensajesNuevos > 0 ? 700 : 400 }}>
+        <div className={`panel${mensajesNuevos > 0 ? " alerta" : ""}`} style={{ marginTop: 20, padding: "14px 16px", borderColor: mensajesNuevos > 0 ? undefined : "#15803d" }}>
+          <p style={{ margin: 0, fontWeight: 600, color: "#15803d" }}>¡Fuiste elegido para este trabajo!</p>
+          <Link href={`/publicaciones/${publicacion.id}/chat`} style={{ color: mensajesNuevos > 0 ? "var(--color-acento-claro)" : "#15803d", textDecoration: "underline", fontSize: 13, fontWeight: mensajesNuevos > 0 ? 700 : 400 }}>
             {mensajesNuevos > 0 ? `🔔 Ir al chat (${mensajesNuevos} nuevo${mensajesNuevos === 1 ? "" : "s"})` : "Ir al chat con quien publicó"}
           </Link>
         </div>

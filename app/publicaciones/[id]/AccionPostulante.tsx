@@ -28,7 +28,7 @@ export default function AccionPostulante({ publicacionId }: { publicacionId: str
 
   return (
     <div style={{ marginTop: 20 }}>
-      {error && <p style={{ color: "#f87171", fontSize: 13, marginBottom: 8 }}>{error}</p>}
+      {error && <p style={{ color: "#dc2626", fontSize: 13, marginBottom: 8 }}>{error}</p>}
       <button onClick={postularme} disabled={cargando} className="boton-primario">
         {cargando ? "Enviando…" : "Postularme a esta oferta"}
       </button>

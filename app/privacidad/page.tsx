@@ -12,7 +12,7 @@ export default function PrivacidadPage() {
       <h1 className="titular" style={{ fontSize: 26, marginTop: 14, fontWeight: 700 }}>Política de privacidad</h1>
       <p style={{ color: "var(--color-mist)", fontSize: 13 }}>Última actualización: septiembre de 2026</p>
 
-      <div style={{ marginTop: 16, display: "flex", flexDirection: "column", gap: 18, fontSize: 13, color: "#cbd5e1", lineHeight: 1.6 }}>
+      <div style={{ marginTop: 16, display: "flex", flexDirection: "column", gap: 18, fontSize: 13, color: "var(--color-texto-tenue)", lineHeight: 1.6 }}>
         <Clausula titulo="1. Alcance de esta política">
           Esta política aplica al uso de la aplicación web y móvil Enganche, disponible en enganche.vercel.app
           y, próximamente, en Google Play Store. Describe qué datos personales recopilamos, para qué los
@@ -96,7 +96,7 @@ export default function PrivacidadPage() {
 function Clausula({ titulo, children }: { titulo: string; children: React.ReactNode }) {
   return (
     <section>
-      <h2 style={{ fontSize: 14, color: "#eef2f5", margin: "0 0 4px" }}>{titulo}</h2>
+      <h2 style={{ fontSize: 14, color: "var(--color-marca)", margin: "0 0 4px" }}>{titulo}</h2>
       <p style={{ margin: 0 }}>{children}</p>
     </section>
   );

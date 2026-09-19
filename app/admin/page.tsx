@@ -8,8 +8,8 @@ import AccionesAdminUrgente from "./AccionesAdminUrgente";
 
 const ESTADO_URGENTE_ETIQUETA: Record<string, { texto: string; color: string }> = {
   pendiente: { texto: "Pendiente", color: "var(--color-acento-claro)" },
-  confirmada: { texto: "Confirmada", color: "#4ade80" },
-  rechazada: { texto: "Rechazada", color: "#f87171" },
+  confirmada: { texto: "Confirmada", color: "#15803d" },
+  rechazada: { texto: "Rechazada", color: "#dc2626" },
 };
 
 type Urgente = {
@@ -27,8 +27,8 @@ type Urgente = {
 const ESTADO_ETIQUETA: Record<string, { texto: string; color: string }> = {
   pendiente: { texto: "Pendiente", color: "var(--color-acento-claro)" },
   marcada_pagada: { texto: "Marcada pagada", color: "var(--color-azul-suave)" },
-  confirmada: { texto: "Confirmada", color: "#4ade80" },
-  rechazada: { texto: "Rechazada", color: "#f87171" },
+  confirmada: { texto: "Confirmada", color: "#15803d" },
+  rechazada: { texto: "Rechazada", color: "#dc2626" },
 };
 
 type Comision = {
@@ -94,8 +94,8 @@ export default async function AdminComisiones() {
       <div style={{ display: "flex", gap: 10, marginTop: 16, flexWrap: "wrap" }}>
         <TarjetaTotal etiqueta="Pendiente" valor={totales.pendiente} color="var(--color-acento-claro)" />
         <TarjetaTotal etiqueta="Marcada pagada" valor={totales.marcada_pagada} color="var(--color-azul-suave)" />
-        <TarjetaTotal etiqueta="Confirmada" valor={totales.confirmada} color="#4ade80" />
-        <TarjetaTotal etiqueta="Rechazada" valor={totales.rechazada} color="#f87171" />
+        <TarjetaTotal etiqueta="Confirmada" valor={totales.confirmada} color="#15803d" />
+        <TarjetaTotal etiqueta="Rechazada" valor={totales.rechazada} color="#dc2626" />
       </div>
 
       <h2 style={{ fontSize: 16, marginTop: 28 }}>

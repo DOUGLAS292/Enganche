@@ -17,7 +17,7 @@ export default function CerrarSesionBoton() {
       style={{
         background: "none",
         border: "none",
-        color: "#94a3b8",
+        color: "#475569",
         textDecoration: "underline",
         cursor: "pointer",
         fontSize: 13,

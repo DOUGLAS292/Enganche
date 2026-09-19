@@ -104,11 +104,11 @@ export default async function Home() {
                 display: "block",
                 marginTop: 22,
                 padding: "14px 16px",
-                borderColor: deudaComision.bloqueado ? "#f87171" : "var(--color-acento-claro)",
+                borderColor: deudaComision.bloqueado ? "#dc2626" : "var(--color-acento-claro)",
                 background: deudaComision.bloqueado ? "rgba(248, 113, 113, 0.08)" : "rgba(251, 191, 36, 0.08)",
               }}
             >
-              <p style={{ margin: 0, fontSize: 14, fontWeight: 700, color: deudaComision.bloqueado ? "#f87171" : "var(--color-acento-claro)" }}>
+              <p style={{ margin: 0, fontSize: 14, fontWeight: 700, color: deudaComision.bloqueado ? "#dc2626" : "var(--color-acento-claro)" }}>
                 {deudaComision.bloqueado ? "🚫 No puedes postularte a ofertas nuevas" : "⚠️ Tienes comisión pendiente de pago"}
               </p>
               <p style={{ margin: "4px 0 0", fontSize: 13, color: "var(--color-mist)" }}>

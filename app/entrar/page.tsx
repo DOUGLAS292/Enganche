@@ -127,4 +127,4 @@ export default function Entrar() {
 
 const labelStyle: CSSProperties = { display: "block", marginTop: 16, marginBottom: 6, fontSize: 14, color: "var(--color-texto-tenue)" };
 
-const errorStyle: CSSProperties = { color: "#f87171", marginTop: 10, fontSize: 14 };
+const errorStyle: CSSProperties = { color: "#dc2626", marginTop: 10, fontSize: 14 };

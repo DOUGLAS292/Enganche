@@ -45,7 +45,7 @@ export default function SubirFotoBoton() {
       <label htmlFor="input-foto-perfil" className="boton-linea" style={{ cursor: "pointer", display: "inline-block" }}>
         {cargando ? "Subiendo…" : "Cambiar foto de perfil"}
       </label>
-      {error && <p style={{ color: "#f87171", fontSize: 12, marginTop: 6 }}>{error}</p>}
+      {error && <p style={{ color: "#dc2626", fontSize: 12, marginTop: 6 }}>{error}</p>}
     </div>
   );
 }
