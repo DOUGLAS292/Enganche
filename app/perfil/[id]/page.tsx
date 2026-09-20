@@ -122,6 +122,17 @@ export default async function PerfilPage({ params }: { params: Promise<{ id: str
             {TIPO_USUARIO_ETIQUETA[perfil.tipo_usuario] ?? perfil.tipo_usuario}
             {perfil.ciudad ? ` · ${perfil.ciudad}` : ""} · Ofrece {OFRECE_ETIQUETA[perfil.ofrece] ?? perfil.ofrece}
           </p>
+          {(perfil.anos_experiencia != null || perfil.sistema_linea) && (
+            <p style={{ margin: "2px 0 0", fontSize: 13, color: "var(--color-mist)" }}>
+              {perfil.anos_experiencia != null &&
+                `${perfil.anos_experiencia} año${perfil.anos_experiencia === 1 ? "" : "s"} de experiencia`}
+              {perfil.anos_experiencia != null && perfil.sistema_linea && " · "}
+              {perfil.sistema_linea && `Trabaja con ${perfil.sistema_linea}`}
+            </p>
+          )}
+          <p style={{ margin: "2px 0 0", fontSize: 11, color: "var(--color-mist-tenue)" }}>
+            En Enganche desde {formatFecha(perfil.creado_en)}
+          </p>
         </div>
       </div>
 
