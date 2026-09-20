@@ -13,11 +13,11 @@
 :root {
   color-scheme: light;
 
-  --color-bg: #f3f6fa;
+  --color-bg: #c7def2;
   --color-bg-elevado: #ffffff;
   --color-superficie: #ffffff;
   --color-superficie-2: #eaf0f6;
-  --color-borde: #d7e1ea;
+  --color-borde: #a7c7e0;
   --color-borde-suave: rgba(4, 37, 58, 0.08);
 
   --color-marca: #04253a;
@@ -42,8 +42,9 @@ body {
   margin: 0;
   font-family: var(--font-sans), system-ui, -apple-system, "Segoe UI", sans-serif;
   background:
-    radial-gradient(1100px 520px at 50% -12%, rgba(255, 173, 1, 0.10), transparent 60%),
-    var(--color-bg);
+    radial-gradient(1100px 520px at 50% -12%, rgba(255, 173, 1, 0.12), transparent 60%),
+    linear-gradient(125deg, #cfe6f7 0%, #82b8df 28%, #eef8fd 52%, #5b9fd2 76%, #bfdff2 100%);
+  background-attachment: fixed;
   color: var(--color-texto);
 }
 
