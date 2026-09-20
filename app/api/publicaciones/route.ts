@@ -33,7 +33,9 @@ export async function GET(request: Request) {
   }
 
   let distanciaSelect = "null as distancia_m";
-  let orderBy = "p.creado_en desc";
+  // Las ofertas "Urgente" confirmadas quedan siempre fijadas arriba,
+  // sin importar el resto del orden ni las ofertas nuevas que entren.
+  let orderBy = "es_urgente desc, p.creado_en desc";
   const tieneLatLng = lat && lng && !Number.isNaN(Number(lat)) && !Number.isNaN(Number(lng));
 
   if (tieneLatLng) {
@@ -60,7 +62,7 @@ export async function GET(request: Request) {
     } else {
       condiciones.push(`p.ubicacion is not null and ST_DWithin(p.ubicacion, ${punto}, $${radioIdx})`);
     }
-    orderBy = "distancia_m asc nulls last, p.creado_en desc";
+    orderBy = "es_urgente desc, distancia_m asc nulls last, p.creado_en desc";
   } else if (ciudad) {
     params.push(`%${ciudad}%`);
     condiciones.push(`p.ciudad ilike $${params.length}`);

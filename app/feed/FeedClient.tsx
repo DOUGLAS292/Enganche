@@ -218,10 +218,11 @@ function chipStyle(activo: boolean): CSSProperties {
     padding: "6px 12px",
     borderRadius: 999,
     fontSize: 12,
+    fontWeight: activo ? 700 : 400,
     cursor: "pointer",
     border: `1px solid ${activo ? "var(--color-azul-suave)" : "var(--color-borde)"}`,
-    background: activo ? "#1e3a5f" : "transparent",
-    color: activo ? "var(--color-texto)" : "var(--color-mist)",
+    background: activo ? "rgba(47, 118, 163, 0.14)" : "var(--color-superficie)",
+    color: activo ? "var(--color-marca)" : "var(--color-mist)",
     fontFamily: "inherit",
   };
 }
