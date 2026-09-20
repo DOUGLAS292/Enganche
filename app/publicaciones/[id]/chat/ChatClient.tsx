@@ -11,6 +11,26 @@ type Mensaje = {
   creado_en: string;
 };
 
+const PATRON_URL = /(https?:\/\/[^\s]+)/g;
+
+// Convierte links sueltos en el mensaje (ej: uno de Google Maps para la
+// ubicación de la obra) en enlaces clicables, sin tocar el resto del texto.
+// split() con un grupo capturado intercala [texto, url, texto, url, ...],
+// así que los índices impares son siempre la URL — más confiable que
+// volver a probar con un regex global, que arrastra estado entre llamadas.
+function renderConLinks(texto: string, colorLink: string) {
+  const partes = texto.split(PATRON_URL);
+  return partes.map((parte, i) =>
+    i % 2 === 1 ? (
+      <a key={i} href={parte} target="_blank" rel="noopener noreferrer" style={{ color: colorLink, wordBreak: "break-all" }}>
+        {parte}
+      </a>
+    ) : (
+      <span key={i}>{parte}</span>
+    )
+  );
+}
+
 export default function ChatClient({
   publicacionId,
   titulo,
@@ -108,11 +128,13 @@ export default function ChatClient({
                   padding: "8px 12px",
                   background: esMio
                     ? "linear-gradient(135deg, rgba(255,207,125,.16), var(--color-superficie-2))"
-                    : "linear-gradient(160deg, rgba(255,255,255,.05), rgba(255,255,255,0) 55%), var(--color-superficie)",
+                    : "linear-gradient(160deg, rgba(4,37,58,.028), rgba(4,37,58,0) 55%), var(--color-superficie)",
                 }}
               >
                 {!esMio && <p style={{ margin: 0, fontSize: 11, color: "var(--color-mist)" }}>{m.emisor_nombre}</p>}
-                <p style={{ margin: esMio ? 0 : "2px 0 0", fontSize: 14 }}>{m.contenido}</p>
+                <p style={{ margin: esMio ? 0 : "2px 0 0", fontSize: 14 }}>
+                  {renderConLinks(m.contenido, esMio ? "var(--color-marca)" : "var(--color-azul-suave)")}
+                </p>
               </div>
             </div>
           );
