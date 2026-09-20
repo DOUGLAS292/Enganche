@@ -76,7 +76,25 @@ export default async function MisPostulacionesPage() {
 
       <div style={{ marginTop: 16, display: "flex", flexDirection: "column", gap: 10 }}>
         {result.rows.map((p) => {
-          const estado = ESTADO_POSTULACION[p.estado_postulacion] ?? { texto: p.estado_postulacion, color: "#475569" };
+          // Si sigo "pendiente" pero la oferta ya no está abierta, es que
+          // ya eligieron a alguien más (o se canceló/expiró) — no me lo
+          // marcan como "rechazada" de una porque, si se reabre, sigo en
+          // la lista de candidatos. Pero mostrar "Pendiente" ahí engaña:
+          // hay que avisar que ya no hay nada por decidir por ahora.
+          const estado =
+            p.estado_postulacion === "pendiente" && p.estado_publicacion !== "abierta"
+              ? {
+                  texto:
+                    p.estado_publicacion === "en_proceso"
+                      ? "Otro fue elegido"
+                      : p.estado_publicacion === "completada"
+                        ? "Oferta ya completada"
+                        : p.estado_publicacion === "cancelada"
+                          ? "Oferta cancelada"
+                          : "Oferta expirada",
+                  color: "#475569",
+                }
+              : (ESTADO_POSTULACION[p.estado_postulacion] ?? { texto: p.estado_postulacion, color: "#475569" });
           const hayMensajes = p.mensajes_nuevos > 0;
           const hayNovedad = !p.notificado;
           const comisionPendiente =
