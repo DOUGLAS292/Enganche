@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { query } from "@/lib/db";
 import { obtenerUsuarioIdDeSesion } from "@/lib/auth/session";
+import { normalizarCiudad } from "@/lib/constants/regiones";
 
 const TIPOS_USUARIO = ["empresa", "taller", "independiente"];
 const OFRECE = ["produccion", "instalacion", "ambos"];
@@ -13,7 +14,7 @@ export async function PATCH(request: Request) {
 
   const body = await request.json().catch(() => null);
   const nombre = String(body?.nombreRazonSocial ?? "").trim();
-  const ciudad = String(body?.ciudad ?? "").trim();
+  const ciudad = normalizarCiudad(String(body?.ciudad ?? ""));
   const tipoUsuario = String(body?.tipoUsuario ?? "");
   const ofrece = String(body?.ofrece ?? "");
   const sistemaLinea = body?.sistemaLinea ? String(body.sistemaLinea).trim() : null;

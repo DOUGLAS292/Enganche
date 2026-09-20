@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { query } from "@/lib/db";
 import { crearSesion, limpiarTelefonoVerificado, obtenerTelefonoVerificado } from "@/lib/auth/session";
+import { normalizarCiudad } from "@/lib/constants/regiones";
 
 const TIPOS_USUARIO = ["empresa", "taller", "independiente"];
 const OFRECE = ["produccion", "instalacion", "ambos"];
@@ -21,7 +22,7 @@ export async function POST(request: Request) {
   const tipoUsuario = String(body?.tipoUsuario ?? "");
   const ofrece = String(body?.ofrece ?? "");
   const nombre = String(body?.nombreRazonSocial ?? "").trim();
-  const ciudad = String(body?.ciudad ?? "").trim();
+  const ciudad = normalizarCiudad(String(body?.ciudad ?? ""));
   const documento = body?.documento ? String(body.documento).trim() : null;
   const sistemaLinea = body?.sistemaLinea ? String(body.sistemaLinea).trim() : null;
   const anosExperiencia = body?.anosExperiencia ? Number(body.anosExperiencia) : null;
