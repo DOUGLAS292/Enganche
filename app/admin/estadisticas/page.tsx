@@ -43,8 +43,8 @@ export default async function AdminEstadisticas() {
     query<{ estado: string; total: string }>(
       "select estado, count(*) as total from publicaciones group by estado"
     ),
-    query<{ estado_postulacion: string; total: string }>(
-      "select estado_postulacion, count(*) as total from postulaciones group by estado_postulacion"
+    query<{ estado: string; total: string }>(
+      "select estado, count(*) as total from postulaciones group by estado"
     ),
     query<{ estado: string; total: string; suma: string }>(
       "select estado::text, count(*) as total, coalesce(sum(valor_comision), 0) as suma from comisiones group by estado"
@@ -80,7 +80,7 @@ export default async function AdminEstadisticas() {
 
   const porTipo = Object.fromEntries(usuariosPorTipo.rows.map((f) => [f.tipo_usuario, Number(f.total)]));
   const porEstadoPub = Object.fromEntries(publicacionesPorEstado.rows.map((f) => [f.estado, Number(f.total)]));
-  const porEstadoPost = Object.fromEntries(postulacionesPorEstado.rows.map((f) => [f.estado_postulacion, Number(f.total)]));
+  const porEstadoPost = Object.fromEntries(postulacionesPorEstado.rows.map((f) => [f.estado, Number(f.total)]));
   const porEstadoComision = Object.fromEntries(
     comisiones.rows.map((f) => [f.estado, { total: Number(f.total), suma: Number(f.suma) }])
   );
