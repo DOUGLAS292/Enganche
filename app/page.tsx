@@ -82,7 +82,7 @@ export default async function Home() {
     }
   }
 
-  const primerNombre = usuario?.nombre_razon_social?.split(" ")[0] ?? "";
+  const nombreSaludo = usuario?.nombre_razon_social ?? "";
 
   return (
     <main className="reticula" style={{ maxWidth: 480, margin: "0 auto", padding: "48px 20px 60px" }}>
@@ -122,7 +122,7 @@ export default async function Home() {
           )}
 
           <div style={saludoCaja}>
-            <p style={{ margin: 0, fontSize: 15, fontWeight: 700 }}>¡Hola, {primerNombre}! 👋</p>
+            <p style={{ margin: 0, fontSize: 15, fontWeight: 700 }}>¡Hola, {nombreSaludo}! 👋</p>
             {usuario.ciudad && (
               <span className="chip-tecnico" style={{ marginTop: 10, display: "inline-block" }}>
                 📍 {usuario.ciudad.toUpperCase()}
