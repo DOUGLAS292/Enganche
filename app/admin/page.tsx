@@ -91,6 +91,10 @@ export default async function AdminComisiones() {
       <h1 className="titular" style={{ fontSize: 26, marginTop: 14, marginBottom: 4, fontWeight: 700 }}>Panel de comisiones</h1>
       <p style={{ color: "var(--color-mist)", marginTop: 0, fontSize: 13 }}>Solo visible para el admin.</p>
 
+      <Link href="/admin/estadisticas" className="boton-linea" style={{ marginTop: 10, display: "inline-block" }}>
+        📊 Ver estadísticas completas
+      </Link>
+
       <div style={{ display: "flex", gap: 10, marginTop: 16, flexWrap: "wrap" }}>
         <TarjetaTotal etiqueta="Pendiente" valor={totales.pendiente} color="var(--color-acento-claro)" />
         <TarjetaTotal etiqueta="Marcada pagada" valor={totales.marcada_pagada} color="var(--color-azul-suave)" />
