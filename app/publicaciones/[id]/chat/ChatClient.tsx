@@ -49,6 +49,7 @@ export default function ChatClient({
   const [enviando, setEnviando] = useState(false);
   const [obteniendoUbicacion, setObteniendoUbicacion] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [borrandoId, setBorrandoId] = useState<string | null>(null);
   const finRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -91,6 +92,24 @@ export default function ChatClient({
     const datosRefrescados = await refrescado.json();
     if (datosRefrescados.ok) setMensajes(datosRefrescados.mensajes);
     return true;
+  }
+
+  async function borrarMensaje(mensajeId: string) {
+    setError(null);
+    setBorrandoId(mensajeId);
+    try {
+      const res = await fetch(`/api/publicaciones/${publicacionId}/mensajes/${mensajeId}`, { method: "DELETE" });
+      const data = await res.json();
+      if (data.ok) {
+        setMensajes((actuales) => actuales.filter((m) => m.id !== mensajeId));
+      } else {
+        setError(data.error ?? "No se pudo borrar el mensaje.");
+      }
+    } catch {
+      setError("Error de conexión.");
+    } finally {
+      setBorrandoId(null);
+    }
   }
 
   async function enviar(e: FormEvent) {
@@ -177,6 +196,23 @@ export default function ChatClient({
                   {renderConLinks(m.contenido, esMio ? "var(--color-marca)" : "var(--color-azul-suave)")}
                 </p>
               </div>
+              {esMio && (
+                <button
+                  onClick={() => borrarMensaje(m.id)}
+                  disabled={borrandoId === m.id}
+                  style={{
+                    background: "none",
+                    border: "none",
+                    cursor: "pointer",
+                    padding: "2px 0",
+                    marginTop: 2,
+                    fontSize: 11,
+                    color: "var(--color-mist-tenue)",
+                  }}
+                >
+                  {borrandoId === m.id ? "Borrando…" : "Borrar"}
+                </button>
+              )}
             </div>
           );
         })}
