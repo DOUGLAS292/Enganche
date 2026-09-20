@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { obtenerUsuarioIdDeSesion } from "@/lib/auth/session";
 import { query } from "@/lib/db";
 import { formatCOP, formatFecha } from "@/lib/format";
+import OcultarBoton from "./OcultarBoton";
 
 const ESTADO_ETIQUETA: Record<string, { texto: string; color: string }> = {
   abierta: { texto: "Abierta", color: "#15803d" },
@@ -43,7 +44,7 @@ export default async function MisPublicacionesPage() {
      left join postulaciones po on po.publicacion_id = p.id
      left join mensajes m on m.publicacion_id = p.id
      left join mensajes_leidos ml on ml.usuario_id = $1 and ml.publicacion_id = p.id
-     where p.autor_id = $1
+     where p.autor_id = $1 and p.oculta_por_autor = false
      group by p.id
      order by
        (count(distinct po.id) filter (where po.estado = 'pendiente') > 0 and p.estado = 'abierta') desc,
@@ -73,22 +74,24 @@ export default async function MisPublicacionesPage() {
           const estado = ESTADO_ETIQUETA[p.estado] ?? { texto: p.estado, color: "#475569" };
           const hayNuevas = (p.postulantes_pendientes > 0 && p.estado === "abierta") || p.mensajes_nuevos > 0;
           const enganchada = p.estado === "en_proceso";
+          const cancelada = p.estado === "cancelada";
           return (
-            <Link
-              key={p.id}
-              href={`/publicaciones/${p.id}`}
-              className={`panel${!enganchada && hayNuevas ? " alerta" : ""}`}
-              style={{
-                padding: "14px 16px",
-                ...(enganchada
-                  ? {
-                      borderColor: "var(--color-azul-suave)",
-                      background:
-                        "linear-gradient(160deg, rgba(47, 118, 163, 0.16), rgba(47, 118, 163, 0.03) 60%), var(--color-superficie)",
-                    }
-                  : {}),
-              }}
-            >
+            <div key={p.id} style={{ position: "relative" }}>
+              {cancelada && <OcultarBoton publicacionId={p.id} />}
+              <Link
+                href={`/publicaciones/${p.id}`}
+                className={`panel${!enganchada && hayNuevas ? " alerta" : ""}`}
+                style={{
+                  padding: "14px 16px",
+                  ...(enganchada
+                    ? {
+                        borderColor: "var(--color-azul-suave)",
+                        background:
+                          "linear-gradient(160deg, rgba(47, 118, 163, 0.16), rgba(47, 118, 163, 0.03) 60%), var(--color-superficie)",
+                      }
+                    : {}),
+                }}
+              >
               <div style={{ display: "flex", justifyContent: "space-between" }}>
                 <span style={{ fontSize: 11, fontWeight: 700, color: estado.color }}>{estado.texto}</span>
                 <span style={{ fontSize: 12, color: "var(--color-mist-tenue)" }}>{formatFecha(p.creado_en)}</span>
@@ -111,7 +114,8 @@ export default async function MisPublicacionesPage() {
                     `${p.postulantes_pendientes > 0 && p.estado === "abierta" ? "🔔 " : ""}${p.postulantes_total} postulante${p.postulantes_total === 1 ? "" : "s"}${p.postulantes_pendientes > 0 && p.estado === "abierta" ? ` · ${p.postulantes_pendientes} por revisar` : ""}`}
                 </span>
               </div>
-            </Link>
+              </Link>
+            </div>
           );
         })}
       </div>
