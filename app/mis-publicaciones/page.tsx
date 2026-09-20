@@ -72,8 +72,23 @@ export default async function MisPublicacionesPage() {
         {result.rows.map((p) => {
           const estado = ESTADO_ETIQUETA[p.estado] ?? { texto: p.estado, color: "#475569" };
           const hayNuevas = (p.postulantes_pendientes > 0 && p.estado === "abierta") || p.mensajes_nuevos > 0;
+          const enganchada = p.estado === "en_proceso";
           return (
-            <Link key={p.id} href={`/publicaciones/${p.id}`} className={`panel${hayNuevas ? " alerta" : ""}`} style={{ padding: "14px 16px" }}>
+            <Link
+              key={p.id}
+              href={`/publicaciones/${p.id}`}
+              className={`panel${!enganchada && hayNuevas ? " alerta" : ""}`}
+              style={{
+                padding: "14px 16px",
+                ...(enganchada
+                  ? {
+                      borderColor: "var(--color-azul-suave)",
+                      background:
+                        "linear-gradient(160deg, rgba(47, 118, 163, 0.16), rgba(47, 118, 163, 0.03) 60%), var(--color-superficie)",
+                    }
+                  : {}),
+              }}
+            >
               <div style={{ display: "flex", justifyContent: "space-between" }}>
                 <span style={{ fontSize: 11, fontWeight: 700, color: estado.color }}>{estado.texto}</span>
                 <span style={{ fontSize: 12, color: "var(--color-mist-tenue)" }}>{formatFecha(p.creado_en)}</span>

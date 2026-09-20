@@ -22,6 +22,7 @@ type Fila = {
   sistema_o_proyecto: string;
   ciudad: string;
   valor_ofertado: number;
+  estado_publicacion: string;
   estado_postulacion: string;
   creado_en: string;
   mensajes_nuevos: number;
@@ -39,7 +40,7 @@ export default async function MisPostulacionesPage() {
   const result = await query<Fila>(
     `select
        p.id, p.nivel_sistema, p.sistema_o_proyecto, p.ciudad, p.valor_ofertado,
-       po.estado as estado_postulacion, po.creado_en, po.notificado,
+       p.estado as estado_publicacion, po.estado as estado_postulacion, po.creado_en, po.notificado,
        count(m.id) filter (
          where po.estado = 'elegida' and m.ganador_id = p.ganador_id
            and m.emisor_id != $1 and m.creado_en > coalesce(ml.leido_hasta, '-infinity')
@@ -86,8 +87,23 @@ export default async function MisPostulacionesPage() {
               : p.estado_postulacion === "rechazada"
                 ? "🔔 Se reabrió la oferta"
                 : "";
+          const enganchada = p.estado_publicacion === "en_proceso";
           return (
-            <Link key={p.id} href={`/publicaciones/${p.id}`} className={`panel${hayNovedad || hayMensajes || comisionPendiente ? " alerta" : ""}`} style={{ padding: "14px 16px" }}>
+            <Link
+              key={p.id}
+              href={`/publicaciones/${p.id}`}
+              className={`panel${!enganchada && (hayNovedad || hayMensajes || comisionPendiente) ? " alerta" : ""}`}
+              style={{
+                padding: "14px 16px",
+                ...(enganchada
+                  ? {
+                      borderColor: "var(--color-azul-suave)",
+                      background:
+                        "linear-gradient(160deg, rgba(47, 118, 163, 0.16), rgba(47, 118, 163, 0.03) 60%), var(--color-superficie)",
+                    }
+                  : {}),
+              }}
+            >
               <div style={{ display: "flex", justifyContent: "space-between" }}>
                 <span style={{ fontSize: 11, fontWeight: 700, color: estado.color }}>{estado.texto}</span>
                 <span style={{ fontSize: 12, color: "var(--color-mist-tenue)" }}>{formatFecha(p.creado_en)}</span>
