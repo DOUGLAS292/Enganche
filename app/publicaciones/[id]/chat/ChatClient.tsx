@@ -47,6 +47,8 @@ export default function ChatClient({
   const [mensajes, setMensajes] = useState<Mensaje[]>([]);
   const [texto, setTexto] = useState("");
   const [enviando, setEnviando] = useState(false);
+  const [obteniendoUbicacion, setObteniendoUbicacion] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const finRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -74,26 +76,65 @@ export default function ChatClient({
     finRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [mensajes.length]);
 
+  async function enviarMensaje(contenido: string): Promise<boolean> {
+    const res = await fetch(`/api/publicaciones/${publicacionId}/mensajes`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ contenido }),
+    });
+    const data = await res.json();
+    if (!data.ok) {
+      setError(data.error ?? "No se pudo enviar el mensaje.");
+      return false;
+    }
+    const refrescado = await fetch(`/api/publicaciones/${publicacionId}/mensajes`);
+    const datosRefrescados = await refrescado.json();
+    if (datosRefrescados.ok) setMensajes(datosRefrescados.mensajes);
+    return true;
+  }
+
   async function enviar(e: FormEvent) {
     e.preventDefault();
     if (!texto.trim()) return;
+    setError(null);
     setEnviando(true);
     try {
-      const res = await fetch(`/api/publicaciones/${publicacionId}/mensajes`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ contenido: texto.trim() }),
-      });
-      const data = await res.json();
-      if (data.ok) {
-        setTexto("");
-        const refrescado = await fetch(`/api/publicaciones/${publicacionId}/mensajes`);
-        const datosRefrescados = await refrescado.json();
-        if (datosRefrescados.ok) setMensajes(datosRefrescados.mensajes);
-      }
+      if (await enviarMensaje(texto.trim())) setTexto("");
+    } catch {
+      setError("Error de conexión.");
     } finally {
       setEnviando(false);
     }
+  }
+
+  // Comparte la ubicación GPS actual como un link de Google Maps con
+  // coordenadas exactas — sirve para sitios sin dirección clara (una finca,
+  // una obra en construcción) donde escribir una dirección no alcanza.
+  function enviarUbicacion() {
+    if (!navigator.geolocation) {
+      setError("Este navegador no permite compartir ubicación.");
+      return;
+    }
+    setError(null);
+    setObteniendoUbicacion(true);
+    navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        const { latitude, longitude } = pos.coords;
+        const link = `https://www.google.com/maps?q=${latitude},${longitude}`;
+        try {
+          await enviarMensaje(`📍 Mi ubicación: ${link}`);
+        } catch {
+          setError("Error de conexión.");
+        } finally {
+          setObteniendoUbicacion(false);
+        }
+      },
+      () => {
+        setError("No se pudo obtener tu ubicación. Revisa los permisos de ubicación del navegador.");
+        setObteniendoUbicacion(false);
+      },
+      { enableHighAccuracy: true, timeout: 15000 }
+    );
   }
 
   return (
@@ -142,7 +183,19 @@ export default function ChatClient({
         <div ref={finRef} />
       </div>
 
+      {error && <p style={{ color: "#dc2626", fontSize: 12, margin: "0 0 6px" }}>{error}</p>}
+
       <form onSubmit={enviar} style={{ display: "flex", gap: 8, padding: "12px 0", borderTop: "1px solid var(--color-borde)" }}>
+        <button
+          type="button"
+          onClick={enviarUbicacion}
+          disabled={obteniendoUbicacion}
+          title="Enviar mi ubicación actual"
+          className="boton-linea"
+          style={{ width: "auto", padding: "10px 12px", borderRadius: 10, flexShrink: 0, fontSize: 16 }}
+        >
+          {obteniendoUbicacion ? "…" : "📍"}
+        </button>
         <input value={texto} onChange={(e) => setTexto(e.target.value)} placeholder="Escribe un mensaje…" className="input-vidrio" style={{ flex: 1 }} />
         <button type="submit" disabled={enviando || !texto.trim()} className="boton-primario" style={{ width: "auto", padding: "10px 18px", borderRadius: 10 }}>
           Enviar
