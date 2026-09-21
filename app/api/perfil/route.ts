@@ -17,7 +17,7 @@ export async function PATCH(request: Request) {
   const ciudad = normalizarCiudad(String(body?.ciudad ?? ""));
   const tipoUsuario = String(body?.tipoUsuario ?? "");
   const ofrece = String(body?.ofrece ?? "");
-  const sistemaLinea = body?.sistemaLinea ? String(body.sistemaLinea).trim() : null;
+  const sistemaLinea = body?.sistemaLinea ? String(body.sistemaLinea).trim().slice(0, 120) : null;
   const anosExperiencia = body?.anosExperiencia !== "" && body?.anosExperiencia != null ? Number(body.anosExperiencia) : null;
 
   if (nombre.length < 2 || nombre.length > 120) {

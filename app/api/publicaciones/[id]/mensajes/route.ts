@@ -1,6 +1,10 @@
 import { NextResponse } from "next/server";
 import { query } from "@/lib/db";
 import { obtenerUsuarioIdDeSesion } from "@/lib/auth/session";
+import { excedioLimite, registrarIntento } from "@/lib/rateLimit";
+
+const LIMITE_MENSAJES = 30;
+const VENTANA_MENSAJES_MS = 10 * 60 * 1000; // 10 minutos
 
 async function obtenerAcceso(id: string, usuarioId: string): Promise<{ autorId: string; ganadorId: string } | null> {
   const result = await query<{ autor_id: string; ganador_id: string | null }>(
@@ -67,6 +71,17 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
   if (!contenido) {
     return NextResponse.json({ ok: false, error: "Escribe un mensaje." }, { status: 400 });
   }
+  if (contenido.length > 2000) {
+    return NextResponse.json({ ok: false, error: "El mensaje es demasiado largo." }, { status: 400 });
+  }
+
+  if (await excedioLimite("mensajes", usuarioId, LIMITE_MENSAJES, VENTANA_MENSAJES_MS)) {
+    return NextResponse.json(
+      { ok: false, error: "Estás enviando mensajes muy rápido. Espera un momento." },
+      { status: 429 }
+    );
+  }
+  await registrarIntento("mensajes", usuarioId);
 
   // Se etiqueta con el ganador actual: si la oferta se reabre y se elige a
   // otra persona más adelante, este mensaje sigue perteneciendo a esta

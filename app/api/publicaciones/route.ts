@@ -2,9 +2,12 @@ import { NextResponse } from "next/server";
 import { query } from "@/lib/db";
 import { obtenerUsuarioIdDeSesion } from "@/lib/auth/session";
 import { regionParaCiudad, normalizarCiudad } from "@/lib/constants/regiones";
+import { excedioLimite, registrarIntento } from "@/lib/rateLimit";
 
 const TIPOS_TRABAJO = ["produccion", "instalacion"];
 const NIVELES_SISTEMA = ["tradicional", "superior", "especializada"];
+const LIMITE_PUBLICACIONES = 20;
+const VENTANA_PUBLICACIONES_MS = 24 * 60 * 60 * 1000; // 1 día
 
 export async function GET(request: Request) {
   const usuarioId = await obtenerUsuarioIdDeSesion();
@@ -121,17 +124,26 @@ export async function POST(request: Request) {
     !TIPOS_TRABAJO.includes(tipoTrabajo) ||
     !NIVELES_SISTEMA.includes(nivelSistema) ||
     !sistemaOProyecto ||
+    sistemaOProyecto.length > 200 ||
     !Number.isInteger(Number(cantidad)) ||
     Number(cantidad) <= 0 ||
     !ciudad ||
     !Number.isFinite(valorOfertado) ||
     valorOfertado <= 0 ||
+    valorOfertado > 10_000_000_000 ||
     (tipoTrabajo === "produccion" && !LUGARES_FABRICACION.includes(lugarFabricacionRaw ?? ""))
   ) {
     return NextResponse.json({ ok: false, error: "Completa los campos obligatorios." }, { status: 400 });
   }
   if (fechaInicio && fechaFin && fechaFin < fechaInicio) {
     return NextResponse.json({ ok: false, error: "La fecha de finalización no puede ser antes de la de inicio." }, { status: 400 });
+  }
+
+  if (await excedioLimite("publicaciones", usuarioId, LIMITE_PUBLICACIONES, VENTANA_PUBLICACIONES_MS)) {
+    return NextResponse.json(
+      { ok: false, error: "Alcanzaste el límite de publicaciones nuevas por hoy. Intenta mañana." },
+      { status: 429 }
+    );
   }
 
   const region = regionParaCiudad(ciudad);
@@ -167,6 +179,7 @@ export async function POST(request: Request) {
      returning id`,
     params
   );
+  await registrarIntento("publicaciones", usuarioId);
 
   return NextResponse.json({ ok: true, id: creado.rows[0].id });
 }

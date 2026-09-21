@@ -1,6 +1,14 @@
+import { timingSafeEqual } from "node:crypto";
 import { NextResponse } from "next/server";
 import { query } from "@/lib/db";
 import { enviarAvisoExpiracion, enviarAvisoPostulantesPendientes } from "@/lib/whatsapp/notificaciones";
+
+function coincideSecreto(recibido: string, esperado: string): boolean {
+  const bufRecibido = Buffer.from(recibido);
+  const bufEsperado = Buffer.from(esperado);
+  if (bufRecibido.length !== bufEsperado.length) return false;
+  return timingSafeEqual(bufRecibido, bufEsperado);
+}
 
 const DIAS_ESPERA_POSTULANTES = 3;
 
@@ -19,7 +27,7 @@ const DIAS_ESPERA_POSTULANTES = 3;
 export async function GET(request: Request) {
   const secret = process.env.CRON_SECRET;
   const auth = request.headers.get("authorization");
-  if (!secret || auth !== `Bearer ${secret}`) {
+  if (!secret || !auth || !coincideSecreto(auth, `Bearer ${secret}`)) {
     return NextResponse.json({ ok: false, error: "No autorizado." }, { status: 401 });
   }
 

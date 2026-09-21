@@ -2,8 +2,11 @@ import { NextResponse } from "next/server";
 import { query } from "@/lib/db";
 import { obtenerUsuarioIdDeSesion } from "@/lib/auth/session";
 import { formatCOP } from "@/lib/format";
+import { excedioLimite, registrarIntento } from "@/lib/rateLimit";
 
 const DIAS_GRACIA_COMISION = 7;
+const LIMITE_POSTULACIONES = 30;
+const VENTANA_POSTULACIONES_MS = 60 * 60 * 1000; // 1 hora
 
 export async function POST(_request: Request, { params }: { params: Promise<{ id: string }> }) {
   const usuarioId = await obtenerUsuarioIdDeSesion();
@@ -64,11 +67,19 @@ export async function POST(_request: Request, { params }: { params: Promise<{ id
     );
   }
 
+  if (await excedioLimite("postular", usuarioId, LIMITE_POSTULACIONES, VENTANA_POSTULACIONES_MS)) {
+    return NextResponse.json(
+      { ok: false, error: "Estás postulándote muy rápido. Espera un momento e intenta de nuevo." },
+      { status: 429 }
+    );
+  }
+
   try {
     await query(
       "insert into postulaciones (publicacion_id, postulante_id, estado) values ($1, $2, 'pendiente')",
       [id, usuarioId]
     );
+    await registrarIntento("postular", usuarioId);
   } catch (err) {
     const codigo = err instanceof Error && "code" in err ? (err as { code?: string }).code : undefined;
     if (codigo === "23505") {

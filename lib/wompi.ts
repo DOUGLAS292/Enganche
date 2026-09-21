@@ -1,4 +1,4 @@
-import { createHash } from "crypto";
+import { createHash, timingSafeEqual } from "crypto";
 
 // Sin pasarela de pago propia: se usa la API de "Links de pago" de Wompi
 // (POST /v1/payment_links) — se genera un link de un solo uso por cada
@@ -75,5 +75,9 @@ export function verificarFirmaWebhook(evento: {
     secreto;
 
   const checksumCalculado = createHash("sha256").update(concatenado).digest("hex").toUpperCase();
-  return checksumCalculado === checksumRecibido.toUpperCase();
+  const recibido = checksumRecibido.toUpperCase();
+  const bufCalculado = Buffer.from(checksumCalculado, "hex");
+  const bufRecibido = Buffer.from(recibido, "hex");
+  if (bufCalculado.length !== bufRecibido.length || bufCalculado.length === 0) return false;
+  return timingSafeEqual(bufCalculado, bufRecibido);
 }

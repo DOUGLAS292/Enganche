@@ -23,12 +23,22 @@ export async function POST(request: Request) {
   const ofrece = String(body?.ofrece ?? "");
   const nombre = String(body?.nombreRazonSocial ?? "").trim();
   const ciudad = normalizarCiudad(String(body?.ciudad ?? ""));
-  const documento = body?.documento ? String(body.documento).trim() : null;
-  const sistemaLinea = body?.sistemaLinea ? String(body.sistemaLinea).trim() : null;
-  const anosExperiencia = body?.anosExperiencia ? Number(body.anosExperiencia) : null;
+  const documento = body?.documento ? String(body.documento).trim().slice(0, 30) : null;
+  const sistemaLinea = body?.sistemaLinea ? String(body.sistemaLinea).trim().slice(0, 120) : null;
+  const anosExperienciaRaw = body?.anosExperiencia ? Number(body.anosExperiencia) : null;
+  const anosExperiencia =
+    anosExperienciaRaw !== null && Number.isInteger(anosExperienciaRaw) && anosExperienciaRaw >= 0 && anosExperienciaRaw <= 80
+      ? anosExperienciaRaw
+      : null;
   const aceptaTerminos = Boolean(body?.aceptaTerminos);
 
-  if (!TIPOS_USUARIO.includes(tipoUsuario) || !OFRECE.includes(ofrece) || !nombre || !ciudad) {
+  if (
+    !TIPOS_USUARIO.includes(tipoUsuario) ||
+    !OFRECE.includes(ofrece) ||
+    nombre.length < 2 ||
+    nombre.length > 120 ||
+    !ciudad
+  ) {
     return NextResponse.json({ ok: false, error: "Completa los campos obligatorios." }, { status: 400 });
   }
   if (!aceptaTerminos) {

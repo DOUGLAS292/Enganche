@@ -3,6 +3,7 @@ import { normalizarCelularCO } from "@/lib/validation/telefono";
 import { verificarOtp } from "@/lib/auth/otp";
 import { query } from "@/lib/db";
 import { crearSesion, marcarTelefonoVerificado } from "@/lib/auth/session";
+import { excedioLimite, registrarIntento, obtenerIp } from "@/lib/rateLimit";
 
 const RAZON_MENSAJE: Record<string, string> = {
   no_solicitado: "Primero pide un código para este celular.",
@@ -10,6 +11,9 @@ const RAZON_MENSAJE: Record<string, string> = {
   codigo_incorrecto: "El código no es correcto.",
   demasiados_intentos: "Demasiados intentos. Pide un código nuevo.",
 };
+
+const LIMITE_VERIFICAR_POR_IP = 20;
+const VENTANA_VERIFICAR_MS = 60 * 60 * 1000; // 1 hora
 
 export async function POST(request: Request) {
   const body = await request.json().catch(() => null);
@@ -19,6 +23,18 @@ export async function POST(request: Request) {
   if (!celular || !/^\d{6}$/.test(codigo)) {
     return NextResponse.json({ ok: false, error: "Datos inválidos." }, { status: 400 });
   }
+
+  // El límite por número (5 intentos, en verificarOtp) ya protege una
+  // cuenta puntual, pero sin límite por IP alguien podría probar códigos
+  // contra muchos números distintos desde la misma conexión.
+  const ip = obtenerIp(request);
+  if (await excedioLimite("otp_verificar", ip, LIMITE_VERIFICAR_POR_IP, VENTANA_VERIFICAR_MS)) {
+    return NextResponse.json(
+      { ok: false, error: "Demasiados intentos desde esta conexión. Espera un momento e intenta de nuevo." },
+      { status: 429 }
+    );
+  }
+  await registrarIntento("otp_verificar", ip);
 
   const resultado = await verificarOtp(celular, codigo);
   if (!resultado.ok) {
