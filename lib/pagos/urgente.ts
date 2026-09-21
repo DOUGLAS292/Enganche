@@ -1,7 +1,7 @@
 import { query } from "@/lib/db";
 import { enviarAvisoUrgenteConfirmado, enviarAvisoOfertaUrgenteCerca } from "@/lib/whatsapp/notificaciones";
 
-const RADIO_AVISO_METROS = 15000;
+const RADIO_AVISO_METROS = 10000;
 
 // Compartida entre la confirmación manual del admin y el webhook de
 // Wompi: confirma el impulso y dispara el aviso a los postulantes

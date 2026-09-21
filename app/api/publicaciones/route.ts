@@ -74,7 +74,11 @@ export async function GET(request: Request) {
       p.tiempo_entrega, p.valor_ofertado, p.ciudad, p.region, p.creado_en, p.lugar_fabricacion,
       u.nombre_razon_social as autor_nombre, u.rating_promedio as autor_rating,
       u.trabajos_completados as autor_trabajos, u.verificado as autor_verificado,
-      exists(select 1 from impulsos_urgentes iu where iu.publicacion_id = p.id and iu.estado = 'confirmada') as es_urgente,
+      exists(
+        select 1 from impulsos_urgentes iu
+        where iu.publicacion_id = p.id and iu.estado = 'confirmada'
+          and iu.confirmada_en > now() - interval '48 hours'
+      ) as es_urgente,
       ${distanciaSelect}
     from publicaciones p
     join usuarios u on u.id = p.autor_id
