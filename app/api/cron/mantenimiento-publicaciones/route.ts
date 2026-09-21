@@ -84,10 +84,26 @@ export async function GET(request: Request) {
     await query("update publicaciones set aviso_postulantes_enviado = true where id = $1", [fila.id]);
   }
 
+  // Limpieza de tablas que solo existen para controlar tasa/OTP a corto
+  // plazo — sin esto crecen indefinidamente con más usuarios y terminan
+  // haciendo cada chequeo de límite más lento de lo necesario.
+  const limpiezaRateLimits = await query<{ id: string }>(
+    "delete from rate_limits where creado_en < now() - interval '2 days' returning id"
+  );
+  const limpiezaOtpIp = await query<{ id: string }>(
+    "delete from otp_solicitudes_ip where creado_en < now() - interval '2 days' returning id"
+  );
+  const limpiezaOtps = await query<{ celular: string }>(
+    "delete from otps where expira_en < now() returning celular"
+  );
+
   return NextResponse.json({
     ok: true,
     avisosExpiracionEnviados: porAvisarExpiracion.rows.length,
     expiradas: expiradas.rows.length,
     avisosPostulantesEnviados: porAvisarPostulantes.rows.length,
+    rateLimitsBorrados: limpiezaRateLimits.rows.length,
+    otpIpBorrados: limpiezaOtpIp.rows.length,
+    otpsExpiradosBorrados: limpiezaOtps.rows.length,
   });
 }

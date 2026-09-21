@@ -10,7 +10,25 @@ function createPool() {
   if (!connectionString) {
     throw new Error("Falta la variable de entorno DATABASE_URL");
   }
-  return new Pool({ connectionString, max: 5 });
+  const pool = new Pool({
+    connectionString,
+    max: 5,
+    idleTimeoutMillis: 10_000,
+    connectionTimeoutMillis: 5_000,
+    // Corta una consulta atascada en vez de dejarla retener su conexión
+    // para siempre — bajo carga alta, una sola consulta colgada puede ir
+    // acaparando conexión tras conexión hasta agotar el pool para todos.
+    statement_timeout: 15_000,
+    query_timeout: 15_000,
+  });
+  // Un cliente inactivo del pool que se cae (red, DB reiniciada, etc.)
+  // emite "error" en el propio Pool — sin este listener, Node lo trata
+  // como excepción no capturada y tumba toda la instancia de la función,
+  // afectando a otras peticiones que compartían ese pool en caliente.
+  pool.on("error", (err) => {
+    console.error("[Enganche] Error inesperado en un cliente inactivo del pool de PostgreSQL:", err);
+  });
+  return pool;
 }
 
 // Perezoso a propósito: `next build` importa las rutas para analizarlas sin
