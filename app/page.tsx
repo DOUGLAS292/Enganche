@@ -13,6 +13,7 @@ export default async function Home() {
   let mensajesNuevosAutor = 0;
   let mensajesNuevosGanador = 0;
   let postulacionesSinVer = 0;
+  let ofertasNuevasCerca = 0;
   let deudaComision: { publicacionId: string; sistemaOProyecto: string; total: number; cantidad: number; bloqueado: boolean } | null = null;
 
   if (usuarioId) {
@@ -22,7 +23,7 @@ export default async function Home() {
     );
     usuario = result.rows[0] ?? null;
 
-    const [pendientes, mensajesAutor, mensajesGanador, sinVer, comisionesDeuda] = await Promise.all([
+    const [pendientes, mensajesAutor, mensajesGanador, sinVer, comisionesDeuda, ofertasCerca] = await Promise.all([
       query<{ total: string }>(
         `select count(*) as total
          from postulaciones po
@@ -60,11 +61,30 @@ export default async function Home() {
          order by c.creado_en asc`,
         [usuarioId]
       ),
+      // Ofertas nuevas que le calzan (por lo que ofrece y por cercanía —
+      // misma ciudad o dentro de 15km) desde la última vez que abrió el
+      // feed. Es el aviso "gratis" para toda oferta nueva — "Urgente"
+      // sigue siendo la única que además manda WhatsApp de inmediato.
+      query<{ total: string }>(
+        `select count(*) as total
+         from publicaciones p
+         join usuarios u on u.id = $1
+         where p.estado = 'abierta'
+           and p.autor_id != $1
+           and p.creado_en > u.feed_visto_hasta
+           and (u.ofrece = 'ambos' or p.tipo_trabajo::text = u.ofrece::text)
+           and (
+             p.ciudad ilike u.ciudad
+             or (p.ubicacion is not null and u.ubicacion is not null and ST_DWithin(p.ubicacion, u.ubicacion, 15000))
+           )`,
+        [usuarioId]
+      ),
     ]);
     postulantesPorRevisar = Number(pendientes.rows[0]?.total ?? 0);
     mensajesNuevosAutor = Number(mensajesAutor.rows[0]?.total ?? 0);
     mensajesNuevosGanador = Number(mensajesGanador.rows[0]?.total ?? 0);
     postulacionesSinVer = Number(sinVer.rows[0]?.total ?? 0);
+    ofertasNuevasCerca = Number(ofertasCerca.rows[0]?.total ?? 0);
 
     if (comisionesDeuda.rows.length > 0) {
       const total = comisionesDeuda.rows.reduce((acc, c) => acc + Number(c.valor_comision), 0);
@@ -131,7 +151,13 @@ export default async function Home() {
           </div>
 
           <div style={{ marginTop: 18, display: "flex", flexDirection: "column", gap: 12 }}>
-            <TarjetaAccion href="/feed" icono="🔍" titulo="Ver ofertas" subtitulo="Encuentra trabajo cerca de ti" />
+            <TarjetaAccion
+              href="/feed"
+              icono="🔍"
+              titulo="Ver ofertas"
+              subtitulo={ofertasNuevasCerca > 0 ? `${ofertasNuevasCerca} oferta${ofertasNuevasCerca === 1 ? "" : "s"} nueva${ofertasNuevasCerca === 1 ? "" : "s"} cerca de ti` : "Encuentra trabajo cerca de ti"}
+              badge={ofertasNuevasCerca > 0 ? ofertasNuevasCerca : undefined}
+            />
             <TarjetaAccion href="/publicar" icono="📢" titulo="Publicar una oferta" subtitulo="Cuenta qué necesitas" />
             <TarjetaAccion
               href="/mis-publicaciones"
