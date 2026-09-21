@@ -29,6 +29,23 @@ export default function RegistroForm({ celular }: { celular: string }) {
   const [error, setError] = useState<string | null>(null);
   const [cargando, setCargando] = useState(false);
 
+  function pedirYGuardarUbicacion() {
+    if (!navigator.geolocation) return;
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        fetch("/api/perfil/ubicacion", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
+        }).catch(() => {});
+      },
+      () => {
+        // Si no da permiso, no pasa nada — sigue usando la app por ciudad.
+      },
+      { enableHighAccuracy: false, timeout: 10000 }
+    );
+  }
+
   async function enviar(e: FormEvent) {
     e.preventDefault();
     setError(null);
@@ -53,6 +70,10 @@ export default function RegistroForm({ celular }: { celular: string }) {
         setError(data.error ?? "No se pudo crear la cuenta.");
         return;
       }
+      // Pide el permiso de ubicación justo al quedar registrado — es la
+      // única vez que estamos seguros de tener a la persona activamente
+      // completando un formulario, el mejor momento para pedirlo.
+      pedirYGuardarUbicacion();
       router.push("/");
       router.refresh();
     } catch {
