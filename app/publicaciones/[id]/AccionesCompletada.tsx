@@ -146,7 +146,7 @@ export default function AccionesCompletada({
     <div style={{ marginTop: 20, display: "flex", flexDirection: "column", gap: 16 }}>
       {error && <p style={{ color: "#dc2626", fontSize: 13, margin: 0 }}>{error}</p>}
 
-      {comisionInicial && (
+      {soyGanador && comisionInicial && (
         <div className="panel" style={{ padding: "14px 16px" }}>
           <p style={{ margin: 0, fontSize: 13, color: "var(--color-mist)" }}>Comisión de la plataforma</p>
           <p style={{ margin: "4px 0 0", fontSize: 18, fontWeight: 700, fontFamily: "var(--font-mono)", color: "var(--color-acento-claro)" }}>
