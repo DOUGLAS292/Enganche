@@ -3,6 +3,35 @@
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 
+const LADO_MAXIMO_PX = 400;
+
+// La foto de perfil se muestra siempre en miniatura (56px), pero el
+// celular sube fotos de cámara de varios MB — sin achicarla antes, cada
+// vez que alguien abre un perfil se descarga esa foto completa. Se
+// redimensiona y comprime en el navegador antes de subirla.
+async function comprimirImagen(archivo: File): Promise<File> {
+  if (typeof createImageBitmap === "undefined") return archivo;
+  try {
+    const bitmap = await createImageBitmap(archivo);
+    const escala = Math.min(1, LADO_MAXIMO_PX / Math.max(bitmap.width, bitmap.height));
+    const ancho = Math.round(bitmap.width * escala);
+    const alto = Math.round(bitmap.height * escala);
+
+    const canvas = document.createElement("canvas");
+    canvas.width = ancho;
+    canvas.height = alto;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return archivo;
+    ctx.drawImage(bitmap, 0, 0, ancho, alto);
+
+    const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, "image/jpeg", 0.82));
+    if (!blob) return archivo;
+    return new File([blob], archivo.name.replace(/\.\w+$/, ".jpg"), { type: "image/jpeg" });
+  } catch {
+    return archivo;
+  }
+}
+
 export default function SubirFotoBoton() {
   const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
@@ -10,11 +39,12 @@ export default function SubirFotoBoton() {
   const [error, setError] = useState<string | null>(null);
 
   async function onFileChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const archivo = e.target.files?.[0];
-    if (!archivo) return;
+    const archivoOriginal = e.target.files?.[0];
+    if (!archivoOriginal) return;
     setError(null);
     setCargando(true);
     try {
+      const archivo = await comprimirImagen(archivoOriginal);
       const formData = new FormData();
       formData.append("foto", archivo);
       const res = await fetch("/api/perfil/foto", { method: "POST", body: formData });
