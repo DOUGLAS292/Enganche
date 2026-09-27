@@ -5,6 +5,8 @@ import { query } from "@/lib/db";
 import { formatCOP } from "@/lib/format";
 import HealthCheck from "./HealthCheck";
 import CerrarSesionBoton from "./CerrarSesionBoton";
+import Landing from "./Landing";
+import InstalarApp from "./InstalarApp";
 
 export default async function Home() {
   const usuarioId = await obtenerUsuarioIdDeSesion();
@@ -102,6 +104,11 @@ export default async function Home() {
     }
   }
 
+  // Sin sesión: página de presentación completa (marketing + instalar app).
+  if (!usuario) {
+    return <Landing />;
+  }
+
   const nombreSaludo = usuario?.nombre_razon_social ?? "";
 
   return (
@@ -148,6 +155,10 @@ export default async function Home() {
                 📍 {usuario.ciudad.toUpperCase()}
               </span>
             )}
+          </div>
+
+          <div style={{ marginTop: 16 }}>
+            <InstalarApp />
           </div>
 
           <div style={{ marginTop: 18, display: "flex", flexDirection: "column", gap: 12 }}>

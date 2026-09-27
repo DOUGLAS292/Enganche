@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import { Manrope, Unbounded, IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
+import { obtenerUsuarioIdDeSesion } from "@/lib/auth/session";
+import NavInferior from "./NavInferior";
 
 // Gilroy es la tipografía oficial de La Ventanería (manual de identidad
 // LV-MKT-001), pero no está disponible como fuente libre/CDN — el manual
@@ -33,6 +35,12 @@ export const metadata: Metadata = {
   description:
     "Marketplace de demanda para producción e instalación de sistemas de aluminio y vidrio.",
   manifest: "/manifest.json",
+  applicationName: "Enganche",
+  appleWebApp: {
+    capable: true,
+    title: "Enganche",
+    statusBarStyle: "default",
+  },
   icons: {
     icon: [
       { url: "/icons/icon-32.png", sizes: "32x32", type: "image/png" },
@@ -46,16 +54,26 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: "#04253A",
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  // Solo leemos la cookie firmada (sin consultar la base de datos) para
+  // decidir si mostrar la barra inferior de navegación tipo app.
+  const conSesion = Boolean(await obtenerUsuarioIdDeSesion());
+
   return (
     <html lang="es" className={`${manrope.variable} ${unbounded.variable} ${plexMono.variable}`}>
-      <body>{children}</body>
+      <body>
+        {children}
+        {conSesion && <NavInferior />}
+      </body>
     </html>
   );
 }

@@ -1,15 +1,35 @@
 {
+  "id": "/",
   "name": "Enganche",
   "short_name": "Enganche",
   "description": "Marketplace de demanda para producción e instalación de sistemas de aluminio y vidrio.",
+  "lang": "es-CO",
+  "dir": "ltr",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
+  "orientation": "portrait",
   "background_color": "#04253A",
   "theme_color": "#04253A",
+  "categories": ["business", "productivity"],
   "icons": [
     { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
     { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
     { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
     { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    {
+      "name": "Ver ofertas cerca",
+      "short_name": "Ofertas",
+      "url": "/feed",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png" }]
+    },
+    {
+      "name": "Publicar una oferta",
+      "short_name": "Publicar",
+      "url": "/publicar",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png" }]
+    }
   ]
 }
