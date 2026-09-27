@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "app.enganche.twa",
+      "sha256_cert_fingerprints": [
+        "EE:6A:5D:6C:91:36:04:3B:F7:BA:30:2E:BD:94:E3:D1:33:6E:5F:1F:96:1B:E8:24:C7:B4:23:E3:BE:94:28:0A"
+      ]
+    }
+  }
+]
