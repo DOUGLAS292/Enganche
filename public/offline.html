@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Sin conexión — Enganche</title>
+<style>
+  :root { color-scheme: light; }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    background: linear-gradient(125deg, #cfe6f7 0%, #82b8df 28%, #eef8fd 52%, #5b9fd2 76%, #bfdff2 100%);
+    color: #04253a;
+    text-align: center;
+    padding: 24px;
+  }
+  .caja {
+    max-width: 380px;
+    background: rgba(255, 255, 255, 0.85);
+    border-radius: 24px;
+    padding: 36px 28px;
+    box-shadow: 0 20px 50px -20px rgba(4, 37, 58, 0.4);
+  }
+  .icono { font-size: 44px; margin-bottom: 6px; }
+  h1 { font-size: 22px; margin: 8px 0 6px; }
+  p { font-size: 15px; line-height: 1.5; color: #3f5768; margin: 0 0 20px; }
+  button {
+    font: inherit;
+    font-weight: 800;
+    padding: 12px 24px;
+    border-radius: 12px;
+    border: none;
+    cursor: pointer;
+    color: #04253a;
+    background: linear-gradient(135deg, #e08a00, #ff7f00);
+  }
+</style>
+</head>
+<body>
+  <div class="caja">
+    <div class="icono">📡</div>
+    <h1>Sin conexión</h1>
+    <p>Parece que no tienes internet en este momento. Revisa tu conexión e intenta de nuevo.</p>
+    <button onclick="location.reload()">Reintentar</button>
+  </div>
+</body>
+</html>
