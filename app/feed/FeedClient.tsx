@@ -3,6 +3,9 @@
 import { useEffect, useState, type CSSProperties } from "react";
 import Link from "next/link";
 import { formatCOP, formatDistanciaKm, formatFecha } from "@/lib/format";
+import { REGION_POR_CIUDAD } from "@/lib/constants/regiones";
+
+const CIUDADES_CONOCIDAS = Object.keys(REGION_POR_CIUDAD).sort();
 
 type Publicacion = {
   id: string;
@@ -42,6 +45,7 @@ export default function FeedClient() {
   const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
   const [estadoUbicacion, setEstadoUbicacion] = useState<EstadoUbicacion>("pidiendo");
   const [ciudadFiltro, setCiudadFiltro] = useState("");
+  const [modoBusqueda, setModoBusqueda] = useState<"cercania" | "ciudad">("cercania");
   const [tipoTrabajo, setTipoTrabajo] = useState<string>("todas");
   const [nivelSistema, setNivelSistema] = useState<string>("todos");
   const [radioKm, setRadioKm] = useState(10);
@@ -70,12 +74,16 @@ export default function FeedClient() {
     async function cargar() {
       setError(null);
       const params = new URLSearchParams();
-      if (coords) {
+      // "Buscar por ciudad" ignora el GPS a propósito: alguien que vive en un
+      // pueblo cercano y viaja a diario a trabajar a la ciudad necesita ver
+      // esas ofertas aunque queden fuera de cualquier radio razonable.
+      const buscarPorCiudad = modoBusqueda === "ciudad" || !coords;
+      if (buscarPorCiudad) {
+        if (ciudadFiltro) params.set("ciudad", ciudadFiltro);
+      } else if (coords) {
         params.set("lat", String(coords.lat));
         params.set("lng", String(coords.lng));
         params.set("radioKm", String(radioKm));
-      } else if (ciudadFiltro) {
-        params.set("ciudad", ciudadFiltro);
       }
       if (tipoTrabajo !== "todas") params.set("tipoTrabajo", tipoTrabajo);
       if (nivelSistema !== "todos") params.set("nivelSistema", nivelSistema);
@@ -98,7 +106,7 @@ export default function FeedClient() {
     return () => {
       cancelado = true;
     };
-  }, [estadoUbicacion, coords, ciudadFiltro, tipoTrabajo, nivelSistema, radioKm]);
+  }, [estadoUbicacion, coords, ciudadFiltro, modoBusqueda, tipoTrabajo, nivelSistema, radioKm]);
 
   return (
     <main style={{ maxWidth: 640, margin: "0 auto", padding: "32px 20px 80px" }}>
@@ -113,14 +121,38 @@ export default function FeedClient() {
         </Link>
       </div>
 
-      {estadoUbicacion === "denegada" && !coords && (
-        <div style={{ marginTop: 12 }}>
-          <p style={{ color: "var(--color-mist)", fontSize: 13, margin: 0 }}>No pudimos usar tu ubicación. Filtra por ciudad:</p>
-          <input value={ciudadFiltro} onChange={(e) => setCiudadFiltro(e.target.value)} placeholder="Ej: Cali" className="input-vidrio" style={{ marginTop: 6 }} />
+      {coords && (
+        <div style={{ display: "flex", gap: 8, marginTop: 12 }}>
+          <button onClick={() => setModoBusqueda("cercania")} style={chipStyle(modoBusqueda === "cercania")}>
+            📍 Cerca de mí
+          </button>
+          <button onClick={() => setModoBusqueda("ciudad")} style={chipStyle(modoBusqueda === "ciudad")}>
+            🏙️ Buscar por ciudad
+          </button>
         </div>
       )}
 
-      {coords && (
+      {(modoBusqueda === "ciudad" || !coords) && (
+        <div style={{ marginTop: 12 }}>
+          {!coords && (
+            <p style={{ color: "var(--color-mist)", fontSize: 13, margin: "0 0 6px" }}>No pudimos usar tu ubicación. Busca por ciudad:</p>
+          )}
+          <input
+            list="ciudades-conocidas"
+            value={ciudadFiltro}
+            onChange={(e) => setCiudadFiltro(e.target.value)}
+            placeholder="Ej: Cali"
+            className="input-vidrio"
+          />
+          <datalist id="ciudades-conocidas">
+            {CIUDADES_CONOCIDAS.map((c) => (
+              <option key={c} value={c} />
+            ))}
+          </datalist>
+        </div>
+      )}
+
+      {modoBusqueda === "cercania" && coords && (
         <div style={{ marginTop: 12, display: "flex", alignItems: "center", gap: 8 }}>
           <label className="chip-tecnico" style={{ whiteSpace: "nowrap" }}>Radio: {radioKm} km</label>
           <input
@@ -164,7 +196,7 @@ export default function FeedClient() {
       {publicaciones === null && !error && <p style={{ marginTop: 24, color: "var(--color-mist)" }}>Cargando ofertas…</p>}
       {publicaciones?.length === 0 && (
         <p style={{ marginTop: 24, color: "var(--color-mist)" }}>
-          No hay ofertas abiertas por ahora{coords ? " en este radio" : ""}. Sé el primero en{" "}
+          No hay ofertas abiertas por ahora{modoBusqueda === "ciudad" || !coords ? " en esa ciudad" : " en este radio"}. Sé el primero en{" "}
           <Link href="/publicar" style={{ color: "var(--color-azul-suave)" }}>
             publicar una
           </Link>
