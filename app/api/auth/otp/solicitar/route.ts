@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { normalizarCelularCO } from "@/lib/validation/telefono";
 import { generarYGuardarOtp, ipExcedioLimite, registrarSolicitudIp } from "@/lib/auth/otp";
-import { enviarOtpWhatsApp, otpEnModoDesarrollo } from "@/lib/auth/whatsapp";
+import { enviarOtpWhatsApp, otpEnModoDesarrollo, puedePedirOtp } from "@/lib/auth/whatsapp";
 
 function obtenerIp(request: Request): string {
   const forwardedFor = request.headers.get("x-forwarded-for");
@@ -16,6 +16,15 @@ export async function POST(request: Request) {
     return NextResponse.json(
       { ok: false, error: "Ingresa un celular colombiano válido (10 dígitos, empieza en 3)." },
       { status: 400 }
+    );
+  }
+
+  // En producción sin WhatsApp no hay forma segura de entregar el código:
+  // se cierra el ingreso salvo para la lista blanca de pruebas.
+  if (!puedePedirOtp(celular)) {
+    return NextResponse.json(
+      { ok: false, error: "El ingreso está en mantenimiento por unas horas. Intenta más tarde." },
+      { status: 503 }
     );
   }
 
