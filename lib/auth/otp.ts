@@ -77,8 +77,15 @@ export type VerificarResultado =
     };
 
 export async function verificarOtp(celular: string, codigo: string): Promise<VerificarResultado> {
+  // El intento se consume en el mismo UPDATE que lo lee: Postgres bloquea
+  // la fila, así que peticiones simultáneas reciben cada una un número de
+  // intento distinto y nadie puede probar más de OTP_MAX_INTENTOS códigos
+  // disparándolos todos a la vez (antes se leía, comparaba e incrementaba
+  // en pasos separados).
   const result = await query<{ codigo_hash: string; expira_en: string; intentos: number }>(
-    "select codigo_hash, expira_en, intentos from otps where celular = $1",
+    `update otps set intentos = intentos + 1
+     where celular = $1
+     returning codigo_hash, expira_en, intentos`,
     [celular]
   );
   const fila = result.rows[0];
@@ -89,16 +96,21 @@ export async function verificarOtp(celular: string, codigo: string): Promise<Ver
     return { ok: false, razon: "expirado" };
   }
 
-  if (fila.intentos >= OTP_MAX_INTENTOS) {
+  if (fila.intentos > OTP_MAX_INTENTOS) {
     await query("delete from otps where celular = $1", [celular]);
     return { ok: false, razon: "demasiados_intentos" };
   }
 
   if (!hashesIguales(hashCodigo(celular, codigo), fila.codigo_hash)) {
-    await query("update otps set intentos = intentos + 1 where celular = $1", [celular]);
     return { ok: false, razon: "codigo_incorrecto" };
   }
 
-  await query("delete from otps where celular = $1", [celular]);
+  // Un solo uso: si dos peticiones con el código correcto llegan a la vez,
+  // solo la que logra borrar la fila entra.
+  const consumido = await query(
+    "delete from otps where celular = $1 and codigo_hash = $2 returning celular",
+    [celular, fila.codigo_hash]
+  );
+  if (!consumido.rows[0]) return { ok: false, razon: "no_solicitado" };
   return { ok: true };
 }
