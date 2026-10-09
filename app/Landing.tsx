@@ -269,7 +269,6 @@ export default function Landing() {
         <p className="landing__marca">
           Enganche<span>.</span>
         </p>
-        <p>Un proyecto de La Ventanería Ingeniería y Diseño S.A.S.</p>
         <p>
           <a href="mailto:Enganche.App.Contacto@gmail.com">Enganche.App.Contacto@gmail.com</a>
         </p>
