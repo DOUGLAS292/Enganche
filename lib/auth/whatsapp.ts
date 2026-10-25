@@ -30,14 +30,14 @@ function esProduccion(): boolean {
 
 // Solo en desarrollo local el código viaja en la respuesta de la API.
 export function otpEnModoDesarrollo(): boolean {
-  return !esProduccion() && !whatsappConfigurado();
+  return !esProduccion() && !whatsappConfigurado() && !process.env.TWILIO_ACCOUNT_SID;
 }
 
-// Si este celular puede pedir código ahora mismo. Con WhatsApp configurado
-// o en desarrollo local, cualquiera; en producción sin WhatsApp, solo los
-// números de la lista blanca.
-export function puedePedirOtp(celular: string): boolean {
-  if (whatsappConfigurado() || !esProduccion()) return true;
+// Si este celular puede pedir código ahora mismo. Con algún canal configurado
+// (WhatsApp o SMS) o en desarrollo local, cualquiera; en producción sin canal,
+// solo los números de la lista blanca.
+export function puedePedirOtp(celular: string, hayCanalConfigurado: boolean): boolean {
+  if (hayCanalConfigurado || !esProduccion()) return true;
   const lista = (process.env.OTP_DEV_ALLOWLIST ?? "")
     .split(",")
     .map((n) => normalizarCelularCO(n))
