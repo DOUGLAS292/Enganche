@@ -3,7 +3,7 @@ import { query } from "@/lib/db";
 import { normalizarCelularCO } from "@/lib/validation/telefono";
 import { generarYGuardarOtp, ipExcedioLimite, registrarSolicitudIp } from "@/lib/auth/otp";
 import { otpEnModoDesarrollo, puedePedirOtp } from "@/lib/auth/whatsapp";
-import { canalesConfigurados, enviarOtp, type CanalOtp } from "@/lib/auth/canales";
+import { canalesConfigurados, enviarOtp, iniciarVerifySms, type CanalOtp } from "@/lib/auth/canales";
 
 function obtenerIp(request: Request): string {
   const forwardedFor = request.headers.get("x-forwarded-for");
@@ -44,6 +44,26 @@ export async function POST(request: Request) {
     );
   }
   await registrarSolicitudIp(ip);
+
+  if (canal === "sms") {
+    // El código del SMS lo maneja Twilio Verify; se borra cualquier código
+    // propio pendiente para que no se confunda con el de WhatsApp.
+    await query("delete from otps where celular = $1", [celular]);
+    const envio = await iniciarVerifySms(celular);
+    if (!envio.ok) {
+      return NextResponse.json(
+        {
+          ok: false,
+          error: envio.limite
+            ? "Ya enviamos varios códigos. Espera unos minutos antes de pedir otro."
+            : "No pudimos enviar el SMS. Intenta con WhatsApp o inténtalo de nuevo en un momento.",
+        },
+        { status: envio.limite ? 429 : 502 }
+      );
+    }
+    await query("insert into otp_canal_elegido (canal) values ($1)", [canal]);
+    return NextResponse.json({ ok: true, celular, canal });
+  }
 
   const resultado = await generarYGuardarOtp(celular);
   if ("errorCooldown" in resultado) {
