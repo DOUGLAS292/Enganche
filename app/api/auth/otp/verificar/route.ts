@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { normalizarCelularCO } from "@/lib/validation/telefono";
 import { verificarOtp } from "@/lib/auth/otp";
 import { query } from "@/lib/db";
+import { smsConfigurado, verificarVerifySms } from "@/lib/auth/canales";
 import { crearSesion, marcarTelefonoVerificado } from "@/lib/auth/session";
 import { excedioLimite, registrarIntento, obtenerIp } from "@/lib/rateLimit";
 
@@ -36,7 +37,15 @@ export async function POST(request: Request) {
   }
   await registrarIntento("otp_verificar", ip);
 
-  const resultado = await verificarOtp(celular, codigo);
+  // Si hay un código propio pendiente (WhatsApp) se valida ese; si no, el
+  // código viene de Twilio Verify (SMS).
+  const propio = await query("select 1 from otps where celular = $1", [celular]);
+  const resultado: Awaited<ReturnType<typeof verificarOtp>> =
+    !propio.rows[0] && smsConfigurado()
+      ? (await verificarVerifySms(celular, codigo))
+        ? { ok: true }
+        : { ok: false, razon: "codigo_incorrecto" }
+      : await verificarOtp(celular, codigo);
   if (!resultado.ok) {
     return NextResponse.json({ ok: false, error: RAZON_MENSAJE[resultado.razon] }, { status: 400 });
   }
