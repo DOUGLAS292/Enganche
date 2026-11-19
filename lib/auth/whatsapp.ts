@@ -30,7 +30,7 @@ function esProduccion(): boolean {
 
 // Solo en desarrollo local el código viaja en la respuesta de la API.
 export function otpEnModoDesarrollo(): boolean {
-  return !esProduccion() && !whatsappConfigurado() && !process.env.TWILIO_ACCOUNT_SID;
+  return !esProduccion() && !whatsappConfigurado() && !process.env.OTP_COM_API_KEY;
 }
 
 // Si este celular puede pedir código ahora mismo. Con algún canal configurado

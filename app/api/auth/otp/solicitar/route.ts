@@ -3,7 +3,9 @@ import { query } from "@/lib/db";
 import { normalizarCelularCO } from "@/lib/validation/telefono";
 import { generarYGuardarOtp, ipExcedioLimite, registrarSolicitudIp } from "@/lib/auth/otp";
 import { otpEnModoDesarrollo, puedePedirOtp } from "@/lib/auth/whatsapp";
-import { canalesConfigurados, enviarOtp, iniciarVerifySms, type CanalOtp } from "@/lib/auth/canales";
+import { canalesConfigurados, enviarOtp, type CanalOtp } from "@/lib/auth/canales";
+import { enviarSmsOtpCom, limpiarOtpComPendiente } from "@/lib/auth/otpcom";
+import { isIP } from "node:net";
 
 function obtenerIp(request: Request): string {
   const forwardedFor = request.headers.get("x-forwarded-for");
@@ -46,10 +48,10 @@ export async function POST(request: Request) {
   await registrarSolicitudIp(ip);
 
   if (canal === "sms") {
-    // El código del SMS lo maneja Twilio Verify; se borra cualquier código
-    // propio pendiente para que no se confunda con el de WhatsApp.
+    // El código del SMS lo maneja otp.com; se borra cualquier código propio
+    // pendiente para que no se confunda con el de WhatsApp.
     await query("delete from otps where celular = $1", [celular]);
-    const envio = await iniciarVerifySms(celular);
+    const envio = await enviarSmsOtpCom(celular, isIP(ip) ? ip : undefined);
     if (!envio.ok) {
       return NextResponse.json(
         {
@@ -65,6 +67,8 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: true, celular, canal });
   }
 
+  // Un código propio (WhatsApp o desarrollo) reemplaza cualquier SMS pendiente de otp.com.
+  await limpiarOtpComPendiente();
   const resultado = await generarYGuardarOtp(celular);
   if ("errorCooldown" in resultado) {
     return NextResponse.json(
