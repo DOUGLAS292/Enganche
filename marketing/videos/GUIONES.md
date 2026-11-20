@@ -2,6 +2,18 @@
 
 Narración exacta de cada escena, en el orden en que aparece. Voz femenina de ElevenLabs.
 
+## Lanzamiento con Luci
+
+Cierra la campaña de expectativa ("Algo se está armando…", "Muy pronto").
+
+1. Les dijimos que algo se estaba armando para el gremio del aluminio y el vidrio. Ya llegó.
+2. Enganche. Aluminio y vidrio, conectados.
+3. Si tienes un proyecto, publica lo que necesitas producir o instalar, con tu precio.
+4. Si instalas o tienes taller, encuentra trabajo cerca de ti y postúlate.
+5. Tú eliges con quién, y se enganchan a trabajar.
+6. Solo con tu celular, con calificaciones y treinta días de garantía, en todo Colombia.
+7. Enganche. Publica, postúlate y contrata. Entra gratis con tu celular.
+
 ## Lanzamiento
 
 1. ¿Todavía consigues trabajo en grupos de WhatsApp y Facebook?
