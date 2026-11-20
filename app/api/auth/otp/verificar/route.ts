@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { normalizarCelularCO } from "@/lib/validation/telefono";
 import { verificarOtp } from "@/lib/auth/otp";
 import { query } from "@/lib/db";
+import { verificarSmsOtpCom } from "@/lib/auth/otpcom";
 import { crearSesion, marcarTelefonoVerificado } from "@/lib/auth/session";
 import { excedioLimite, registrarIntento, obtenerIp } from "@/lib/rateLimit";
 
@@ -10,6 +11,7 @@ const RAZON_MENSAJE: Record<string, string> = {
   expirado: "El código venció, pide uno nuevo.",
   codigo_incorrecto: "El código no es correcto.",
   demasiados_intentos: "Demasiados intentos. Pide un código nuevo.",
+  error_servicio: "No pudimos verificar el código ahora. Intenta de nuevo en un momento.",
 };
 
 const LIMITE_VERIFICAR_POR_IP = 20;
@@ -36,7 +38,9 @@ export async function POST(request: Request) {
   }
   await registrarIntento("otp_verificar", ip);
 
-  const resultado = await verificarOtp(celular, codigo);
+  // Si este navegador tiene un SMS de otp.com pendiente para este celular, se valida
+  // con otp.com; si no, con el código propio de Enganche (WhatsApp).
+  const resultado = (await verificarSmsOtpCom(celular, codigo)) ?? (await verificarOtp(celular, codigo));
   if (!resultado.ok) {
     return NextResponse.json({ ok: false, error: RAZON_MENSAJE[resultado.razon] }, { status: 400 });
   }

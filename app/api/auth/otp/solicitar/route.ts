@@ -1,7 +1,11 @@
 import { NextResponse } from "next/server";
+import { query } from "@/lib/db";
 import { normalizarCelularCO } from "@/lib/validation/telefono";
 import { generarYGuardarOtp, ipExcedioLimite, registrarSolicitudIp } from "@/lib/auth/otp";
-import { enviarOtpWhatsApp, otpEnModoDesarrollo, puedePedirOtp } from "@/lib/auth/whatsapp";
+import { otpEnModoDesarrollo, puedePedirOtp } from "@/lib/auth/whatsapp";
+import { canalesConfigurados, enviarOtp, type CanalOtp } from "@/lib/auth/canales";
+import { enviarSmsOtpCom, limpiarOtpComPendiente } from "@/lib/auth/otpcom";
+import { isIP } from "node:net";
 
 function obtenerIp(request: Request): string {
   const forwardedFor = request.headers.get("x-forwarded-for");
@@ -19,13 +23,19 @@ export async function POST(request: Request) {
     );
   }
 
-  // En producción sin WhatsApp no hay forma segura de entregar el código:
-  // se cierra el ingreso salvo para la lista blanca de pruebas.
-  if (!puedePedirOtp(celular)) {
+  const configurados = canalesConfigurados();
+  if (!puedePedirOtp(celular, configurados.length > 0)) {
     return NextResponse.json(
       { ok: false, error: "El ingreso está en mantenimiento por unas horas. Intenta más tarde." },
       { status: 503 }
     );
+  }
+
+  // Con un solo canal activo se usa ese; con varios, el usuario escoge.
+  const canalPedido = body?.canal as CanalOtp | undefined;
+  const canal: CanalOtp | undefined = canalPedido ?? (configurados.length === 1 ? configurados[0] : undefined);
+  if (configurados.length > 0 && (!canal || !configurados.includes(canal))) {
+    return NextResponse.json({ ok: false, error: "Escoge cómo quieres recibir el código." }, { status: 400 });
   }
 
   const ip = obtenerIp(request);
@@ -37,6 +47,28 @@ export async function POST(request: Request) {
   }
   await registrarSolicitudIp(ip);
 
+  if (canal === "sms") {
+    // El código del SMS lo maneja otp.com; se borra cualquier código propio
+    // pendiente para que no se confunda con el de WhatsApp.
+    await query("delete from otps where celular = $1", [celular]);
+    const envio = await enviarSmsOtpCom(celular, isIP(ip) ? ip : undefined);
+    if (!envio.ok) {
+      return NextResponse.json(
+        {
+          ok: false,
+          error: envio.limite
+            ? "Ya enviamos varios códigos. Espera unos minutos antes de pedir otro."
+            : "No pudimos enviar el SMS. Intenta con WhatsApp o inténtalo de nuevo en un momento.",
+        },
+        { status: envio.limite ? 429 : 502 }
+      );
+    }
+    await query("insert into otp_canal_elegido (canal) values ($1)", [canal]);
+    return NextResponse.json({ ok: true, celular, canal });
+  }
+
+  // Un código propio (WhatsApp o desarrollo) reemplaza cualquier SMS pendiente de otp.com.
+  await limpiarOtpComPendiente();
   const resultado = await generarYGuardarOtp(celular);
   if ("errorCooldown" in resultado) {
     return NextResponse.json(
@@ -45,11 +77,19 @@ export async function POST(request: Request) {
     );
   }
 
-  await enviarOtpWhatsApp(celular, resultado.codigo);
+  if (canal) {
+    await enviarOtp(canal, celular, resultado.codigo);
+    // Solo el canal y la fecha, para medir la preferencia sin identificar al usuario.
+    await query("insert into otp_canal_elegido (canal) values ($1)", [canal]);
+  } else {
+    // Sin canal activo solo queda el log del servidor (lista blanca o desarrollo).
+    console.log(`[Enganche] Sin canal configurado — código OTP para ${celular}: ${resultado.codigo}`);
+  }
 
   return NextResponse.json({
     ok: true,
     celular,
+    canal: canal ?? null,
     ...(otpEnModoDesarrollo() ? { codigoDesarrollo: resultado.codigo } : {}),
   });
 }

@@ -1,9 +1,12 @@
 "use client";
 
-import { useState, type CSSProperties, type FormEvent } from "react";
+import { useEffect, useState, type CSSProperties, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 
 type Paso = "celular" | "codigo";
+type Canal = "whatsapp" | "sms";
+
+const ETIQUETA: Record<Canal, string> = { whatsapp: "WhatsApp", sms: "SMS" };
 
 export default function Entrar() {
   const router = useRouter();
@@ -13,16 +16,23 @@ export default function Entrar() {
   const [cargando, setCargando] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [codigoDesarrollo, setCodigoDesarrollo] = useState<string | null>(null);
+  const [canales, setCanales] = useState<Canal[]>([]);
 
-  async function pedirCodigo(e: FormEvent) {
-    e.preventDefault();
+  useEffect(() => {
+    fetch("/api/auth/otp/canales")
+      .then((r) => r.json())
+      .then((d) => setCanales(d.canales ?? []))
+      .catch(() => setCanales([]));
+  }, []);
+
+  async function pedirCodigo(canal: Canal | null) {
     setError(null);
     setCargando(true);
     try {
       const res = await fetch("/api/auth/otp/solicitar", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ celular }),
+        body: JSON.stringify({ celular, canal }),
       });
       const data = await res.json();
       if (!data.ok) {
@@ -63,13 +73,18 @@ export default function Entrar() {
     }
   }
 
+  function enviarFormulario(e: FormEvent) {
+    e.preventDefault();
+    pedirCodigo(canales.length === 1 ? canales[0] : null);
+  }
+
   return (
     <main className="reticula" style={{ maxWidth: 420, margin: "0 auto", padding: "56px 20px" }}>
       <h1 className="titular" style={{ fontSize: 28, fontWeight: 700 }}>Entrar a Enganche</h1>
 
       {paso === "celular" && (
-        <form onSubmit={pedirCodigo}>
-          <p style={{ color: "var(--color-mist)" }}>Te enviamos un código por WhatsApp, sin contraseñas.</p>
+        <form onSubmit={enviarFormulario}>
+          <p style={{ color: "var(--color-mist)" }}>Te enviamos un código de 6 dígitos, sin contraseñas.</p>
           <label htmlFor="celular" style={labelStyle}>
             Número de celular
           </label>
@@ -84,9 +99,26 @@ export default function Entrar() {
             className="input-vidrio"
           />
           {error && <p style={errorStyle}>{error}</p>}
-          <button type="submit" disabled={cargando} className="boton-primario" style={{ marginTop: 20 }}>
-            {cargando ? "Enviando…" : "Enviar código por WhatsApp"}
-          </button>
+          {canales.length > 1 ? (
+            <div style={{ display: "grid", gap: 10, marginTop: 20 }}>
+              <p style={{ color: "var(--color-texto-tenue)", fontSize: 14, margin: 0 }}>¿Cómo quieres recibir el código?</p>
+              {canales.map((canal) => (
+                <button
+                  key={canal}
+                  type="button"
+                  disabled={cargando}
+                  onClick={() => pedirCodigo(canal)}
+                  className="boton-primario"
+                >
+                  {cargando ? "Enviando…" : `Recibir por ${ETIQUETA[canal]}`}
+                </button>
+              ))}
+            </div>
+          ) : (
+            <button type="submit" disabled={cargando || canales.length === 0} className="boton-primario" style={{ marginTop: 20 }}>
+              {cargando ? "Enviando…" : canales.length === 1 ? `Enviar código por ${ETIQUETA[canales[0]]}` : "Enviar código"}
+            </button>
+          )}
         </form>
       )}
 
@@ -95,7 +127,7 @@ export default function Entrar() {
           <p style={{ color: "var(--color-mist)" }}>Escribe el código de 6 dígitos que te llegó al {celular}.</p>
           {codigoDesarrollo && (
             <p style={{ color: "var(--color-acento-claro)", fontSize: 13 }}>
-              Modo desarrollo (WhatsApp aún no configurado) — tu código es <strong>{codigoDesarrollo}</strong>
+              Modo desarrollo (ningún canal configurado) — tu código es <strong>{codigoDesarrollo}</strong>
             </p>
           )}
           <label htmlFor="codigo" style={labelStyle}>
