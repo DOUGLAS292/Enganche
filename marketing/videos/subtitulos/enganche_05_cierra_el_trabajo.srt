@@ -1,0 +1,23 @@
+1
+00:00:00,050 --> 00:00:02,134
+Cómo cerrar un trabajo en Enganche.
+
+2
+00:00:02,584 --> 00:00:06,392
+Cuando el trabajo esté listo, toca Marcar trabajo completado.
+
+3
+00:00:06,842 --> 00:00:12,504
+Califica a quien hizo el trabajo. Ambos se califican y la reputación de cada uno crece.
+
+4
+00:00:12,954 --> 00:00:19,688
+Quien hizo el trabajo paga una comisión del tres por ciento. Durante tu periodo gratis, la comisión es cero.
+
+5
+00:00:20,138 --> 00:00:24,573
+Cada trabajo completado suma a tu perfil y a tu reputación en el gremio.
+
+6
+00:00:25,023 --> 00:00:32,165
+Enganche. Todo el gremio del aluminio y vidrio, enganchado. Entra gratis con tu celular.
