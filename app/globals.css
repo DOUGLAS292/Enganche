@@ -789,4 +789,42 @@ code {
   .landing__franja-pista { animation: none; }
 }
 
-.landing__redes a { font-weight: 600; }
+
+
+.landing__redes { display: flex; justify-content: center; flex-wrap: wrap; gap: 12px; margin: 18px 0 10px; }
+a.landing__red {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 10px 18px; border-radius: 999px;
+  color: #fff; font-weight: 700; font-size: 14px; text-decoration: none;
+  box-shadow: 0 4px 12px rgba(7, 38, 56, 0.25);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  animation: landing-red-latido 3s ease-in-out infinite;
+}
+a.landing__red svg { width: 22px; height: 22px; }
+a.landing__red:nth-child(2) { animation-delay: 0.4s; }
+a.landing__red:nth-child(3) { animation-delay: 0.8s; }
+a.landing__red:hover, a.landing__red:focus-visible {
+  transform: translateY(-4px) scale(1.08); box-shadow: 0 10px 20px rgba(7, 38, 56, 0.35); animation: none;
+}
+.landing__red--fb { background: #1877f2; }
+.landing__red--ig { background: linear-gradient(45deg, #f9a825, #e1306c 55%, #833ab4); }
+.landing__red--tt { background: #0b0b0f; }
+@keyframes landing-red-latido {
+  0%, 70%, 100% { transform: scale(1); }
+  35% { transform: scale(1.07); }
+}
+@media (prefers-reduced-motion: reduce) {
+  a.landing__red { animation: none; transition: none; }
+}
+
+.landing__barra-der { display: flex; align-items: center; gap: 12px; }
+.landing__redes--compacta { margin: 0; gap: 8px; }
+.landing__redes--compacta a.landing__red { padding: 8px; box-shadow: 0 3px 8px rgba(7, 38, 56, 0.22); }
+.landing__redes--compacta a.landing__red span { display: none; }
+.landing__redes--compacta a.landing__red svg { width: 20px; height: 20px; }
+@media (max-width: 420px) {
+  .landing__barra-der { gap: 8px; }
+  .landing__redes--compacta { gap: 6px; }
+  .landing__redes--compacta a.landing__red { padding: 7px; }
+  .landing__redes--compacta a.landing__red svg { width: 18px; height: 18px; }
+}
