@@ -43,6 +43,25 @@ function Check() {
   );
 }
 
+function Redes({ compacta = false }: { compacta?: boolean }) {
+  return (
+    <div className={`landing__redes${compacta ? " landing__redes--compacta" : ""}`}>
+      <a className="landing__red landing__red--fb" href="https://www.facebook.com/EnganchaApp" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
+        <svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M13.5 21v-7.5h2.6l.4-3h-3V8.6c0-.9.3-1.5 1.5-1.5h1.6V4.4c-.3 0-1.2-.1-2.3-.1-2.3 0-3.9 1.4-3.9 4v2.2H7.8v3h2.6V21h3.1z"/></svg>
+        <span>Facebook</span>
+      </a>
+      <a className="landing__red landing__red--ig" href="https://www.instagram.com/enganche.app" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+        <svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M7.5 3h9A4.5 4.5 0 0 1 21 7.5v9a4.5 4.5 0 0 1-4.5 4.5h-9A4.5 4.5 0 0 1 3 16.5v-9A4.5 4.5 0 0 1 7.5 3zm0 1.8A2.7 2.7 0 0 0 4.8 7.5v9a2.7 2.7 0 0 0 2.7 2.7h9a2.7 2.7 0 0 0 2.7-2.7v-9a2.7 2.7 0 0 0-2.7-2.7h-9zM12 7.8a4.2 4.2 0 1 1 0 8.4 4.2 4.2 0 0 1 0-8.4zm0 1.8a2.4 2.4 0 1 0 0 4.8 2.4 2.4 0 0 0 0-4.8zm4.6-3.1a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/></svg>
+        <span>Instagram</span>
+      </a>
+      <a className="landing__red landing__red--tt" href="https://www.tiktok.com/@enganche.app" target="_blank" rel="noopener noreferrer" aria-label="TikTok">
+        <svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M16.6 3c.3 2.4 1.7 3.9 4 4.1v3c-1.4.1-2.7-.3-4-1.1v5.9c0 3.7-2.6 5.9-5.6 5.9-3 0-5.4-2.3-5.4-5.4 0-3.3 2.7-5.7 6.1-5.3v3.1c-1.7-.4-3 .6-3 2.1 0 1.2.9 2.2 2.2 2.2 1.4 0 2.3-1 2.3-2.6V3h3.4z"/></svg>
+        <span>TikTok</span>
+      </a>
+    </div>
+  );
+}
+
 export default function Landing() {
   const precioUrgente = formatCOP(valorUrgenteVigente());
 
@@ -52,9 +71,12 @@ export default function Landing() {
         <Link href="/" className="landing__marca">
           Enganche<span>.</span>
         </Link>
-        <Link href="/entrar" className="landing__entrar">
-          Entrar
-        </Link>
+        <div className="landing__barra-der">
+          <Redes compacta />
+          <Link href="/entrar" className="landing__entrar">
+            Entrar
+          </Link>
+        </div>
       </header>
 
       {/* ---------- HERO ---------- */}
@@ -272,20 +294,7 @@ export default function Landing() {
         <p>
           <a href="mailto:Enganche.App.Contacto@gmail.com">Enganche.App.Contacto@gmail.com</a>
         </p>
-        <div className="landing__redes">
-          <a className="landing__red landing__red--fb" href="https://www.facebook.com/EnganchaApp" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
-            <svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M13.5 21v-7.5h2.6l.4-3h-3V8.6c0-.9.3-1.5 1.5-1.5h1.6V4.4c-.3 0-1.2-.1-2.3-.1-2.3 0-3.9 1.4-3.9 4v2.2H7.8v3h2.6V21h3.1z"/></svg>
-            <span>Facebook</span>
-          </a>
-          <a className="landing__red landing__red--ig" href="https://www.instagram.com/enganche.app" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
-            <svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M7.5 3h9A4.5 4.5 0 0 1 21 7.5v9a4.5 4.5 0 0 1-4.5 4.5h-9A4.5 4.5 0 0 1 3 16.5v-9A4.5 4.5 0 0 1 7.5 3zm0 1.8A2.7 2.7 0 0 0 4.8 7.5v9a2.7 2.7 0 0 0 2.7 2.7h9a2.7 2.7 0 0 0 2.7-2.7v-9a2.7 2.7 0 0 0-2.7-2.7h-9zM12 7.8a4.2 4.2 0 1 1 0 8.4 4.2 4.2 0 0 1 0-8.4zm0 1.8a2.4 2.4 0 1 0 0 4.8 2.4 2.4 0 0 0 0-4.8zm4.6-3.1a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/></svg>
-            <span>Instagram</span>
-          </a>
-          <a className="landing__red landing__red--tt" href="https://www.tiktok.com/@enganche.app" target="_blank" rel="noopener noreferrer" aria-label="TikTok">
-            <svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M16.6 3c.3 2.4 1.7 3.9 4 4.1v3c-1.4.1-2.7-.3-4-1.1v5.9c0 3.7-2.6 5.9-5.6 5.9-3 0-5.4-2.3-5.4-5.4 0-3.3 2.7-5.7 6.1-5.3v3.1c-1.7-.4-3 .6-3 2.1 0 1.2.9 2.2 2.2 2.2 1.4 0 2.3-1 2.3-2.6V3h3.4z"/></svg>
-            <span>TikTok</span>
-          </a>
-        </div>
+        <Redes />
         <p>
           <Link href="/terminos">Términos y condiciones</Link> · <Link href="/privacidad">Política de privacidad</Link>
         </p>
