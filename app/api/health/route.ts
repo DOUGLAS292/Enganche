@@ -8,9 +8,8 @@ export async function GET() {
     );
     return NextResponse.json({ ok: true, db: result.rows[0] });
   } catch (error) {
-    return NextResponse.json(
-      { ok: false, error: error instanceof Error ? error.message : "error desconocido" },
-      { status: 500 }
-    );
+    // El detalle del error (host, versión, etc.) se queda en los registros del servidor.
+    console.error("[Enganche] Falló el chequeo de salud:", error);
+    return NextResponse.json({ ok: false, error: "No se pudo conectar con la base de datos." }, { status: 500 });
   }
 }
