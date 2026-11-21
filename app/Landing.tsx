@@ -272,6 +272,11 @@ export default function Landing() {
         <p>
           <a href="mailto:Enganche.App.Contacto@gmail.com">Enganche.App.Contacto@gmail.com</a>
         </p>
+        <p className="landing__redes">
+          <a href="https://www.facebook.com/EnganchaApp" target="_blank" rel="noopener noreferrer">Facebook</a> ·{" "}
+          <a href="https://www.instagram.com/enganche.app" target="_blank" rel="noopener noreferrer">Instagram</a> ·{" "}
+          <a href="https://www.tiktok.com/@enganche.app" target="_blank" rel="noopener noreferrer">TikTok</a>
+        </p>
         <p>
           <Link href="/terminos">Términos y condiciones</Link> · <Link href="/privacidad">Política de privacidad</Link>
         </p>

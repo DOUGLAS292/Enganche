@@ -9,8 +9,17 @@ const COOKIE = "enganche_otp_sms";
 const COOKIE_MAX_AGE_SEG = 60 * 10; // 10 minutos
 const TIMEOUT_MS = 10_000;
 
+// Una clave de prueba (otp_test_...) no envía mensajes y acepta siempre 123456:
+// en producción dejaría entrar a cualquiera a cualquier cuenta. Por eso, ahí el
+// canal SMS se considera apagado aunque la variable exista.
 export function otpComConfigurado(): boolean {
-  return Boolean(process.env.OTP_COM_API_KEY);
+  const clave = process.env.OTP_COM_API_KEY;
+  if (!clave) return false;
+  if (process.env.NODE_ENV === "production" && clave.startsWith("otp_test_")) {
+    console.error("[Enganche] OTP_COM_API_KEY es una clave de PRUEBA en producción: el canal SMS queda apagado.");
+    return false;
+  }
+  return true;
 }
 
 function secretKey(): Uint8Array {

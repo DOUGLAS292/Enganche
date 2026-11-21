@@ -6,6 +6,7 @@ import { otpEnModoDesarrollo, puedePedirOtp } from "@/lib/auth/whatsapp";
 import { canalesConfigurados, enviarOtp, type CanalOtp } from "@/lib/auth/canales";
 import { enviarSmsOtpCom, limpiarOtpComPendiente } from "@/lib/auth/otpcom";
 import { isIP } from "node:net";
+import { excedioLimite, registrarIntento } from "@/lib/rateLimit";
 
 function obtenerIp(request: Request): string {
   const forwardedFor = request.headers.get("x-forwarded-for");
@@ -48,6 +49,23 @@ export async function POST(request: Request) {
   await registrarSolicitudIp(ip);
 
   if (canal === "sms") {
+    // Cada SMS cuesta dinero: límite por número (frena el abuso contra una persona
+    // y el gasto) y tope global por hora (frena el bombardeo con muchas IP).
+    if (await excedioLimite("otp_sms_celular", celular, 3, 10 * 60 * 1000)) {
+      return NextResponse.json(
+        { ok: false, error: "Ya enviamos varios códigos a este número. Espera unos minutos antes de pedir otro." },
+        { status: 429 }
+      );
+    }
+    if (await excedioLimite("otp_sms_global", "todos", 1500, 60 * 60 * 1000)) {
+      return NextResponse.json(
+        { ok: false, error: "Estamos recibiendo muchas solicitudes. Intenta de nuevo en unos minutos." },
+        { status: 503 }
+      );
+    }
+    await registrarIntento("otp_sms_celular", celular);
+    await registrarIntento("otp_sms_global", "todos");
+
     // El código del SMS lo maneja otp.com; se borra cualquier código propio
     // pendiente para que no se confunda con el de WhatsApp.
     await query("delete from otps where celular = $1", [celular]);
