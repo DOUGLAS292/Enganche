@@ -50,13 +50,23 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: false, error: "Este celular ya tiene una cuenta." }, { status: 409 });
   }
 
-  const creado = await query<{ id: string }>(
-    `insert into usuarios
-       (celular, tipo_usuario, nombre_razon_social, documento, ciudad, ofrece, sistema_linea, anos_experiencia, verificado, terminos_aceptados_en)
-     values ($1, $2, $3, $4, $5, $6, $7, $8, true, now())
-     returning id`,
-    [celular, tipoUsuario, nombre, documento, ciudad, ofrece, sistemaLinea, anosExperiencia]
-  );
+  let creado;
+  try {
+    creado = await query<{ id: string }>(
+      `insert into usuarios
+         (celular, tipo_usuario, nombre_razon_social, documento, ciudad, ofrece, sistema_linea, anos_experiencia, verificado, terminos_aceptados_en)
+       values ($1, $2, $3, $4, $5, $6, $7, $8, true, now())
+       returning id`,
+      [celular, tipoUsuario, nombre, documento, ciudad, ofrece, sistemaLinea, anosExperiencia]
+    );
+  } catch (err) {
+    // Doble toque en "Crear cuenta": la segunda petición choca con la primera.
+    const codigo = err instanceof Error && "code" in err ? (err as { code?: string }).code : undefined;
+    if (codigo === "23505") {
+      return NextResponse.json({ ok: false, error: "Este celular ya tiene una cuenta. Entra con tu código." }, { status: 409 });
+    }
+    throw err;
+  }
 
   await crearSesion(creado.rows[0].id);
   await limpiarTelefonoVerificado();

@@ -1,5 +1,6 @@
 import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
+import { alertarAdmins } from "@/lib/push/alertaAdmin";
 
 // SMS con otp.com: ellos generan, envían y comprueban el código (y cuentan los
 // intentos). Solo guardamos el otp_id que devuelve el envío, en una cookie
@@ -8,6 +9,8 @@ const API_BASE = "https://api.otp.com/api/v1/otp";
 const COOKIE = "enganche_otp_sms";
 const COOKIE_MAX_AGE_SEG = 60 * 10; // 10 minutos
 const TIMEOUT_MS = 10_000;
+// El envío tiene hasta dos intentos; con 4,5 s cada uno cabe en el límite de 10 s de la función.
+const TIMEOUT_ENVIO_MS = 4_500;
 
 // Una clave de prueba (otp_test_...) no envía mensajes y acepta siempre 123456:
 // en producción dejaría entrar a cualquiera a cualquier cuenta. Por eso, ahí el
@@ -78,21 +81,38 @@ export async function enviarSmsOtpCom(celular: string, clientIp?: string): Promi
   const cuerpo: Record<string, string> = { recipient: celular, locale: "es" };
   if (clientIp) cuerpo.client_ip = clientIp;
 
-  let res: Response;
-  try {
-    res = await fetch(`${API_BASE}/send`, {
-      method: "POST",
-      headers: encabezados({ "idempotency-key": idempotencia }),
-      body: JSON.stringify(cuerpo),
-      signal: AbortSignal.timeout(TIMEOUT_MS),
-    });
-  } catch (err) {
-    console.error("[Enganche] Error de red enviando SMS con otp.com:", err);
+  // Un fallo de red o un error 5xx se reintenta una vez: la misma llave de
+  // idempotencia evita que se cobren o envíen dos códigos.
+  let res: Response | null = null;
+  for (let intento = 0; intento < 2; intento++) {
+    try {
+      res = await fetch(`${API_BASE}/send`, {
+        method: "POST",
+        headers: encabezados({ "idempotency-key": idempotencia }),
+        body: JSON.stringify(cuerpo),
+        signal: AbortSignal.timeout(TIMEOUT_ENVIO_MS),
+      });
+      if (res.status < 500) break;
+      console.error(`[Enganche] otp.com respondió ${res.status} al enviar (intento ${intento + 1}).`);
+    } catch (err) {
+      res = null;
+      console.error(`[Enganche] Error de red enviando SMS con otp.com (intento ${intento + 1}):`, err);
+    }
+  }
+
+  if (!res) {
+    await alertarAdmins("otp-red", "⚠️ El SMS no está saliendo", "No hay conexión con otp.com. Los usuarios no pueden recibir códigos.");
     return { ok: false, limite: false };
   }
 
   if (!res.ok) {
     console.error(`[Enganche] otp.com no envió el SMS (${res.status}): ${await res.text()}`);
+    // 401/402/403 casi siempre es clave inválida o saldo agotado: bloquea a todos.
+    if (res.status === 401 || res.status === 402 || res.status === 403) {
+      await alertarAdmins("otp-cuenta", "⚠️ otp.com rechazó el envío", `Error ${res.status}: revisa el saldo y la clave de otp.com. Nadie puede recibir códigos.`);
+    } else if (res.status >= 500) {
+      await alertarAdmins("otp-servicio", "⚠️ otp.com está fallando", `Error ${res.status} del proveedor de SMS. Los usuarios no reciben códigos.`);
+    }
     return { ok: false, limite: res.status === 429 };
   }
 
