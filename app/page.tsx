@@ -7,6 +7,7 @@ import HealthCheck from "./HealthCheck";
 import CerrarSesionBoton from "./CerrarSesionBoton";
 import Landing from "./Landing";
 import InstalarApp from "./InstalarApp";
+import ActivarAvisos from "./ActivarAvisos";
 
 export default async function Home() {
   const usuarioId = await obtenerUsuarioIdDeSesion();
@@ -66,7 +67,7 @@ export default async function Home() {
       // Ofertas nuevas que le calzan (por lo que ofrece y por cercanía —
       // misma ciudad o dentro de 15km) desde la última vez que abrió el
       // feed. Es el aviso "gratis" para toda oferta nueva — "Urgente"
-      // sigue siendo la única que además manda WhatsApp de inmediato.
+      // sigue siendo la única que además manda un aviso inmediato al celular.
       query<{ total: string }>(
         `select count(*) as total
          from publicaciones p
@@ -159,6 +160,10 @@ export default async function Home() {
 
           <div style={{ marginTop: 16 }}>
             <InstalarApp />
+          </div>
+
+          <div style={{ marginTop: 12 }}>
+            <ActivarAvisos />
           </div>
 
           <div style={{ marginTop: 18, display: "flex", flexDirection: "column", gap: 12 }}>

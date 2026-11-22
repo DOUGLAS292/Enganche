@@ -14,7 +14,7 @@ export default function PrivacidadPage() {
 
       <div style={{ marginTop: 16, display: "flex", flexDirection: "column", gap: 18, fontSize: 13, color: "var(--color-texto-tenue)", lineHeight: 1.6 }}>
         <Clausula titulo="1. Alcance de esta política">
-          Esta política aplica al uso de la aplicación web y móvil Enganche, disponible en enganche.vercel.app
+          Esta política aplica al uso de la aplicación web y móvil Enganche, disponible en enganchecolombia.com
           y, próximamente, en Google Play Store. Describe qué datos personales recopilamos, para qué los
           usamos, con quién los compartimos y qué derechos tiene cada usuario sobre su información.
         </Clausula>
@@ -25,7 +25,9 @@ export default function PrivacidadPage() {
           de identidad o NIT (opcional), la información de las ofertas que publicas, los mensajes de chat con
           la otra parte de un trabajo, y las calificaciones y reportes de garantía que registras o recibes.
           Enganche no solicita ni almacena contraseñas: el acceso se hace con un código de un solo uso enviado
-          por WhatsApp.
+          por mensaje de texto (SMS) o WhatsApp.
+          Si activas los avisos en tu celular, guardamos el identificador técnico de ese dispositivo para
+          enviarte notificaciones de tus ofertas y mensajes; puedes desactivarlos cuando quieras desde la app.
         </Clausula>
 
         <Clausula titulo="3. Para qué usamos estos datos">

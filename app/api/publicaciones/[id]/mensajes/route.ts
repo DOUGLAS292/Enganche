@@ -1,4 +1,5 @@
-import { NextResponse } from "next/server";
+import { NextResponse, after } from "next/server";
+import { enviarPushAUsuario } from "@/lib/push/enviar";
 import { query } from "@/lib/db";
 import { obtenerUsuarioIdDeSesion } from "@/lib/auth/session";
 import { excedioLimite, registrarIntento } from "@/lib/rateLimit";
@@ -92,6 +93,17 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     contenido,
     acceso.ganadorId,
   ]);
+
+  // Aviso a la otra persona del chat (nunca se incluye el texto del mensaje).
+  const destinatarioId = usuarioId === acceso.autorId ? acceso.ganadorId : acceso.autorId;
+  after(() =>
+    enviarPushAUsuario(destinatarioId, {
+      titulo: "Mensaje nuevo 💬",
+      cuerpo: "Tienes un mensaje nuevo en el chat de un trabajo.",
+      url: `/publicaciones/${id}/chat`,
+      tag: `mensaje-${id}`,
+    })
+  );
 
   return NextResponse.json({ ok: true });
 }

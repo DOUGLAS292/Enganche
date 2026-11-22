@@ -6,8 +6,9 @@ import InstalarApp from "./InstalarApp";
 // Página de presentación para quien todavía no ha iniciado sesión.
 // Todo el contenido refleja las reglas reales de la plataforma
 // (comisión 3% solo al ejecutor, 30 días sin comisión desde el primer
-// trabajo completado, precio fijo sin regateo, Urgente con aviso por
-// WhatsApp a 10 km). Si una regla cambia en el código, actualizar aquí.
+// trabajo completado, precio fijo sin regateo, Urgente con aviso inmediato
+// al celular a ejecutores a 10 km que activaron los avisos). Si una regla
+// cambia en el código, actualizar aquí.
 
 const ESPECIALIDADES = [
   "Ventanería",
@@ -144,7 +145,7 @@ export default function Landing() {
           </div>
           <div className="landing__flotante landing__flotante--b">
             <strong>⚡ Oferta Urgente</strong>
-            <span>Aviso por WhatsApp a ejecutores cerca de tu obra</span>
+            <span>Aviso en el celular a ejecutores cerca de tu obra</span>
           </div>
         </div>
       </section>
@@ -268,7 +269,7 @@ export default function Landing() {
             <p className="landing__cobro-t">⚡ Urgente (opcional)</p>
             <p className="landing__cobro-v">{precioUrgente}</p>
             <ul>
-              <li><Check />Aviso inmediato por WhatsApp</li>
+              <li><Check />Aviso inmediato en el celular</li>
               <li><Check />A ejecutores cerca de tu obra</li>
               <li><Check />Insignia Urgente en tu oferta</li>
             </ul>
