@@ -51,9 +51,9 @@ export async function POST(request: Request) {
   if (canal === "sms") {
     // Cada SMS cuesta dinero: límite por número (frena el abuso contra una persona
     // y el gasto) y tope global por hora (frena el bombardeo con muchas IP).
-    if (await excedioLimite("otp_sms_celular", celular, 3, 10 * 60 * 1000)) {
+    if (await excedioLimite("otp_sms_celular", celular, 5, 10 * 60 * 1000)) {
       return NextResponse.json(
-        { ok: false, error: "Ya enviamos varios códigos a este número. Espera unos minutos antes de pedir otro." },
+        { ok: false, error: "Ya enviamos varios códigos a este número. Espera unos 10 minutos antes de pedir otro; el último que te llegó sigue siendo válido." },
         { status: 429 }
       );
     }
@@ -76,7 +76,7 @@ export async function POST(request: Request) {
           ok: false,
           error: envio.limite
             ? "Ya enviamos varios códigos. Espera unos minutos antes de pedir otro."
-            : "No pudimos enviar el SMS. Intenta con WhatsApp o inténtalo de nuevo en un momento.",
+            : "No pudimos enviar el SMS ahora. Inténtalo de nuevo en un minuto.",
         },
         { status: envio.limite ? 429 : 502 }
       );

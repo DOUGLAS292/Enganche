@@ -4,7 +4,10 @@ import { query } from "@/lib/db";
 const OTP_TTL_MS = 5 * 60 * 1000; // 5 minutos
 const OTP_RESEND_COOLDOWN_MS = 60 * 1000; // 60 segundos entre reenvíos
 const OTP_MAX_INTENTOS = 5;
-const OTP_LIMITE_POR_IP = 8;
+// Muchos celulares en Colombia salen a internet por la misma dirección (la del
+// operador), así que un límite bajo por IP bloquearía a personas distintas en
+// pleno lanzamiento. El freno real es por número y el tope global por hora.
+const OTP_LIMITE_POR_IP = 40;
 const OTP_VENTANA_IP_MS = 60 * 60 * 1000; // 1 hora
 
 function pepper(): string {

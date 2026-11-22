@@ -14,7 +14,7 @@ const RAZON_MENSAJE: Record<string, string> = {
   error_servicio: "No pudimos verificar el código ahora. Intenta de nuevo en un momento.",
 };
 
-const LIMITE_VERIFICAR_POR_IP = 20;
+const LIMITE_VERIFICAR_POR_IP = 120; // varias personas comparten la IP del operador móvil
 const VENTANA_VERIFICAR_MS = 60 * 60 * 1000; // 1 hora
 
 export async function POST(request: Request) {
