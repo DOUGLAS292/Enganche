@@ -5,6 +5,8 @@
 // no exista o no esté aprobada, el aviso se registra en la consola del
 // servidor — nunca debe tumbar el cron por esto, por eso no relanza el
 // error si falla el envío real.
+import { enviarPushACelular } from "@/lib/push/enviar";
+
 const GRAPH_VERSION = "v21.0";
 
 async function enviarPlantillaUtilidad(
@@ -63,6 +65,12 @@ export async function enviarAvisoExpiracion(
   sistemaOProyecto: string,
   diasInactiva: number
 ): Promise<void> {
+  await enviarPushACelular(celular, {
+    titulo: "Tu oferta está por vencer",
+    cuerpo: `"${sistemaOProyecto}" lleva ${diasInactiva} días sin postulantes nuevos. Renuévala para que siga visible.`,
+    url: "/mis-publicaciones",
+    tag: "expiracion",
+  });
   await enviarPlantillaUtilidad(
     celular,
     process.env.WHATSAPP_AVISO_EXPIRACION_TEMPLATE,
@@ -78,6 +86,12 @@ export async function enviarAvisoPostulantesPendientes(
   diasEsperando: number,
   postulantesPendientes: number
 ): Promise<void> {
+  await enviarPushACelular(celular, {
+    titulo: "Tienes postulantes esperando",
+    cuerpo: `"${sistemaOProyecto}" tiene ${postulantesPendientes} postulante(s) hace ${diasEsperando} días. Elige con quién trabajar.`,
+    url: "/mis-publicaciones",
+    tag: "postulantes-pendientes",
+  });
   await enviarPlantillaUtilidad(
     celular,
     process.env.WHATSAPP_AVISO_POSTULANTES_TEMPLATE,
@@ -92,6 +106,12 @@ export async function enviarAvisoComisionPendiente(
   sistemaOProyecto: string,
   valorComision: string
 ): Promise<void> {
+  await enviarPushACelular(celular, {
+    titulo: "Comisión pendiente",
+    cuerpo: `Debes ${valorComision} de comisión por "${sistemaOProyecto}". Márcala como pagada desde la app.`,
+    url: "/",
+    tag: "comision",
+  });
   await enviarPlantillaUtilidad(
     celular,
     process.env.WHATSAPP_AVISO_COMISION_PENDIENTE_TEMPLATE,
@@ -106,6 +126,12 @@ export async function enviarAvisoSolicitudUrgente(
   sistemaOProyecto: string,
   valor: string
 ): Promise<void> {
+  await enviarPushACelular(celular, {
+    titulo: "Solicitud de Urgente",
+    cuerpo: `"${sistemaOProyecto}" pidió activar Urgente por ${valor}. Revisa el panel admin.`,
+    url: "/admin",
+    tag: "solicitud-urgente",
+  });
   await enviarPlantillaUtilidad(
     celular,
     process.env.WHATSAPP_AVISO_SOLICITUD_URGENTE_TEMPLATE,
@@ -119,6 +145,12 @@ export async function enviarAvisoUrgenteConfirmado(
   celular: string,
   sistemaOProyecto: string
 ): Promise<void> {
+  await enviarPushACelular(celular, {
+    titulo: "Tu oferta ya es Urgente ⚡",
+    cuerpo: `"${sistemaOProyecto}" ya está destacada como urgente y avisamos a quienes están cerca.`,
+    url: "/mis-publicaciones",
+    tag: "urgente-confirmado",
+  });
   await enviarPlantillaUtilidad(
     celular,
     process.env.WHATSAPP_AVISO_URGENTE_CONFIRMADO_TEMPLATE,
@@ -133,6 +165,12 @@ export async function enviarAvisoOfertaUrgenteCerca(
   sistemaOProyecto: string,
   ciudad: string
 ): Promise<void> {
+  await enviarPushACelular(celular, {
+    titulo: "⚡ Oferta urgente cerca de ti",
+    cuerpo: `"${sistemaOProyecto}" en ${ciudad} necesita a alguien ya.`,
+    url: "/feed",
+    tag: "urgente-cerca",
+  });
   await enviarPlantillaUtilidad(
     celular,
     process.env.WHATSAPP_AVISO_OFERTA_URGENTE_TEMPLATE,
@@ -147,6 +185,12 @@ export async function enviarAvisoComisionRechazada(
   sistemaOProyecto: string,
   valorComision: string
 ): Promise<void> {
+  await enviarPushACelular(celular, {
+    titulo: "Pago de comisión no confirmado",
+    cuerpo: `No pudimos confirmar el pago de ${valorComision} por "${sistemaOProyecto}". Revísalo en la app.`,
+    url: "/",
+    tag: "comision-rechazada",
+  });
   await enviarPlantillaUtilidad(
     celular,
     process.env.WHATSAPP_AVISO_COMISION_RECHAZADA_TEMPLATE,

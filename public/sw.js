@@ -65,3 +65,41 @@ self.addEventListener("fetch", (event) => {
     );
   }
 });
+
+// --- Avisos en el celular (Web Push) ---
+// El servidor envía {titulo, cuerpo, url, tag}. Si el mensaje no se puede
+// leer, igual se muestra un aviso genérico (Chrome exige mostrar uno).
+self.addEventListener("push", (event) => {
+  let datos = {};
+  try {
+    datos = event.data ? event.data.json() : {};
+  } catch {
+    datos = {};
+  }
+  const titulo = datos.titulo || "Enganche";
+  event.waitUntil(
+    self.registration.showNotification(titulo, {
+      body: datos.cuerpo || "Tienes una novedad en Enganche.",
+      icon: "/icons/icon-192.png",
+      badge: "/icons/icon-192.png",
+      tag: datos.tag || undefined,
+      renotify: Boolean(datos.tag),
+      data: { url: typeof datos.url === "string" && datos.url.startsWith("/") ? datos.url : "/" },
+    })
+  );
+});
+
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close();
+  const destino = new URL((event.notification.data && event.notification.data.url) || "/", self.location.origin).href;
+  event.waitUntil(
+    self.clients.matchAll({ type: "window", includeUncontrolled: true }).then((ventanas) => {
+      for (const ventana of ventanas) {
+        if (new URL(ventana.url).origin === self.location.origin && "focus" in ventana) {
+          return ventana.navigate(destino).then((v) => (v || ventana).focus()).catch(() => ventana.focus());
+        }
+      }
+      return self.clients.openWindow(destino);
+    })
+  );
+});

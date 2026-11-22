@@ -1,4 +1,5 @@
-import { NextResponse } from "next/server";
+import { NextResponse, after } from "next/server";
+import { enviarPushAUsuario } from "@/lib/push/enviar";
 import { query } from "@/lib/db";
 import { obtenerUsuarioIdDeSesion } from "@/lib/auth/session";
 import { formatCOP } from "@/lib/format";
@@ -15,8 +16,8 @@ export async function POST(_request: Request, { params }: { params: Promise<{ id
   }
   const { id } = await params;
 
-  const publicacion = await query<{ autor_id: string; estado: string }>(
-    "select autor_id, estado from publicaciones where id = $1",
+  const publicacion = await query<{ autor_id: string; estado: string; sistema_o_proyecto: string }>(
+    "select autor_id, estado, sistema_o_proyecto from publicaciones where id = $1",
     [id]
   );
   const fila = publicacion.rows[0];
@@ -96,6 +97,15 @@ export async function POST(_request: Request, { params }: { params: Promise<{ id
        set ultima_actividad_en = now(), aviso_expiracion_enviado = false, aviso_postulantes_enviado = false
      where id = $1`,
     [id]
+  );
+
+  after(() =>
+    enviarPushAUsuario(fila.autor_id, {
+      titulo: "Nueva postulación 🙌",
+      cuerpo: `Alguien se postuló a "${fila.sistema_o_proyecto}". Revisa quién es y elige.`,
+      url: `/publicaciones/${id}`,
+      tag: `postulacion-${id}`,
+    })
   );
 
   return NextResponse.json({ ok: true });

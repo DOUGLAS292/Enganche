@@ -1,4 +1,5 @@
-import { NextResponse } from "next/server";
+import { NextResponse, after } from "next/server";
+import { enviarPushAUsuario } from "@/lib/push/enviar";
 import { query } from "@/lib/db";
 import { obtenerUsuarioIdDeSesion } from "@/lib/auth/session";
 
@@ -14,8 +15,8 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     return NextResponse.json({ ok: false, error: "Falta el postulante." }, { status: 400 });
   }
 
-  const publicacion = await query<{ autor_id: string; estado: string }>(
-    "select autor_id, estado from publicaciones where id = $1",
+  const publicacion = await query<{ autor_id: string; estado: string; sistema_o_proyecto: string }>(
+    "select autor_id, estado, sistema_o_proyecto from publicaciones where id = $1",
     [id]
   );
   const fila = publicacion.rows[0];
@@ -48,6 +49,15 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
   await query(
     "update postulaciones set estado = 'elegida', notificado = false where publicacion_id = $1 and postulante_id = $2",
     [id, postulanteId]
+  );
+
+  after(() =>
+    enviarPushAUsuario(postulanteId, {
+      titulo: "¡Te eligieron! 🎉",
+      cuerpo: `Te eligieron para "${fila.sistema_o_proyecto}". Entra al chat para coordinar.`,
+      url: `/publicaciones/${id}`,
+      tag: `elegido-${id}`,
+    })
   );
 
   return NextResponse.json({ ok: true });
