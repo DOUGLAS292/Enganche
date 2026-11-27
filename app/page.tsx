@@ -1,4 +1,5 @@
 import Link from "next/link";
+import AvisoAdmin from "./AvisoAdmin";
 import type { CSSProperties } from "react";
 import { obtenerUsuarioIdDeSesion } from "@/lib/auth/session";
 import { query } from "@/lib/db";
@@ -17,6 +18,7 @@ export default async function Home() {
   let mensajesNuevosGanador = 0;
   let postulacionesSinVer = 0;
   let ofertasNuevasCerca = 0;
+  let avisosAdmin: { id: string; mensaje: string }[] = [];
   let deudaComision: { publicacionId: string; sistemaOProyecto: string; total: number; cantidad: number; bloqueado: boolean } | null = null;
 
   if (usuarioId) {
@@ -25,6 +27,12 @@ export default async function Home() {
       [usuarioId]
     );
     usuario = result.rows[0] ?? null;
+    avisosAdmin = (
+      await query<{ id: string; mensaje: string }>(
+        `select id, mensaje from avisos_usuario where usuario_id = $1 and leido_en is null order by creado_en limit 3`,
+        [usuarioId]
+      )
+    ).rows;
 
     const [pendientes, mensajesAutor, mensajesGanador, sinVer, comisionesDeuda, ofertasCerca] = await Promise.all([
       query<{ total: string }>(
@@ -124,6 +132,9 @@ export default async function Home() {
 
       {usuario ? (
         <>
+          {avisosAdmin.map((a) => (
+            <AvisoAdmin key={a.id} id={a.id} mensaje={a.mensaje} />
+          ))}
           {deudaComision && (
             <Link
               href={`/publicaciones/${deudaComision.publicacionId}`}

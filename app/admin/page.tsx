@@ -94,6 +94,9 @@ export default async function AdminComisiones() {
       <Link href="/admin/estadisticas" className="boton-linea" style={{ marginTop: 10, display: "inline-block" }}>
         📊 Ver estadísticas completas
       </Link>
+      <Link href="/admin/ofertas" className="boton-linea" style={{ marginTop: 10, marginLeft: 8, display: "inline-block" }}>
+        Ofertas publicadas
+      </Link>
 
       <div style={{ display: "flex", gap: 10, marginTop: 16, flexWrap: "wrap" }}>
         <TarjetaTotal etiqueta="Pendiente" valor={totales.pendiente} color="var(--color-acento-claro)" />

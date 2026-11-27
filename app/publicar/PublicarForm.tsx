@@ -4,6 +4,8 @@ import { useState, type FormEvent, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { PROYECTOS_SUGERIDOS } from "@/lib/constants/proyectos";
+import { minimoPorM2, valorMinimo } from "@/lib/constants/precios";
+import { formatCOP } from "@/lib/format";
 
 const TIPOS = [
   { valor: "instalacion", etiqueta: "Instalación" },
@@ -57,6 +59,12 @@ export default function PublicarForm() {
       { enableHighAccuracy: false, timeout: 10000 }
     );
   }
+
+  const mtr2Num = Number(mtr2);
+  const minimo = minimoPorM2(tipoTrabajo, tipoTrabajo === "produccion" ? lugarFabricacion : null);
+  const valorMinimoOferta =
+    minimo && mtr2 !== "" && Number.isFinite(mtr2Num) && mtr2Num > 0 ? valorMinimo(mtr2Num, minimo) : null;
+  const valorBajo = valorMinimoOferta !== null && valorOfertado !== "" && Number(valorOfertado) < valorMinimoOferta;
 
   async function enviar(e: FormEvent) {
     e.preventDefault();
@@ -150,13 +158,14 @@ export default function PublicarForm() {
               placeholder="Ej: 3"
             />
           </Campo>
-          <Campo etiqueta="m² (opcional)">
+          <Campo etiqueta="m² (obligatorio)">
             <input
               type="number"
               min={0}
               step="0.1"
               value={mtr2}
               onChange={(e) => setMtr2(e.target.value)}
+              required
               className="input-vidrio"
               placeholder="Ej: 13,4"
             />
@@ -173,6 +182,11 @@ export default function PublicarForm() {
             required
             className="input-vidrio"
           />
+          {valorBajo && (
+            <p style={{ margin: "6px 0 0", fontSize: 13, color: "#b00020" }}>
+              Para {mtr2} m² {minimo?.descripcion}, el valor mínimo de referencia es {formatCOP(valorMinimoOferta ?? 0)}. Revisa los metros o el valor.
+            </p>
+          )}
         </Campo>
 
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
