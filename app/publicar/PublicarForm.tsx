@@ -158,13 +158,14 @@ export default function PublicarForm() {
               placeholder="Ej: 3"
             />
           </Campo>
-          <Campo etiqueta="m² (opcional)">
+          <Campo etiqueta="m² (obligatorio)">
             <input
               type="number"
               min={0}
               step="0.1"
               value={mtr2}
               onChange={(e) => setMtr2(e.target.value)}
+              required
               className="input-vidrio"
               placeholder="Ej: 13,4"
             />

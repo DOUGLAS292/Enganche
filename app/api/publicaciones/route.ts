@@ -133,6 +133,7 @@ export async function POST(request: Request) {
     !Number.isFinite(valorOfertado) ||
     valorOfertado <= 0 ||
     valorOfertado > 10_000_000_000 ||
+    mtr2 == null ||
     (tipoTrabajo === "produccion" && !LUGARES_FABRICACION.includes(lugarFabricacionRaw ?? ""))
   ) {
     return NextResponse.json({ ok: false, error: "Completa los campos obligatorios." }, { status: 400 });
@@ -140,7 +141,7 @@ export async function POST(request: Request) {
   // Un valor irreal para los metros indicados confunde a quienes se postulan y
   // daña la confianza en el mercado: se rechaza con una explicación clara.
   const minimo = minimoPorM2(tipoTrabajo, lugarFabricacionRaw);
-  if (minimo && mtr2 != null && valorOfertado < valorMinimo(mtr2, minimo)) {
+  if (minimo && valorOfertado < valorMinimo(mtr2, minimo)) {
     return NextResponse.json(
       {
         ok: false,
