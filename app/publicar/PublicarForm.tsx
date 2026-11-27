@@ -4,7 +4,7 @@ import { useState, type FormEvent, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { PROYECTOS_SUGERIDOS } from "@/lib/constants/proyectos";
-import { valorMinimoInstalacion } from "@/lib/constants/precios";
+import { minimoPorM2, valorMinimo } from "@/lib/constants/precios";
 import { formatCOP } from "@/lib/format";
 
 const TIPOS = [
@@ -61,13 +61,10 @@ export default function PublicarForm() {
   }
 
   const mtr2Num = Number(mtr2);
-  const valorBajo =
-    tipoTrabajo === "instalacion" &&
-    mtr2 !== "" &&
-    Number.isFinite(mtr2Num) &&
-    mtr2Num > 0 &&
-    valorOfertado !== "" &&
-    Number(valorOfertado) < valorMinimoInstalacion(mtr2Num);
+  const minimo = minimoPorM2(tipoTrabajo, tipoTrabajo === "produccion" ? lugarFabricacion : null);
+  const valorMinimoOferta =
+    minimo && mtr2 !== "" && Number.isFinite(mtr2Num) && mtr2Num > 0 ? valorMinimo(mtr2Num, minimo) : null;
+  const valorBajo = valorMinimoOferta !== null && valorOfertado !== "" && Number(valorOfertado) < valorMinimoOferta;
 
   async function enviar(e: FormEvent) {
     e.preventDefault();
@@ -186,7 +183,7 @@ export default function PublicarForm() {
           />
           {valorBajo && (
             <p style={{ margin: "6px 0 0", fontSize: 13, color: "#b00020" }}>
-              Para {mtr2} m² de instalación el valor mínimo de referencia es {formatCOP(valorMinimoInstalacion(Number(mtr2)))}. Revisa los metros o el valor.
+              Para {mtr2} m² {minimo?.descripcion}, el valor mínimo de referencia es {formatCOP(valorMinimoOferta ?? 0)}. Revisa los metros o el valor.
             </p>
           )}
         </Campo>

@@ -3,7 +3,7 @@ import { query } from "@/lib/db";
 import { obtenerUsuarioIdDeSesion } from "@/lib/auth/session";
 import { regionParaCiudad, normalizarCiudad } from "@/lib/constants/regiones";
 import { excedioLimite, registrarIntento } from "@/lib/rateLimit";
-import { PRECIO_MINIMO_INSTALACION_M2, valorMinimoInstalacion } from "@/lib/constants/precios";
+import { minimoPorM2, valorMinimo } from "@/lib/constants/precios";
 import { formatCOP } from "@/lib/format";
 
 const TIPOS_TRABAJO = ["produccion", "instalacion"];
@@ -139,11 +139,12 @@ export async function POST(request: Request) {
   }
   // Un valor irreal para los metros indicados confunde a quienes se postulan y
   // daña la confianza en el mercado: se rechaza con una explicación clara.
-  if (tipoTrabajo === "instalacion" && mtr2 != null && valorOfertado < valorMinimoInstalacion(mtr2)) {
+  const minimo = minimoPorM2(tipoTrabajo, lugarFabricacionRaw);
+  if (minimo && mtr2 != null && valorOfertado < valorMinimo(mtr2, minimo)) {
     return NextResponse.json(
       {
         ok: false,
-        error: `Para ${mtr2} m² de instalación, el valor de referencia mínimo es ${formatCOP(valorMinimoInstalacion(mtr2))} (${formatCOP(PRECIO_MINIMO_INSTALACION_M2)} por m²). Revisa los metros cuadrados o el valor ofertado.`,
+        error: `Para ${mtr2} m² ${minimo.descripcion}, el valor de referencia mínimo es ${formatCOP(valorMinimo(mtr2, minimo))} (${formatCOP(minimo.porM2)} por m²). Revisa los metros cuadrados o el valor ofertado.`,
       },
       { status: 400 }
     );
