@@ -10,7 +10,7 @@ export default function PrivacidadPage() {
       </Link>
 
       <h1 className="titular" style={{ fontSize: 26, marginTop: 14, fontWeight: 700 }}>Política de privacidad</h1>
-      <p style={{ color: "var(--color-mist)", fontSize: 13 }}>Última actualización: septiembre de 2026</p>
+      <p style={{ color: "var(--color-mist)", fontSize: 13 }}>Última actualización: noviembre de 2026</p>
 
       <div style={{ marginTop: 16, display: "flex", flexDirection: "column", gap: 18, fontSize: 13, color: "var(--color-texto-tenue)", lineHeight: 1.6 }}>
         <Clausula titulo="1. Alcance de esta política">
@@ -42,7 +42,9 @@ export default function PrivacidadPage() {
           calificación y trabajos completados — nunca tu celular, ni siquiera en el chat. Compartimos datos
           con los proveedores que operan la infraestructura de la plataforma (hosting, base de datos, y el
           envío de códigos de verificación cuando esté activo), y con autoridades solo ante un requerimiento
-          legal válido.
+          legal válido. También usamos el píxel de Meta (Facebook e Instagram) para medir cuántas personas
+          llegan desde nuestros anuncios y completan el registro: registra la visita y el registro con datos
+          técnicos del navegador, y no le enviamos tu celular, nombre ni documento.
         </Clausula>
 
         <Clausula titulo="5. Seguridad de la información">
