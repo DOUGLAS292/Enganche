@@ -4,6 +4,7 @@ import "./globals.css";
 import { obtenerUsuarioIdDeSesion } from "@/lib/auth/session";
 import NavInferior from "./NavInferior";
 import RegistrarServiceWorker from "./RegistrarServiceWorker";
+import MetaPixel from "./MetaPixel";
 
 // Gilroy es la tipografía oficial de La Ventanería (manual de identidad
 // LV-MKT-001), pero no está disponible como fuente libre/CDN — el manual
@@ -75,6 +76,7 @@ export default async function RootLayout({
         {children}
         {conSesion && <NavInferior />}
         <RegistrarServiceWorker />
+        <MetaPixel />
       </body>
     </html>
   );

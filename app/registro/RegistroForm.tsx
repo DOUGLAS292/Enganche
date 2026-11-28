@@ -3,6 +3,7 @@
 import { useState, type CSSProperties, type FormEvent, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { registrarEventoMeta } from "@/lib/metaPixel";
 
 const TIPOS = [
   { valor: "independiente", etiqueta: "Independiente" },
@@ -70,6 +71,10 @@ export default function RegistroForm({ celular }: { celular: string }) {
         setError(data.error ?? "No se pudo crear la cuenta.");
         return;
       }
+      // Le avisa a Meta que la cuenta quedó creada, para que las campañas
+      // optimicen por registros y no solo por clics. Solo va el tipo de
+      // usuario, nunca datos personales.
+      registrarEventoMeta("CompleteRegistration", { content_name: tipoUsuario });
       // Pide el permiso de ubicación justo al quedar registrado — es la
       // única vez que estamos seguros de tener a la persona activamente
       // completando un formulario, el mejor momento para pedirlo.
