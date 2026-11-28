@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;800&family=Manrope:wght@500;700;800&family=IBM+Plex+Mono:wght@500;600&display=block" rel="stylesheet">
+<style>
+  :root { --marca:#04253a; --acento:#ff7f00; --ambar:#ffad01; --azul:#2f76a3; --cielo:#c7def2; }
+  html, body { margin:0; width:1080px; height:1920px; overflow:hidden; font-family: Manrope, sans-serif; color:#fff; }
+  body { background:#04253a; }
+  .bg { position:absolute; inset:-200px; background:
+      radial-gradient(700px 700px at 80% 15%, rgba(255,127,0,.35), transparent 60%),
+      radial-gradient(900px 900px at 10% 90%, rgba(47,118,163,.55), transparent 60%),
+      linear-gradient(180deg, #06314d 0%, #04253a 55%, #021827 100%); }
+  .grid { position:absolute; inset:0; opacity:.10;
+      background-image: linear-gradient(rgba(255,255,255,.6) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.6) 1px, transparent 1px);
+      background-size: 90px 90px; }
+  .esc { position:absolute; inset:0; opacity:0; }
+  .big { position:absolute; left:80px; right:80px; font-family:Unbounded, sans-serif; font-weight:800; letter-spacing:-3px; line-height:1.02; }
+  .o { color:var(--acento); }
+  .a { color:var(--ambar); }
+  .kick { position:absolute; left:80px; font-family:'IBM Plex Mono', monospace; font-weight:600; font-size:30px; letter-spacing:6px; color:var(--ambar); }
+  .phone { position:absolute; width:560px; height:1212px; border-radius:66px; background:#0b1620; box-shadow:0 60px 110px rgba(0,0,0,.55), inset 0 0 0 3px #22313b; }
+  .phone .scr { position:absolute; left:14px; top:14px; right:14px; bottom:14px; border-radius:52px; overflow:hidden; background:#c7def2; }
+  .phone .scr img { width:100%; display:block; }
+  .phone .isla { position:absolute; left:50%; top:26px; width:130px; height:34px; margin-left:-65px; border-radius:18px; background:#0b1620; z-index:5; }
+  .chip { position:absolute; padding:26px 40px; border-radius:60px; font-weight:800; font-size:44px; white-space:nowrap; }
+  .chip.n { background:#fff; color:var(--marca); }
+  .chip.c { background:linear-gradient(135deg,#ff9a2e,#ff7f00); color:var(--marca); }
+  .chip.b { background:rgba(255,255,255,.10); border:2px solid rgba(255,255,255,.35); color:#fff; }
+  .burst { position:absolute; left:50%; top:50%; width:10px; height:10px; border-radius:50%; border:8px solid var(--acento); }
+  .ico { position:absolute; border-radius:22%; box-shadow:0 40px 90px rgba(0,0,0,.5); }
+  .wa { position:absolute; padding:26px 34px; border-radius:30px 30px 30px 8px; background:#e9f6ee; color:#1c3a2a; font-weight:700; font-size:36px; max-width:640px; box-shadow:0 20px 40px rgba(0,0,0,.35); }
+  .btn { position:absolute; left:50%; padding:34px 80px; border-radius:70px; background:linear-gradient(135deg,#ff9a2e,#ff7f00); color:var(--marca);
+         font-weight:800; font-size:50px; white-space:nowrap; box-shadow:0 24px 60px rgba(255,127,0,.5); }
+  .marca { position:absolute; left:0; right:0; text-align:center; font-family:Unbounded, sans-serif; font-weight:800; }
+</style>
+</head>
+<body>
+<div class="bg" id="bg"></div>
+<div class="grid"></div>
+
+<!-- 0: gancho, el caos de los grupos -->
+<section class="esc" id="e0">
+  <div class="wa" id="wa0" style="left:90px; top:300px;">¿Alguien instala 12 ventanas en Jamundí? 🙏</div>
+  <div class="wa" id="wa1" style="left:300px; top:520px;">Yo, escríbeme al privado</div>
+  <div class="wa" id="wa2" style="left:120px; top:700px;">¿Cuánto pagan? ¿Para cuándo?</div>
+  <div class="wa" id="wa3" style="left:360px; top:880px;">¿Sigue disponible? 😅</div>
+  <div class="big" id="h0" style="top:1180px; font-size:96px;">¿Sigues buscando trabajo en <span class="o">grupos</span>?</div>
+</section>
+
+<!-- 1: llegó Enganche -->
+<section class="esc" id="e1">
+  <div class="burst" id="burst1"></div>
+  <img class="ico" id="ico1" src="brand/icon.png" style="left:340px; top:560px; width:400px; height:400px;" alt="">
+  <div class="big" id="h1" style="top:1080px; text-align:center; font-size:120px;">Llegó<br><span class="o">Enganche.</span></div>
+</section>
+
+<!-- 2: lema + landing -->
+<section class="esc" id="e2">
+  <div class="kick" id="k2" style="top:190px;">ALUMINIO Y VIDRIO · COLOMBIA</div>
+  <div class="big" id="h2" style="top:250px; font-size:84px;">Todo el gremio, <span class="o">enganchado.</span></div>
+  <div class="phone" id="p2" style="left:260px; top:640px;"><div class="isla"></div><div class="scr"><img id="img2" src="shots/00_landing.png" alt=""></div></div>
+</section>
+
+<!-- 3: publica con tu precio -->
+<section class="esc" id="e3">
+  <div class="kick" style="top:190px;">01 · PUBLICA</div>
+  <div class="big" id="h3" style="top:250px; font-size:92px;">Publica con <span class="o">tu precio.</span></div>
+  <div class="phone" id="p3" style="left:260px; top:600px;"><div class="isla"></div><div class="scr"><img src="shots/07_publicar_lleno.png" alt=""></div></div>
+  <div class="chip c" id="c3" style="left:560px; top:1290px;">$ 2.400.000</div>
+</section>
+
+<!-- 4: cerca de ti se postulan -->
+<section class="esc" id="e4">
+  <div class="kick" style="top:190px;">02 · RECIBE POSTULACIONES</div>
+  <div class="big" id="h4" style="top:250px; font-size:92px;">Se postulan <span class="o">cerca de ti.</span></div>
+  <div class="phone" id="p4" style="left:260px; top:600px;"><div class="isla"></div><div class="scr"><img src="shots/08_feed.png" alt=""></div></div>
+  <div class="chip n" id="c4" style="left:90px; top:1360px;">📍 1,9 km</div>
+</section>
+
+<!-- 5: tú eliges -->
+<section class="esc" id="e5">
+  <div class="kick" style="top:190px;">03 · ELIGE Y COORDINA</div>
+  <div class="big" id="h5" style="top:250px; font-size:92px;">Tú <span class="o">eliges</span> con quién.</div>
+  <div class="phone" id="p5" style="left:260px; top:600px;"><div class="isla"></div><div class="scr"><img src="shots/15_chat.png" alt=""></div></div>
+  <div class="chip c" id="c5" style="left:600px; top:1180px;">Elegido ✓</div>
+</section>
+
+<!-- 6: beneficios -->
+<section class="esc" id="e6">
+  <div class="big" id="h6" style="top:300px; font-size:92px;">Con orden, historial y <span class="o">confianza.</span></div>
+  <div class="chip b" id="b0" style="left:90px; top:800px;">📱 Solo tu celular</div>
+  <div class="chip b" id="b1" style="left:250px; top:960px;">🔒 Sin contraseñas</div>
+  <div class="chip b" id="b2" style="left:90px; top:1120px;">⭐ Calificaciones</div>
+  <div class="chip c" id="b3" style="left:230px; top:1280px;">🛡️ 30 días de garantía</div>
+  <div class="chip b" id="b4" style="left:90px; top:1440px;">🇨🇴 Todo Colombia</div>
+</section>
+
+<!-- 7: cierre -->
+<section class="esc" id="e7">
+  <img class="ico" id="ico7" src="brand/icon.png" style="left:390px; top:420px; width:300px; height:300px;" alt="">
+  <div class="marca" id="m7" style="top:800px; font-size:110px;">Enganche<span class="o">.</span></div>
+  <div class="big" id="h7" style="top:1000px; text-align:center; font-size:60px; letter-spacing:-1px; line-height:1.2;">Registrarte, publicar<br>y postularte <span class="a">no cuesta nada.</span></div>
+  <div class="btn" id="btn7" style="top:1380px;">Entra gratis</div>
+</section>
+
+<script>
+const TL = __TIMELINE__;
+const $ = (id) => document.getElementById(id);
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const ease = (x) => 1 - Math.pow(1 - clamp(x), 3);
+const back = (x) => { x = clamp(x); const c = 1.70158; return 1 + (c + 1) * Math.pow(x - 1, 3) + c * Math.pow(x - 1, 2); };
+const k = (l, s, d) => ease((l - s) / d);
+const kb = (l, s, d) => back((l - s) / d);
+
+function pop(el, l, s, d = 0.5, dy = 60) {
+  const v = kb(l, s, d), o = k(l, s, d * 0.6);
+  el.style.opacity = o;
+  el.style.transform = `translateY(${((1 - Math.min(v, 1)) * dy).toFixed(1)}px) scale(${(0.85 + 0.15 * v).toFixed(3)})`;
+}
+function rise(el, l, s, d = 0.6, dy = 50) {
+  const v = k(l, s, d);
+  el.style.opacity = v;
+  el.style.transform = `translateY(${((1 - v) * dy).toFixed(1)}px)`;
+}
+function phoneIn(el, l, dur, rot) {
+  const v = kb(l, 0.15, 0.8);
+  const drift = (l / Math.max(dur, 1)) * 30;
+  el.style.opacity = k(l, 0.1, 0.4);
+  el.style.transform = `translateY(${((1 - Math.min(v, 1.05)) * 400 - drift).toFixed(1)}px) rotate(${(rot * (1 - k(l, 0, 1.4)) + rot * 0.25).toFixed(2)}deg)`;
+}
+
+const DRAW = [
+  (l) => {
+    ['wa0', 'wa1', 'wa2', 'wa3'].forEach((id, i) => pop($(id), l, 0.05 + i * 0.32, 0.45, 40));
+    rise($('h0'), l, 1.1, 0.6);
+  },
+  (l) => {
+    const b = $('burst1'); const v = k(l, 0, 0.9);
+    b.style.transform = `translate(-50%,-50%) scale(${(1 + v * 140).toFixed(1)})`;
+    b.style.opacity = (1 - v).toFixed(3);
+    b.style.top = '760px';
+    const i = $('ico1'); const w = kb(l, 0.05, 0.7);
+    i.style.opacity = k(l, 0.05, 0.3);
+    i.style.transform = `scale(${(0.4 + 0.6 * w).toFixed(3)}) rotate(${((1 - k(l, 0, 0.8)) * -20).toFixed(2)}deg)`;
+    pop($('h1'), l, 0.45, 0.6);
+  },
+  (l, d) => {
+    rise($('k2'), l, 0.0, 0.5); rise($('h2'), l, 0.15, 0.6);
+    phoneIn($('p2'), l, d, -4);
+    $('img2').style.transform = `translateY(${(-k(l, 1.2, d) * 420).toFixed(1)}px)`;
+  },
+  (l, d) => { rise($('h3'), l, 0.05, 0.5); phoneIn($('p3'), l, d, 4); pop($('c3'), l, 1.3, 0.5); },
+  (l, d) => { rise($('h4'), l, 0.05, 0.5); phoneIn($('p4'), l, d, -4); pop($('c4'), l, 1.3, 0.5); },
+  (l, d) => { rise($('h5'), l, 0.05, 0.5); phoneIn($('p5'), l, d, 4); pop($('c5'), l, 1.4, 0.5); },
+  (l) => { rise($('h6'), l, 0.0, 0.5); ['b0', 'b1', 'b2', 'b3', 'b4'].forEach((id, i) => pop($(id), l, 0.5 + i * 0.28, 0.45, 50)); },
+  (l) => {
+    const i = $('ico7'); const w = kb(l, 0.05, 0.7);
+    i.style.opacity = k(l, 0.05, 0.3);
+    i.style.transform = `scale(${(0.6 + 0.4 * w).toFixed(3)}) rotate(${(Math.sin(l * 2) * 3).toFixed(2)}deg)`;
+    rise($('m7'), l, 0.3, 0.6); rise($('h7'), l, 0.7, 0.6);
+    const b = $('btn7'); const v = kb(l, 1.2, 0.5);
+    b.style.opacity = k(l, 1.2, 0.3);
+    b.style.transform = `translateX(-50%) scale(${(0.8 + 0.2 * v + 0.02 * Math.sin(l * 6)).toFixed(3)})`;
+  },
+];
+
+function render(t) {
+  let idx = TL.findIndex((s) => t >= s.start && t < s.end);
+  if (idx < 0) idx = TL.length - 1;
+  const s = TL[idx]; const l = t - s.start; const d = s.end - s.start;
+  document.querySelectorAll('.esc').forEach((el) => { el.style.opacity = 0; });
+  $('e' + idx).style.opacity = clamp(l / 0.2);
+  $('bg').style.transform = `translate(${(Math.sin(t * 0.4) * 60).toFixed(1)}px, ${(Math.cos(t * 0.3) * 60).toFixed(1)}px)`;
+  DRAW[idx](l, d);
+}
+window.render = render;
+</script>
+</body>
+</html>
