@@ -62,6 +62,10 @@ vidrio en **todo Colombia**. Lanzamiento nacional (ver `docs/SPEC.md`).
   conjunto que ya existen.
 - Meta no permite mezclar optimizaciones distintas (clics y visitas a la
   página) dentro de una campaña con presupuesto de campaña.
+- Al 28 nov: 63.473 COP, 1.198 clics, pero solo 445 visitas cargaron la página
+  (37 %). El conjunto salía en todas las ubicaciones, incluidas Audience Network,
+  Marketplace, estados de WhatsApp y Threads, que traen clics accidentales. El 28
+  nov se dejó solo en Facebook e Instagram (feed, historias y reels).
 - El video del reel vive en la página, no en la biblioteca de la cuenta: para
   crear un anuncio nuevo con otro enlace hay que subir el archivo del video a
   la cuenta publicitaria.
