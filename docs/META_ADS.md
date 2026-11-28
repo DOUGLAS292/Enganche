@@ -44,6 +44,13 @@ vidrio en **todo Colombia**. Lanzamiento nacional (ver `docs/SPEC.md`).
 - Anuncio: "Reel LLEGO ENGANCHE - Registro" (ID 120250964869730410), creativo
   1140930888912100, botón "Registrarse". Su enlace es `http://www.enganchecolombia.com/`.
 
+- Anuncios nuevos (28 nov 2026), en el mismo conjunto, enlace `https://www.enganchecolombia.com/`
+  y botón "Registrarse":
+  - "Imagen - Aluminieros y vidrieros - Registro" (ID 120251059458710410,
+    creativo 1833293757790028, imagen `docs/anuncios/enganche-a.png`).
+  - "Imagen - Talleres y constructoras - Registro" (ID 120251059458850410,
+    creativo 1665120915354878, imagen `docs/anuncios/enganche-b.png`).
+
 ## Resultados (22–27 nov 2026)
 
 - Gasto 55.171 COP, 10.111 impresiones, 6.620 personas alcanzadas.
@@ -69,6 +76,9 @@ vidrio en **todo Colombia**. Lanzamiento nacional (ver `docs/SPEC.md`).
 - El video del reel vive en la página, no en la biblioteca de la cuenta: para
   crear un anuncio nuevo con otro enlace hay que subir el archivo del video a
   la cuenta publicitaria.
+
+- Para subir imágenes a Meta desde la sesión hace falta permitir el host
+  `rupload.facebook.com` en el entorno (se agregó el 28 nov).
 
 ## Píxel de Meta
 
